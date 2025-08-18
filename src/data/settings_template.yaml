@@ -7,4 +7,4 @@ llm_api_key: null
 
 # System index of the microphone to be used by default during the presentation control
 # To see available microphones, run `moves settings list`
-selected_mic: 0
+selected_mic: null
