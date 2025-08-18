@@ -1,0 +1,15 @@
+[project]
+name = "moves"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "instructor>=1.10.0",
+    "jellyfish>=1.2.0",
+    "litellm>=1.75.8",
+    "num2words>=0.5.14",
+    "pymupdf>=1.26.3",
+    "rapidfuzz>=3.13.0",
+    "sentence-transformers>=5.1.0",
+]
