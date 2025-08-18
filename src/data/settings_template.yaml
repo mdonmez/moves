@@ -3,7 +3,7 @@
 llm_model: gemini/gemini-2.0-flash
 
 # API key for the LLM provider.
-llm_api_key:
+llm_api_key: null
 
 # System index of the microphone to be used by default during the presentation control
 # To see available microphones, run `moves settings list`

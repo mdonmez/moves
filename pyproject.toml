@@ -11,5 +11,6 @@ dependencies = [
     "num2words>=0.5.14",
     "pymupdf>=1.26.3",
     "rapidfuzz>=3.13.0",
+    "ruamel-yaml>=0.18.14",
     "sentence-transformers>=5.1.0",
 ]
