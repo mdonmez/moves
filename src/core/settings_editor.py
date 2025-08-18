@@ -1,37 +1,36 @@
 from pathlib import Path
 from ruamel.yaml import YAML
-from io import StringIO
 import copy
 
 from ..data.models import Settings
 from ..utils import data_handler
 
-
 yaml = YAML()
 
 
 class SettingsEditor:
-    template_path = Path("src/data/settings_template.yaml")
-    settings_filename = Path("settings.yaml")
+    template = Path("src/data/settings_template.yaml")
+    settings = data_handler.DATA_FOLDER / Path("settings.yaml")
 
     def __init__(self):
         try:
-            self.template_node = (
-                yaml.load(self.template_path.read_text(encoding="utf-8")) or {}
+            self.template_data = (
+                yaml.load(self.template.read_text(encoding="utf-8")) or {}
             )
         except Exception:
-            self.template_node = {}
+            self.template_data = {}
 
         try:
-            loaded = yaml.load(data_handler.read(self.settings_filename)) or {}
+            user_data = yaml.load(data_handler.read(self.settings)) or {}
         except Exception:
-            loaded = {}
+            user_data = {}
 
         self._data = (
-            {**self.template_node, **loaded}
-            if isinstance(self.template_node, dict)
-            else loaded
+            {**self.template_data, **user_data}
+            if isinstance(self.template_data, dict)
+            else user_data
         )
+
         try:
             self._save()
         except Exception:
@@ -39,16 +38,21 @@ class SettingsEditor:
 
     def _save(self):
         node = (
-            copy.deepcopy(self.template_node)
-            if isinstance(self.template_node, dict)
-            else dict(self._data)
+            copy.deepcopy(self.template_data)
+            if isinstance(self.template_data, dict)
+            else {}
         )
-        node.update(self._data)
-        buf = StringIO()
-        yaml.dump(node, buf)
-        return data_handler.write(self.settings_filename, buf.getvalue())
+        for key in node.keys():
+            if key in self._data:
+                node[key] = self._data[key]
+
+        with self.settings.open("w", encoding="utf-8") as f:
+            yaml.dump(node, f)
+        return True
 
     def set(self, key, value):
+        if key not in self.template_data:
+            return False
         self._data[key] = value
         try:
             self._save()
@@ -57,8 +61,8 @@ class SettingsEditor:
             return False
 
     def unset(self, key):
-        if key in self.template_node:
-            self._data[key] = self.template_node[key]
+        if key in self.template_data:
+            self._data[key] = self.template_data[key]
         else:
             self._data.pop(key, None)
         try:
@@ -67,20 +71,32 @@ class SettingsEditor:
         except Exception:
             return False
 
-    def list(self):
-        return Settings(
-            llm_model=self._data.get("llm_model", ""),
-            llm_api_key=self._data.get("llm_api_key", ""),
-            selected_mic=int(self._data.get("selected_mic", 0)),
-        )
+    def list(self) -> Settings:
+        return Settings(**self._data)
 
 
 if __name__ == "__main__":
+    import sys
+
     editor = SettingsEditor()
-    print("Initial settings:", editor.list())
-    print("Setting 'llm_model' to 'gpt-4'")
-    editor.set("llm_model", "gpt-4")
-    print("Updated settings:", editor.list())
-    print("Unsetting 'llm_model'")
-    editor.unset("llm_model")
-    print("Settings after unset:", editor.list())
+
+    print("Loaded template keys:", list(editor.template_data.keys()))
+    print("Current data:", editor._data)
+
+    test_key = "llm_model"
+    print(f"\n[SET] {test_key} -> 'gpt-4'")
+    result = editor.set(test_key, "gpt-4")
+    print("Result:", result)
+    print("Data after set:", editor._data)
+
+    print(f"\n[UNSET] {test_key}")
+    result = editor.unset(test_key)
+    print("Result:", result)
+    print("Data after unset:", editor._data)
+
+    print("\n[LIST]")
+    settings_obj = editor.list()
+    print(settings_obj)
+
+    print("\n=== Test Completed ===")
+    sys.exit(0)
