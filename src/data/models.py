@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Literal
 from pathlib import Path
 
 
@@ -37,3 +38,10 @@ class Settings:
     llm_model: str
     llm_api_key: str
     selected_mic: int
+
+
+@dataclass(frozen=True)
+class ProcessResult:
+    section_count: int
+    transcript_from: Literal["SOURCE", "LOCAL"]
+    presentation_from: Literal["SOURCE", "LOCAL"]

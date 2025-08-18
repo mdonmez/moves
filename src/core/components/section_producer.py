@@ -130,7 +130,7 @@ if __name__ == "__main__":
         presentation_path,
         transcript_path,
         llm_model="gemini/gemini-2.5-flash",
-        llm_api_key="AIzaSyBW2acq1nanlFpGfv4L6ofYBioV9Z_l6UE",
+        llm_api_key="",
     )
     section_list = convert_to_list(sections)
 

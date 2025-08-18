@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from pathlib import Path
+from typing import List
 import shutil
 
 DATA_FOLDER = Path.home() / ".moves"
@@ -27,38 +30,29 @@ def read(path: Path) -> str:
         raise RuntimeError(f"Read operation failed for {path}: {e}") from e
 
 
-def list(path: Path) -> list[str]:
+def list(path: Path) -> List[Path]:
     full_path = DATA_FOLDER / Path(path)
     if not full_path.exists():
         return []
 
-    items = []
+    items: List[Path] = []
     try:
         for item in full_path.iterdir():
-            if item.is_file():
-                items.append(item.name)
-            elif item.is_dir():
-                items.append(item.name + "/")
-        return sorted(items)
+            items.append(item)
+        return sorted(items, key=lambda p: str(p))
     except Exception as e:
         raise RuntimeError(f"List operation failed for {path}: {e}") from e
 
 
 def rename(path: Path, new_name: str) -> Path:
     full_path = DATA_FOLDER / Path(path)
-    if not full_path.exists():
-        raise FileNotFoundError(f"Path not found: {path}")
-
-    new_path = full_path.parent / new_name
-    if new_path.exists():
-        raise FileExistsError(f"Target already exists: {new_name}")
 
     try:
-        shutil.move(str(full_path), str(new_path))
-        return new_path.relative_to(DATA_FOLDER)
+        full_path.rename(full_path.parent / new_name)
+        return full_path.relative_to(DATA_FOLDER)
     except Exception as e:
         raise RuntimeError(
-            f"Rename operation failed for {path} to {new_name}: {e}"
+            f"Rename operation failed for {full_path} to {new_name}: {e}"
         ) from e
 
 
