@@ -3,6 +3,7 @@ import json
 from dataclasses import asdict
 from pathlib import Path
 
+
 from ..data.models import Speaker, ProcessResult
 from ..utils import id_generator, data_handler
 
@@ -16,6 +17,14 @@ class SpeakerManager:
     def add(
         self, name: str, source_presentation: Path, source_transcript: Path
     ) -> Speaker:
+        current_speakers = self.list()
+        speaker_ids = [speaker.speaker_id for speaker in current_speakers]
+
+        if name in speaker_ids:
+            raise ValueError(
+                f"Given name '{name}' can't be a same with one of the existing speakers' IDs."
+            )
+
         speaker_id = id_generator.generate_speaker_id(name)
         speaker_path = self.SPEAKERS_PATH / speaker_id
         speaker = Speaker(
@@ -49,6 +58,24 @@ class SpeakerManager:
         }
         data_handler.write(speaker_path / "speaker.json", json.dumps(data, indent=4))
         return speaker
+
+    def resolve(self, speaker_pattern: str) -> Speaker | list[Speaker]:
+        speakers = self.list()
+        speaker_ids = [speaker.speaker_id for speaker in speakers]
+
+        if speaker_pattern in speaker_ids:
+            return speakers[speaker_ids.index(speaker_pattern)]
+
+        matched_speakers = [
+            speaker for speaker in speakers if speaker.name == speaker_pattern
+        ]
+        if matched_speakers:
+            if len(matched_speakers) == 1:
+                return matched_speakers[0]
+            else:
+                return matched_speakers
+
+        return []
 
     def process(
         self, speakers: list[Speaker], llm_model: str, llm_api_key: str
@@ -152,27 +179,3 @@ class SpeakerManager:
                             data[k] = Path(v)
                     speakers.append(Speaker(**data))
         return speakers
-
-
-if __name__ == "__main__":
-    speaker_manager = SpeakerManager()
-
-    speaker1 = speaker_manager.add(
-        name="ezgi",
-        source_presentation=Path(
-            "C:/Users/Donmez/Sync/Projects/Active/moves_prev/src/data/test_data_section_generation/1/presentation.pdf"
-        ),
-        source_transcript=Path(
-            "C:/Users/Donmez/Sync/Projects/Active/moves_prev/src/data/test_data_section_generation/1/input_transcript.pdf"
-        ),
-    )
-
-    print(speaker_manager.list())
-
-    print(
-        speaker_manager.process(
-            [speaker1],
-            llm_model="gemini/gemini-2.5-flash-lite",
-            llm_api_key="",
-        )
-    )
