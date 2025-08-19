@@ -538,19 +538,20 @@ def settings_unset(
             raise typer.Exit(1)
         
         # Get the template value to show what it will be reset to
-        template_value = settings_editor.template_data.get(key, "None")
+        template_value = settings_editor.template_data.get(key)
         
         # Reset setting
         success = settings_editor.unset(key)
         
         if success:
-            if template_value is not None:
+            if key in settings_editor.template_data:
                 # Display confirmation showing the reset value
-                if key == "llm_api_key" and template_value and str(template_value) != "None":
+                if key == "llm_api_key" and template_value and template_value != "null" and template_value is not None:
                     display_value = str(template_value)[:8] + "..." + str(template_value)[-4:] if len(str(template_value)) > 12 else "***"
                     typer.echo(f"Setting reset: {key} = {display_value} (default)")
                 else:
-                    typer.echo(f"Setting reset: {key} = {template_value} (default)")
+                    display_value = "Not configured" if template_value is None else str(template_value)
+                    typer.echo(f"Setting reset: {key} = {display_value} (default)")
             else:
                 # Key was removed (not in template)
                 typer.echo(f"Setting removed: {key}")
