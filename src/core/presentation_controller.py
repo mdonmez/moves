@@ -19,7 +19,6 @@ class PresentationController:
         sections: list[Section],
         start_section: Section,
         window_size: int = 12,
-        selected_mic: int | None = None,
     ):
         self.frame_duration = 0.1
         self.sample_rate = 16000
@@ -55,9 +54,8 @@ class PresentationController:
             target=self.navigate_presentation, daemon=True
         )
 
-        self.selected_mic = (
-            selected_mic if selected_mic is not None else sd.default.device[0]
-        )
+        # Always use the default sounddevice input
+        self.selected_mic = sd.default.device[0]
 
     def process_audio(self):
         while not self.shutdown_flag.is_set():
