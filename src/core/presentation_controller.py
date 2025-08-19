@@ -19,7 +19,6 @@ class PresentationController:
         sections: list[Section],
         start_section: Section,
         window_size: int = 12,
-        selected_mic: int | None = None,
     ):
         self.frame_duration = 0.1
         self.sample_rate = 16000
@@ -53,10 +52,6 @@ class PresentationController:
 
         self.navigator = threading.Thread(
             target=self.navigate_presentation, daemon=True
-        )
-
-        self.selected_mic = (
-            selected_mic if selected_mic is not None else sd.default.device[0]
         )
 
     def process_audio(self):
@@ -121,15 +116,15 @@ class PresentationController:
                         target_idx = target_section.section_index
                         navigation_distance = target_idx - current_idx
 
-                        print(f"Speech: {' '.join(current_words[-7:])}")
-                        print(
-                            f"Chunk: {' '.join(best_chunk.partial_content.strip().split()[-7:])}"
+                        self.update_live_display(
+                            speech=" ".join(current_words[-7:]),
+                            chunk=" ".join(
+                                best_chunk.partial_content.strip().split()[-7:]
+                            ),
+                            confidence=f"{confidence:.4f}",
+                            navigation=f"{navigation_distance}",
+                            matched_section=f"{target_section.section_index}",
                         )
-                        print(f"Confidence: {confidence:.4f}")
-                        print(f"Navigation distance: {navigation_distance}")
-                        print(f"Matched section: {target_section.section_index}")
-                        print("=" * 40)
-
                         if navigation_distance != 0:
                             key = Key.right if navigation_distance > 0 else Key.left
                             abs_distance = abs(navigation_distance)
@@ -154,17 +149,82 @@ class PresentationController:
             except Exception as e:
                 raise RuntimeError(f"Navigation error: {e}") from e
 
+    def update_live_display(
+        self,
+        status="Listening...",
+        speech="-",
+        chunk="-",
+        confidence="-",
+        navigation="-",
+        matched_section="-",
+    ):
+        from rich.table import Table
+        from rich.panel import Panel
+        from rich.live import Live
+        from rich.layout import Layout
+        from rich.console import Console
+
+        console = Console()
+
+        layout = Layout()
+        layout.split_column(
+            Layout(name="header", size=3),
+            Layout(ratio=1, name="main"),
+            Layout(size=3, name="footer"),
+        )
+
+        layout["main"].split_row(Layout(name="side"), Layout(name="body", ratio=2))
+
+        header_table = Table(show_header=False, show_border=False, expand=True)
+        header_table.add_column(justify="center")
+        header_table.add_row(
+            f"[bold cyan]Presentation Control[/bold] | Status: [green]{status}[/green]"
+        )
+
+        footer_table = Table(show_header=False, show_border=False, expand=True)
+        footer_table.add_column(justify="center")
+        footer_table.add_row(
+            f"Press [bold]Ctrl+C[/bold] to stop | Current Section: [bold]{self.current_section.section_index}[/bold] | Total Sections: [bold]{len(self.sections)}[/bold]"
+        )
+
+        side_panel = Panel(
+            f"""
+[bold]Speech:[/bold] [green]{speech}[/green]
+[bold]Chunk:[/bold] [yellow]{chunk}[/yellow]
+            """,
+            title="Real-time Transcription",
+            border_style="blue",
+        )
+
+        body_panel = Panel(
+            f"""
+[bold]Confidence:[/bold] {confidence}
+[bold]Navigation:[/bold] {navigation}
+[bold]Matched Section:[/bold] {matched_section}
+            """,
+            title="Navigation Details",
+            border_style="magenta",
+        )
+
+        layout["header"].update(header_table)
+        layout["footer"].update(footer_table)
+        layout["side"].update(side_panel)
+        layout["body"].update(body_panel)
+
+        if not hasattr(self, "live_display"):
+            self.live_display = Live(layout, console=console, screen=True)
+            self.live_display.start()
+        else:
+            self.live_display.update(layout)
+
     def control(self):
-        print("\n--- Presentation Controller ---")
-        print("Listening (Press Ctrl+C to stop)\n")
-        print(f"Starts from page: {self.current_section.section_index}")
-        print(f"Total pages: {len(self.sections)}")
-        print("READY")
-        print("=" * 40)
+        self.update_live_display(status="Initializing...")
 
         audio_thread = threading.Thread(target=self.process_audio, daemon=True)
         audio_thread.start()
         self.navigator.start()
+
+        self.update_live_display()
 
         blocksize = int(self.sample_rate * self.frame_duration)
 
@@ -178,23 +238,23 @@ class PresentationController:
                     indata[:, 0].copy()
                 ),
                 latency="low",
-                device=self.selected_mic,
             ):
                 while not self.shutdown_flag.is_set():
                     sd.sleep(20)
 
         except KeyboardInterrupt:
-            print("\n[System] Shutting down...")
+            pass
 
         finally:
+            if hasattr(self, "live_display"):
+                self.live_display.stop()
+
             self.shutdown_flag.set()
 
             if audio_thread.is_alive():
                 audio_thread.join(timeout=1.0)
             if self.navigator.is_alive():
                 self.navigator.join(timeout=1.0)
-
-            print("[System] Shutdown complete")
 
 
 if __name__ == "__main__":

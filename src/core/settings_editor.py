@@ -37,6 +37,8 @@ class SettingsEditor:
             pass
 
     def _save(self):
+        from io import StringIO
+
         node = (
             copy.deepcopy(self.template_data)
             if isinstance(self.template_data, dict)
@@ -46,8 +48,11 @@ class SettingsEditor:
             if key in self._data:
                 node[key] = self._data[key]
 
-        with self.settings.open("w", encoding="utf-8") as f:
-            yaml.dump(node, f)
+        string_stream = StringIO()
+        yaml.dump(node, string_stream)
+        data_handler.write(
+            self.settings.relative_to(data_handler.DATA_FOLDER), string_stream.getvalue()
+        )
         return True
 
     def set(self, key, value):

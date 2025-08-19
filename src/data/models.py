@@ -35,9 +35,8 @@ class SimilarityResult:
 
 @dataclass
 class Settings:
-    llm_model: str
-    llm_api_key: str
-    selected_mic: int
+    model: str | None
+    key: str | None
 
 
 @dataclass(frozen=True)
