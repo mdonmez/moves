@@ -2,9 +2,7 @@ from typing import Optional
 import typer
 from pathlib import Path
 from rich.console import Console
-from rich.progress import Progress, SpinnerColumn, TextColumn
 from rich.panel import Panel
-from rich.text import Text
 from rich.table import Table
 from src.data.models import Section
 
@@ -15,12 +13,14 @@ console = Console()
 def speaker_manager_instance():
     """Get a SpeakerManager instance"""
     from src.core.speaker_manager import SpeakerManager
+
     return SpeakerManager()
 
 
 def presentation_controller_instance(sections: list[Section], start_section: Section):
     """Get a PresentationController instance"""
     from src.core.presentation_controller import PresentationController
+
     return PresentationController(
         sections=sections,
         start_section=start_section,
@@ -31,6 +31,7 @@ def presentation_controller_instance(sections: list[Section], start_section: Sec
 def settings_editor_instance():
     """Get a SettingsEditor instance"""
     from src.core.settings_editor import SettingsEditor
+
     return SettingsEditor()
 
 
@@ -38,10 +39,14 @@ def validate_speaker_resolution(resolved_speaker, speaker_name: str):
     """Helper function to validate and handle speaker resolution results"""
     if isinstance(resolved_speaker, list):
         if len(resolved_speaker) == 0:
-            console.print(f"[red]Error: No speaker found matching '{speaker_name}'[/red]")
+            console.print(
+                f"[red]Error: No speaker found matching '{speaker_name}'[/red]"
+            )
             raise typer.Exit(1)
         elif len(resolved_speaker) > 1:
-            console.print(f"[red]Error: Multiple speakers found matching '{speaker_name}'. Be more specific:[/red]")
+            console.print(
+                f"[red]Error: Multiple speakers found matching '{speaker_name}'. Be more specific:[/red]"
+            )
             for s in resolved_speaker:
                 console.print(f"[yellow]  - {s.name} ({s.speaker_id})[/yellow]")
             raise typer.Exit(1)
@@ -91,7 +96,9 @@ def speaker_add(
         speaker = speaker_manager.add(name, source_presentation, source_transcript)
 
         # Display success message with created speaker information
-        console.print("\n[bold green]✓ Speaker profile created successfully:[/bold green]")
+        console.print(
+            "\n[bold green]✓ Speaker profile created successfully:[/bold green]"
+        )
         console.print(f"[cyan]  Name:[/cyan] {speaker.name}")
         console.print(f"[cyan]  Speaker ID:[/cyan] {speaker.speaker_id}")
         console.print(f"[cyan]  Presentation:[/cyan] {speaker.source_presentation}")
@@ -141,7 +148,9 @@ def speaker_edit(
             raise typer.Exit(1)
 
         if transcript_path and not transcript_path.exists():
-            console.print(f"[red]Error: Transcript file not found: {transcript_path}[/red]")
+            console.print(
+                f"[red]Error: Transcript file not found: {transcript_path}[/red]"
+            )
             raise typer.Exit(1)
 
         # Update speaker
@@ -150,10 +159,14 @@ def speaker_edit(
         )
 
         # Display updated speaker information
-        console.print("\n[bold green]✓ Speaker profile updated successfully:[/bold green]")
+        console.print(
+            "\n[bold green]✓ Speaker profile updated successfully:[/bold green]"
+        )
         console.print(f"[cyan]  Name:[/cyan] {updated_speaker.name}")
         console.print(f"[cyan]  Speaker ID:[/cyan] {updated_speaker.speaker_id}")
-        console.print(f"[cyan]  Presentation:[/cyan] {updated_speaker.source_presentation}")
+        console.print(
+            f"[cyan]  Presentation:[/cyan] {updated_speaker.source_presentation}"
+        )
         console.print(f"[cyan]  Transcript:[/cyan] {updated_speaker.source_transcript}")
         console.print()
 
@@ -182,20 +195,22 @@ def speaker_list():
         table.add_column("Speaker ID", style="cyan", width=15)
         table.add_column("Name", style="magenta", width=20)
         table.add_column("Ready", style="green", width=10)
-        
+
         # Add speaker rows
         from src.utils import data_handler
-        
+
         for speaker in speakers:
-            speaker_path = (
-                data_handler.DATA_FOLDER / "speakers" / speaker.speaker_id
-            )
+            speaker_path = data_handler.DATA_FOLDER / "speakers" / speaker.speaker_id
             sections_file = speaker_path / "sections.json"
-            ready_status = "[green]✓ Yes[/green]" if sections_file.exists() else "[red]✗ No[/red]"
-            
+            ready_status = (
+                "[green]✓ Yes[/green]" if sections_file.exists() else "[red]✗ No[/red]"
+            )
+
             table.add_row(speaker.speaker_id, speaker.name, ready_status)
 
-        console.print(Panel(table, title="[bold]Registered Speakers[/bold]", border_style="blue"))
+        console.print(
+            Panel(table, title="[bold]Registered Speakers[/bold]", border_style="blue")
+        )
         console.print(f"[dim]Total speakers: {len(speakers)}[/dim]")
 
     except Exception as e:
@@ -228,36 +243,54 @@ def speaker_show(
         table.add_column("File Type", style="cyan", width=12)
         table.add_column("Source Path", style="white", width=50)
         table.add_column("Status", style="green", width=12)
-        table.add_column("Local Path", style="white", width=50) 
+        table.add_column("Local Path", style="white", width=50)
         table.add_column("Local Status", style="green", width=12)
 
         # Source files information
-        pres_exists = "[green]✓ EXISTS[/green]" if resolved_speaker.source_presentation.exists() else "[red]✗ NOT FOUND[/red]"
-        trans_exists = "[green]✓ EXISTS[/green]" if resolved_speaker.source_transcript.exists() else "[red]✗ NOT FOUND[/red]"
-        local_pres_exists = "[green]✓ EXISTS[/green]" if local_presentation.exists() else "[red]✗ NOT FOUND[/red]"
-        local_trans_exists = "[green]✓ EXISTS[/green]" if local_transcript.exists() else "[red]✗ NOT FOUND[/red]"
+        pres_exists = (
+            "[green]✓ EXISTS[/green]"
+            if resolved_speaker.source_presentation.exists()
+            else "[red]✗ NOT FOUND[/red]"
+        )
+        trans_exists = (
+            "[green]✓ EXISTS[/green]"
+            if resolved_speaker.source_transcript.exists()
+            else "[red]✗ NOT FOUND[/red]"
+        )
+        local_pres_exists = (
+            "[green]✓ EXISTS[/green]"
+            if local_presentation.exists()
+            else "[red]✗ NOT FOUND[/red]"
+        )
+        local_trans_exists = (
+            "[green]✓ EXISTS[/green]"
+            if local_transcript.exists()
+            else "[red]✗ NOT FOUND[/red]"
+        )
 
         table.add_row(
-            "Presentation", 
-            str(resolved_speaker.source_presentation), 
+            "Presentation",
+            str(resolved_speaker.source_presentation),
             pres_exists,
             str(local_presentation),
-            local_pres_exists
+            local_pres_exists,
         )
         table.add_row(
-            "Transcript", 
-            str(resolved_speaker.source_transcript), 
+            "Transcript",
+            str(resolved_speaker.source_transcript),
             trans_exists,
             str(local_transcript),
-            local_trans_exists
+            local_trans_exists,
         )
 
         # Display speaker details
-        console.print(f"\n[bold blue]Speaker Details[/bold blue]")
+        console.print("\n[bold blue]Speaker Details[/bold blue]")
         console.print(f"[cyan]Name:[/cyan] {resolved_speaker.name}")
         console.print(f"[cyan]Speaker ID:[/cyan] {resolved_speaker.speaker_id}")
         console.print()
-        console.print(Panel(table, title="[bold]File Information[/bold]", border_style="blue"))
+        console.print(
+            Panel(table, title="[bold]File Information[/bold]", border_style="blue")
+        )
 
     except ValueError as e:
         console.print(f"[red]Error: {str(e)}[/red]")
@@ -316,7 +349,10 @@ def speaker_process(
             raise typer.Exit(1)
 
         # Display processing start message with Rich
-        with console.status(f"[bold blue]Processing {len(speaker_list)} speaker(s) with {settings.model}...", spinner="dots"):
+        with console.status(
+            f"[bold blue]Processing {len(speaker_list)} speaker(s) with {settings.model}...",
+            spinner="dots",
+        ):
             # Call speaker_manager.process with resolved speakers
             results = speaker_manager.process(
                 speaker_list, settings.model, settings.key
@@ -324,7 +360,7 @@ def speaker_process(
 
         # Display processing results with Rich
         console.print("\n[bold green]✓ Processing completed successfully[/bold green]")
-        
+
         # Create results table
         table = Table(show_header=True, header_style="bold blue")
         table.add_column("Speaker", style="cyan", width=25)
@@ -338,10 +374,12 @@ def speaker_process(
                 f"{speaker.name} ({speaker.speaker_id})",
                 str(result.section_count),
                 result.transcript_from,
-                result.presentation_from
+                result.presentation_from,
             )
-        
-        console.print(Panel(table, title="[bold]Processing Results[/bold]", border_style="green"))
+
+        console.print(
+            Panel(table, title="[bold]Processing Results[/bold]", border_style="green")
+        )
 
     except ValueError as e:
         console.print(f"[red]Error: {str(e)}[/red]")
@@ -370,7 +408,9 @@ def speaker_delete(
         success = speaker_manager.delete(resolved_speaker)
 
         if success:
-            console.print("[green]✓ Speaker and associated data deleted successfully[/green]")
+            console.print(
+                "[green]✓ Speaker and associated data deleted successfully[/green]"
+            )
         else:
             console.print("[red]Error: Failed to delete speaker data.[/red]")
             raise typer.Exit(1)
@@ -413,7 +453,9 @@ def presentation_control(
             console.print(
                 f"[red]Error: Speaker '{resolved_speaker.name}' has not been processed yet.[/red]"
             )
-            console.print("[yellow]Please run 'moves speaker process' first to generate sections.[/yellow]")
+            console.print(
+                "[yellow]Please run 'moves speaker process' first to generate sections.[/yellow]"
+            )
             raise typer.Exit(1)
 
         # Load sections data
@@ -432,7 +474,9 @@ def presentation_control(
         start_section = sections[0]
 
         # Create and start presentation controller
-        console.print(f"\n[bold green]Starting presentation control for: {resolved_speaker.name}[/bold green]")
+        console.print(
+            f"\n[bold green]Starting presentation control for: {resolved_speaker.name}[/bold green]"
+        )
         console.print(f"[cyan]Loaded {len(sections)} sections[/cyan]")
         console.print("[dim]Using default microphone[/dim]")
         console.print("═" * 50)
@@ -469,7 +513,9 @@ def settings_list():
 
         # Add model setting
         model_value = settings.model if settings.model else "[dim]Not configured[/dim]"
-        model_status = "[green]✓ Set[/green]" if settings.model else "[red]✗ Missing[/red]"
+        model_status = (
+            "[green]✓ Set[/green]" if settings.model else "[red]✗ Missing[/red]"
+        )
         table.add_row("Model", model_value, model_status)
 
         # Add API key setting (masked)
@@ -485,7 +531,9 @@ def settings_list():
             key_status = "[red]✗ Missing[/red]"
         table.add_row("API Key", masked_key, key_status)
 
-        console.print(Panel(table, title="[bold]Application Settings[/bold]", border_style="blue"))
+        console.print(
+            Panel(table, title="[bold]Application Settings[/bold]", border_style="blue")
+        )
 
     except Exception as e:
         console.print(f"[red]Error accessing settings: {str(e)}[/red]")
@@ -519,7 +567,9 @@ def settings_set(
                 display_value = (
                     value[:8] + "..." + value[-4:] if len(value) > 12 else "***"
                 )
-                console.print(f"[green]✓ Setting updated: {key} = {display_value}[/green]")
+                console.print(
+                    f"[green]✓ Setting updated: {key} = {display_value}[/green]"
+                )
             else:
                 console.print(f"[green]✓ Setting updated: {key} = {value}[/green]")
         else:
@@ -570,14 +620,18 @@ def settings_unset(
                         if len(str(template_value)) > 12
                         else "***"
                     )
-                    console.print(f"[green]✓ Setting reset: {key} = {display_value} (default)[/green]")
+                    console.print(
+                        f"[green]✓ Setting reset: {key} = {display_value} (default)[/green]"
+                    )
                 else:
                     display_value = (
                         "Not configured"
                         if template_value is None
                         else str(template_value)
                     )
-                    console.print(f"[green]✓ Setting reset: {key} = {display_value} (default)[/green]")
+                    console.print(
+                        f"[green]✓ Setting reset: {key} = {display_value} (default)[/green]"
+                    )
             else:
                 # Key was removed (not in template)
                 console.print(f"[green]✓ Setting removed: {key}[/green]")
