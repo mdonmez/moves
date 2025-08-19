@@ -36,7 +36,10 @@ def validate_speaker_resolution(resolved_speaker, speaker_name: str):
             typer.echo(f"Error: No speaker found matching '{speaker_name}'", err=True)
             raise typer.Exit(1)
         elif len(resolved_speaker) > 1:
-            typer.echo(f"Error: Multiple speakers found matching '{speaker_name}'. Be more specific:", err=True)
+            typer.echo(
+                f"Error: Multiple speakers found matching '{speaker_name}'. Be more specific:",
+                err=True,
+            )
             for s in resolved_speaker:
                 typer.echo(f"    {s.name} ({s.speaker_id})", err=True)
             raise typer.Exit(1)
@@ -112,7 +115,10 @@ def speaker_edit(
     """Update speaker's source files (presentation or transcript paths)"""
     # Validate at least one update parameter is provided
     if not source_presentation and not source_transcript:
-        typer.echo("Error: At least one update parameter (--presentation or --transcript) must be provided", err=True)
+        typer.echo(
+            "Error: At least one update parameter (--presentation or --transcript) must be provided",
+            err=True,
+        )
         raise typer.Exit(1)
 
     try:
@@ -127,7 +133,9 @@ def speaker_edit(
 
         if presentation_path and not presentation_path.exists():
             typer.echo(f"Could not update speaker '{resolved_speaker.name}'.", err=True)
-            typer.echo(f"    Presentation file not found: {presentation_path}", err=True)
+            typer.echo(
+                f"    Presentation file not found: {presentation_path}", err=True
+            )
             raise typer.Exit(1)
 
         if transcript_path and not transcript_path.exists():
@@ -170,7 +178,7 @@ def speaker_list():
         # Display speakers in Direct Summary format
         typer.echo(f"Registered Speakers ({len(speakers)})")
         typer.echo()
-        
+
         # Table header
         typer.echo("ID              NAME    STATUS")
         typer.echo("─────────────── ──────  ──────────")
@@ -182,7 +190,7 @@ def speaker_list():
             speaker_path = data_handler.DATA_FOLDER / "speakers" / speaker.speaker_id
             sections_file = speaker_path / "sections.json"
             ready_status = "Ready" if sections_file.exists() else "Not Ready"
-            
+
             # Format with proper spacing to align columns
             typer.echo(f"{speaker.speaker_id:<15} {speaker.name:<6}  {ready_status}")
 
@@ -204,12 +212,17 @@ def speaker_show(
 
         # Check if speaker is ready (sections.json exists)
         from src.utils import data_handler
-        speaker_path = data_handler.DATA_FOLDER / "speakers" / resolved_speaker.speaker_id
+
+        speaker_path = (
+            data_handler.DATA_FOLDER / "speakers" / resolved_speaker.speaker_id
+        )
         sections_file = speaker_path / "sections.json"
         status = "Ready" if sections_file.exists() else "Not Ready"
 
         # Display speaker details in Direct Summary format
-        typer.echo(f"Showing details for speaker '{resolved_speaker.name}' ({resolved_speaker.speaker_id})")
+        typer.echo(
+            f"Showing details for speaker '{resolved_speaker.name}' ({resolved_speaker.speaker_id})"
+        )
         typer.echo(f"    ID -> {resolved_speaker.speaker_id}")
         typer.echo(f"    Name -> {resolved_speaker.name}")
         typer.echo(f"    Status -> {status}")
@@ -240,11 +253,17 @@ def speaker_process(
 
         # Validate LLM settings are configured
         if not settings.model:
-            typer.echo("Error: LLM model not configured. Use 'moves settings set model <model>' to configure.", err=True)
+            typer.echo(
+                "Error: LLM model not configured. Use 'moves settings set model <model>' to configure.",
+                err=True,
+            )
             raise typer.Exit(1)
 
         if not settings.key:
-            typer.echo("Error: LLM API key not configured. Use 'moves settings set key <key>' to configure.", err=True)
+            typer.echo(
+                "Error: LLM API key not configured. Use 'moves settings set key <key>' to configure.",
+                err=True,
+            )
             raise typer.Exit(1)
 
         # Resolve speakers
@@ -263,19 +282,22 @@ def speaker_process(
                 resolved = validate_speaker_resolution(resolved, speaker_name)
                 speaker_list.append(resolved)
         else:
-            typer.echo("Error: Either provide speaker names or use --all to process all speakers.", err=True)
+            typer.echo(
+                "Error: Either provide speaker names or use --all to process all speakers.",
+                err=True,
+            )
             raise typer.Exit(1)
 
         # Display processing message
         if len(speaker_list) == 1:
-            typer.echo(f"Processing speaker '{speaker_list[0].name}' ({speaker_list[0].speaker_id})...")
+            typer.echo(
+                f"Processing speaker '{speaker_list[0].name}' ({speaker_list[0].speaker_id})..."
+            )
         else:
             typer.echo(f"Processing {len(speaker_list)} speakers...")
 
         # Call speaker_manager.process with resolved speakers
-        results = speaker_manager.process(
-            speaker_list, settings.model, settings.key
-        )
+        results = speaker_manager.process(speaker_list, settings.model, settings.key)
 
         # Display results in Direct Summary format
         if len(speaker_list) == 1:
@@ -287,7 +309,9 @@ def speaker_process(
             typer.echo(f"{len(speaker_list)} speakers processed.")
             for i, result in enumerate(results):
                 speaker = speaker_list[i]
-                typer.echo(f"    '{speaker.name}' ({speaker.speaker_id}) -> {result.section_count} sections created.")
+                typer.echo(
+                    f"    '{speaker.name}' ({speaker.speaker_id}) -> {result.section_count} sections created."
+                )
 
     except typer.Exit:
         # Re-raise typer.Exit to avoid catching it in the generic handler
@@ -312,7 +336,9 @@ def speaker_delete(
         success = speaker_manager.delete(resolved_speaker)
 
         if success:
-            typer.echo(f"Speaker '{resolved_speaker.name}' ({resolved_speaker.speaker_id}) deleted.")
+            typer.echo(
+                f"Speaker '{resolved_speaker.name}' ({resolved_speaker.speaker_id}) deleted."
+            )
         else:
             typer.echo(f"Could not delete speaker '{resolved_speaker.name}'.", err=True)
             typer.echo("    Failed to delete speaker data.", err=True)
@@ -353,8 +379,14 @@ def presentation_control(
         sections_file = speaker_path / "sections.json"
 
         if not sections_file.exists():
-            typer.echo(f"Error: Speaker '{resolved_speaker.name}' has not been processed yet.", err=True)
-            typer.echo("Please run 'moves speaker process' first to generate sections.", err=True)
+            typer.echo(
+                f"Error: Speaker '{resolved_speaker.name}' has not been processed yet.",
+                err=True,
+            )
+            typer.echo(
+                "Please run 'moves speaker process' first to generate sections.",
+                err=True,
+            )
             raise typer.Exit(1)
 
         # Load sections data
@@ -372,13 +404,16 @@ def presentation_control(
         # Determine starting section (first section)
         start_section = sections[0]
 
-        # Display startup message in Direct Summary format
-        typer.echo(f"Starting presentation control for '{resolved_speaker.name}' ({resolved_speaker.speaker_id}).")
-        typer.echo(f"    {len(sections)} sections loaded")
-        typer.echo("    READY & LISTENING...")
-        typer.echo("---")
-
         controller = presentation_controller_instance(sections, start_section)
+
+        typer.echo(
+            f"Starting presentation control for '{resolved_speaker.name}' ({resolved_speaker.speaker_id})."
+        )
+        typer.echo(f"    {len(sections)} sections loaded")
+        typer.echo("    READY & LISTENING\n")
+        typer.echo("    Press Ctrl+C to exit.")
+        typer.echo("    \nWaiting for 12 words to first trigger, keep speaking...\n")
+
         controller.control()
 
     except KeyboardInterrupt:
@@ -404,11 +439,11 @@ def settings_list():
 
         # Display settings in Direct Summary format
         typer.echo("Application Settings.")
-        
+
         # Display model setting
         model_value = settings.model if settings.model else "Not configured"
         typer.echo(f"    model (LLM Model) -> {model_value}")
-        
+
         # Display API key setting (masked)
         if settings.key:
             masked_key = (

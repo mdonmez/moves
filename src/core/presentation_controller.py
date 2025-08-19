@@ -82,8 +82,6 @@ class PresentationController:
                 raise RuntimeError(f"Audio processing error: {e}") from e
 
     def navigate_presentation(self):
-        import sys
-        
         while not self.shutdown_flag.is_set():
             try:
                 current_words = list(self.recent_words)
@@ -113,7 +111,6 @@ class PresentationController:
 
                         best_result = similarity_results[0]
                         best_chunk = best_result.chunk
-                        confidence = best_result.score
 
                         target_section = best_chunk.source_sections[-1]
 
@@ -121,16 +118,11 @@ class PresentationController:
                         target_idx = target_section.section_index
                         navigation_distance = target_idx - current_idx
 
-                        # Update the streaming display - this should overwrite the current line
-                        # Clear the current line and move cursor to beginning
-                        print(f"\r\033[K", end="", flush=True)
-                        print(f"[ {current_idx + 1}/{len(self.sections)} ]", flush=True)
-                        
-                        # Show speech and match info while processing
+                        # Print status with speech and match info
                         recent_speech = " ".join(current_words[-7:])
-                        recent_match = " ".join(best_chunk.partial_content.strip().split()[-7:])
-                        print(f'Speech -> "{recent_speech}"', flush=True)
-                        print(f'Match  -> "{recent_match}"', flush=True)
+                        recent_match = " ".join(
+                            best_chunk.partial_content.strip().split()[-7:]
+                        )
 
                         if navigation_distance != 0:
                             key = Key.right if navigation_distance > 0 else Key.left
@@ -143,14 +135,11 @@ class PresentationController:
                                 if abs_distance > 1 and _ < abs_distance - 1:
                                     time.sleep(0.01)
 
-                            # Update display after navigation
-                            print(f"\r\033[K", end="", flush=True)  # Clear current lines
-                            print(f"\r\033[2A\033[K", end="", flush=True)  # Move up 2 lines and clear
-                            print(f"\r\033[1A\033[K", end="", flush=True)  # Move up 1 more line and clear
-                            print(f"[ {target_idx + 1}/{len(self.sections)} ]", flush=True)
-                            print(f'Speech -> "{recent_speech}"', flush=True)
-                            print(f'Match  -> "{recent_match}"', flush=True)
-                            print()  # Add empty line after confirmed navigation
+                        print(
+                            f"\n[{target_section.section_index + 1}/{len(self.sections)}]"
+                        )
+                        print(f"Speech  -> {recent_speech}")
+                        print(f"Match   -> {recent_match}")
 
                         self.current_section = target_section
                         self.previous_recent_words = current_words.copy()
@@ -166,9 +155,6 @@ class PresentationController:
                 raise RuntimeError(f"Navigation error: {e}") from e
 
     def control(self):
-        # Initial state display - minimal and clean
-        print(f"[ {self.current_section.section_index + 1}/{len(self.sections)} ]")
-
         audio_thread = threading.Thread(target=self.process_audio, daemon=True)
         audio_thread.start()
         self.navigator.start()
