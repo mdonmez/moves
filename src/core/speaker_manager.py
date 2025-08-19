@@ -165,7 +165,7 @@ class SpeakerManager:
         speaker_path = self.SPEAKERS_PATH / speaker.speaker_id
         return bool(data_handler.delete(speaker_path))
 
-    def list(self):
+    def list(self) -> list[Speaker]:
         speakers = []
         for folder in data_handler.list(self.SPEAKERS_PATH):
             if folder.is_dir():
