@@ -1,13 +1,7 @@
 from typing import Optional
 import typer
 from pathlib import Path
-from rich.console import Console
-from rich.panel import Panel
-from rich.table import Table
 from src.data.models import Section
-
-# Initialize Rich console
-console = Console()
 
 
 def speaker_manager_instance():
@@ -39,16 +33,12 @@ def validate_speaker_resolution(resolved_speaker, speaker_name: str):
     """Helper function to validate and handle speaker resolution results"""
     if isinstance(resolved_speaker, list):
         if len(resolved_speaker) == 0:
-            console.print(
-                f"[red]Error: No speaker found matching '{speaker_name}'[/red]"
-            )
+            typer.echo(f"Error: No speaker found matching '{speaker_name}'", err=True)
             raise typer.Exit(1)
         elif len(resolved_speaker) > 1:
-            console.print(
-                f"[red]Error: Multiple speakers found matching '{speaker_name}'. Be more specific:[/red]"
-            )
+            typer.echo(f"Error: Multiple speakers found matching '{speaker_name}'. Be more specific:", err=True)
             for s in resolved_speaker:
-                console.print(f"[yellow]  - {s.name} ({s.speaker_id})[/yellow]")
+                typer.echo(f"    {s.name} ({s.speaker_id})", err=True)
             raise typer.Exit(1)
         else:
             return resolved_speaker[0]
@@ -77,39 +67,35 @@ def speaker_add(
     source_transcript: Path = typer.Argument(..., help="Path to transcript file"),
 ):
     """Create a new speaker profile with presentation and transcript files"""
+    # Validate that both file paths exist and are accessible
+    if not source_presentation.exists():
+        typer.echo(f"Could not add speaker '{name}'.", err=True)
+        typer.echo(f"    Presentation file not found: {source_presentation}", err=True)
+        raise typer.Exit(1)
+
+    if not source_transcript.exists():
+        typer.echo(f"Could not add speaker '{name}'.", err=True)
+        typer.echo(f"    Transcript file not found: {source_transcript}", err=True)
+        raise typer.Exit(1)
+
     try:
-        # Validate that both file paths exist and are accessible
-        if not source_presentation.exists():
-            console.print(
-                f"[red]Error: Presentation file not found: {source_presentation}[/red]"
-            )
-            raise typer.Exit(1)
-
-        if not source_transcript.exists():
-            console.print(
-                f"[red]Error: Transcript file not found: {source_transcript}[/red]"
-            )
-            raise typer.Exit(1)
-
         # Create speaker manager instance and add speaker
         speaker_manager = speaker_manager_instance()
         speaker = speaker_manager.add(name, source_presentation, source_transcript)
 
-        # Display success message with created speaker information
-        console.print(
-            "\n[bold green]✓ Speaker profile created successfully:[/bold green]"
-        )
-        console.print(f"[cyan]  Name:[/cyan] {speaker.name}")
-        console.print(f"[cyan]  Speaker ID:[/cyan] {speaker.speaker_id}")
-        console.print(f"[cyan]  Presentation:[/cyan] {speaker.source_presentation}")
-        console.print(f"[cyan]  Transcript:[/cyan] {speaker.source_transcript}")
-        console.print()
+        # Display success message in Direct Summary format
+        typer.echo(f"Speaker '{speaker.name}' ({speaker.speaker_id}) added.")
+        typer.echo(f"    ID -> {speaker.speaker_id}")
+        typer.echo(f"    Presentation -> {speaker.source_presentation}")
+        typer.echo(f"    Transcript -> {speaker.source_transcript}")
 
     except ValueError as e:
-        console.print(f"[red]Error: {str(e)}[/red]")
+        typer.echo(f"Could not add speaker '{name}'.", err=True)
+        typer.echo(f"    {str(e)}", err=True)
         raise typer.Exit(1)
     except Exception as e:
-        console.print(f"[red]Unexpected error: {str(e)}[/red]")
+        typer.echo(f"Could not add speaker '{name}'.", err=True)
+        typer.echo(f"    Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -127,9 +113,7 @@ def speaker_edit(
     try:
         # Validate at least one update parameter is provided
         if not source_presentation and not source_transcript:
-            console.print(
-                "[red]Error: At least one update parameter (--presentation or --transcript) must be provided[/red]"
-            )
+            typer.echo("Error: At least one update parameter (--presentation or --transcript) must be provided", err=True)
             raise typer.Exit(1)
 
         # Create speaker manager instance and resolve speaker
@@ -142,15 +126,13 @@ def speaker_edit(
         transcript_path = Path(source_transcript) if source_transcript else None
 
         if presentation_path and not presentation_path.exists():
-            console.print(
-                f"[red]Error: Presentation file not found: {presentation_path}[/red]"
-            )
+            typer.echo(f"Could not update speaker '{resolved_speaker.name}'.", err=True)
+            typer.echo(f"    Presentation file not found: {presentation_path}", err=True)
             raise typer.Exit(1)
 
         if transcript_path and not transcript_path.exists():
-            console.print(
-                f"[red]Error: Transcript file not found: {transcript_path}[/red]"
-            )
+            typer.echo(f"Could not update speaker '{resolved_speaker.name}'.", err=True)
+            typer.echo(f"    Transcript file not found: {transcript_path}", err=True)
             raise typer.Exit(1)
 
         # Update speaker
@@ -158,23 +140,18 @@ def speaker_edit(
             resolved_speaker, presentation_path, transcript_path
         )
 
-        # Display updated speaker information
-        console.print(
-            "\n[bold green]✓ Speaker profile updated successfully:[/bold green]"
-        )
-        console.print(f"[cyan]  Name:[/cyan] {updated_speaker.name}")
-        console.print(f"[cyan]  Speaker ID:[/cyan] {updated_speaker.speaker_id}")
-        console.print(
-            f"[cyan]  Presentation:[/cyan] {updated_speaker.source_presentation}"
-        )
-        console.print(f"[cyan]  Transcript:[/cyan] {updated_speaker.source_transcript}")
-        console.print()
+        # Display updated speaker information in Direct Summary format
+        typer.echo(f"Speaker '{updated_speaker.name}' updated.")
+        if presentation_path:
+            typer.echo(f"    Presentation -> {updated_speaker.source_presentation}")
+        if transcript_path:
+            typer.echo(f"    Transcript -> {updated_speaker.source_transcript}")
 
     except ValueError as e:
-        console.print(f"[red]Error: {str(e)}[/red]")
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
     except Exception as e:
-        console.print(f"[red]Unexpected error: {str(e)}[/red]")
+        typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -187,14 +164,16 @@ def speaker_list():
         speakers = speaker_manager.list()
 
         if not speakers:
-            console.print("[yellow]No speakers found.[/yellow]")
+            typer.echo("No speakers are registered.")
             return
 
-        # Create table for better formatting
-        table = Table(show_header=True, header_style="bold blue")
-        table.add_column("Speaker ID", style="cyan", width=15)
-        table.add_column("Name", style="magenta", width=20)
-        table.add_column("Ready", style="green", width=10)
+        # Display speakers in Direct Summary format
+        typer.echo(f"Registered Speakers ({len(speakers)})")
+        typer.echo()
+        
+        # Table header
+        typer.echo("ID              NAME    STATUS")
+        typer.echo("─────────────── ──────  ──────────")
 
         # Add speaker rows
         from src.utils import data_handler
@@ -202,19 +181,13 @@ def speaker_list():
         for speaker in speakers:
             speaker_path = data_handler.DATA_FOLDER / "speakers" / speaker.speaker_id
             sections_file = speaker_path / "sections.json"
-            ready_status = (
-                "[green]✓ Yes[/green]" if sections_file.exists() else "[red]✗ No[/red]"
-            )
-
-            table.add_row(speaker.speaker_id, speaker.name, ready_status)
-
-        console.print(
-            Panel(table, title="[bold]Registered Speakers[/bold]", border_style="blue")
-        )
-        console.print(f"[dim]Total speakers: {len(speakers)}[/dim]")
+            ready_status = "Ready" if sections_file.exists() else "Not Ready"
+            
+            # Format with proper spacing to align columns
+            typer.echo(f"{speaker.speaker_id:<15} {speaker.name:<6}  {ready_status}")
 
     except Exception as e:
-        console.print(f"[red]Error accessing speaker data: {str(e)}[/red]")
+        typer.echo(f"Error accessing speaker data: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -229,74 +202,25 @@ def speaker_show(
         resolved_speaker = speaker_manager.resolve(speaker)
         resolved_speaker = validate_speaker_resolution(resolved_speaker, speaker)
 
-        # Get paths for local files
+        # Check if speaker is ready (sections.json exists)
         from src.utils import data_handler
+        speaker_path = data_handler.DATA_FOLDER / "speakers" / resolved_speaker.speaker_id
+        sections_file = speaker_path / "sections.json"
+        status = "Ready" if sections_file.exists() else "Not Ready"
 
-        speaker_path = (
-            data_handler.DATA_FOLDER / "speakers" / resolved_speaker.speaker_id
-        )
-        local_presentation = speaker_path / "presentation.pdf"
-        local_transcript = speaker_path / "transcript.pdf"
-
-        # Create file status table
-        table = Table(show_header=True, header_style="bold blue")
-        table.add_column("File Type", style="cyan", width=12)
-        table.add_column("Source Path", style="white", width=50)
-        table.add_column("Status", style="green", width=12)
-        table.add_column("Local Path", style="white", width=50)
-        table.add_column("Local Status", style="green", width=12)
-
-        # Source files information
-        pres_exists = (
-            "[green]✓ EXISTS[/green]"
-            if resolved_speaker.source_presentation.exists()
-            else "[red]✗ NOT FOUND[/red]"
-        )
-        trans_exists = (
-            "[green]✓ EXISTS[/green]"
-            if resolved_speaker.source_transcript.exists()
-            else "[red]✗ NOT FOUND[/red]"
-        )
-        local_pres_exists = (
-            "[green]✓ EXISTS[/green]"
-            if local_presentation.exists()
-            else "[red]✗ NOT FOUND[/red]"
-        )
-        local_trans_exists = (
-            "[green]✓ EXISTS[/green]"
-            if local_transcript.exists()
-            else "[red]✗ NOT FOUND[/red]"
-        )
-
-        table.add_row(
-            "Presentation",
-            str(resolved_speaker.source_presentation),
-            pres_exists,
-            str(local_presentation),
-            local_pres_exists,
-        )
-        table.add_row(
-            "Transcript",
-            str(resolved_speaker.source_transcript),
-            trans_exists,
-            str(local_transcript),
-            local_trans_exists,
-        )
-
-        # Display speaker details
-        console.print("\n[bold blue]Speaker Details[/bold blue]")
-        console.print(f"[cyan]Name:[/cyan] {resolved_speaker.name}")
-        console.print(f"[cyan]Speaker ID:[/cyan] {resolved_speaker.speaker_id}")
-        console.print()
-        console.print(
-            Panel(table, title="[bold]File Information[/bold]", border_style="blue")
-        )
+        # Display speaker details in Direct Summary format
+        typer.echo(f"Showing details for speaker '{resolved_speaker.name}' ({resolved_speaker.speaker_id})")
+        typer.echo(f"    ID -> {resolved_speaker.speaker_id}")
+        typer.echo(f"    Name -> {resolved_speaker.name}")
+        typer.echo(f"    Status -> {status}")
+        typer.echo(f"    Presentation -> {resolved_speaker.source_presentation}")
+        typer.echo(f"    Transcript -> {resolved_speaker.source_transcript}")
 
     except ValueError as e:
-        console.print(f"[red]Error: {str(e)}[/red]")
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
     except Exception as e:
-        console.print(f"[red]Unexpected error: {str(e)}[/red]")
+        typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -316,15 +240,11 @@ def speaker_process(
 
         # Validate LLM settings are configured
         if not settings.model:
-            console.print(
-                "[red]Error: LLM model not configured. Use 'moves settings set model <model>' to configure.[/red]"
-            )
+            typer.echo("Error: LLM model not configured. Use 'moves settings set model <model>' to configure.", err=True)
             raise typer.Exit(1)
 
         if not settings.key:
-            console.print(
-                "[red]Error: LLM API key not configured. Use 'moves settings set key <key>' to configure.[/red]"
-            )
+            typer.echo("Error: LLM API key not configured. Use 'moves settings set key <key>' to configure.", err=True)
             raise typer.Exit(1)
 
         # Resolve speakers
@@ -343,49 +263,37 @@ def speaker_process(
                 resolved = validate_speaker_resolution(resolved, speaker_name)
                 speaker_list.append(resolved)
         else:
-            console.print(
-                "[red]Error: Either provide speaker names or use --all to process all speakers.[/red]"
-            )
+            typer.echo("Error: Either provide speaker names or use --all to process all speakers.", err=True)
             raise typer.Exit(1)
 
-        # Display processing start message with Rich
-        with console.status(
-            f"[bold blue]Processing {len(speaker_list)} speaker(s) with {settings.model}...",
-            spinner="dots",
-        ):
-            # Call speaker_manager.process with resolved speakers
-            results = speaker_manager.process(
-                speaker_list, settings.model, settings.key
-            )
+        # Display processing message
+        if len(speaker_list) == 1:
+            typer.echo(f"Processing speaker '{speaker_list[0].name}' ({speaker_list[0].speaker_id})...")
+        else:
+            typer.echo(f"Processing {len(speaker_list)} speakers...")
 
-        # Display processing results with Rich
-        console.print("\n[bold green]✓ Processing completed successfully[/bold green]")
-
-        # Create results table
-        table = Table(show_header=True, header_style="bold blue")
-        table.add_column("Speaker", style="cyan", width=25)
-        table.add_column("Sections", style="green", width=10)
-        table.add_column("Transcript", style="yellow", width=12)
-        table.add_column("Presentation", style="magenta", width=12)
-
-        for i, result in enumerate(results):
-            speaker = speaker_list[i]
-            table.add_row(
-                f"{speaker.name} ({speaker.speaker_id})",
-                str(result.section_count),
-                result.transcript_from,
-                result.presentation_from,
-            )
-
-        console.print(
-            Panel(table, title="[bold]Processing Results[/bold]", border_style="green")
+        # Call speaker_manager.process with resolved speakers
+        results = speaker_manager.process(
+            speaker_list, settings.model, settings.key
         )
 
+        # Display results in Direct Summary format
+        if len(speaker_list) == 1:
+            result = results[0]
+            speaker = speaker_list[0]
+            typer.echo(f"Speaker '{speaker.name}' ({speaker.speaker_id}) processed.")
+            typer.echo(f"    {result.section_count} sections created.")
+        else:
+            typer.echo(f"{len(speaker_list)} speakers processed.")
+            for i, result in enumerate(results):
+                speaker = speaker_list[i]
+                typer.echo(f"    '{speaker.name}' ({speaker.speaker_id}) -> {result.section_count} sections created.")
+
     except ValueError as e:
-        console.print(f"[red]Error: {str(e)}[/red]")
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
     except Exception as e:
-        console.print(f"[red]Processing error: {str(e)}[/red]")
+        typer.echo(f"Processing error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -400,26 +308,21 @@ def speaker_delete(
         resolved_speaker = speaker_manager.resolve(speaker)
         resolved_speaker = validate_speaker_resolution(resolved_speaker, speaker)
 
-        # Display confirmation and delete
-        console.print(
-            f"\n[yellow]Deleting speaker: {resolved_speaker.name} ({resolved_speaker.speaker_id})[/yellow]"
-        )
-
+        # Delete speaker
         success = speaker_manager.delete(resolved_speaker)
 
         if success:
-            console.print(
-                "[green]✓ Speaker and associated data deleted successfully[/green]"
-            )
+            typer.echo(f"Speaker '{resolved_speaker.name}' ({resolved_speaker.speaker_id}) deleted.")
         else:
-            console.print("[red]Error: Failed to delete speaker data.[/red]")
+            typer.echo(f"Could not delete speaker '{resolved_speaker.name}'.", err=True)
+            typer.echo("    Failed to delete speaker data.", err=True)
             raise typer.Exit(1)
 
     except ValueError as e:
-        console.print(f"[red]Error: {str(e)}[/red]")
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
     except Exception as e:
-        console.print(f"[red]Unexpected error: {str(e)}[/red]")
+        typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -450,12 +353,8 @@ def presentation_control(
         sections_file = speaker_path / "sections.json"
 
         if not sections_file.exists():
-            console.print(
-                f"[red]Error: Speaker '{resolved_speaker.name}' has not been processed yet.[/red]"
-            )
-            console.print(
-                "[yellow]Please run 'moves speaker process' first to generate sections.[/yellow]"
-            )
+            typer.echo(f"Error: Speaker '{resolved_speaker.name}' has not been processed yet.", err=True)
+            typer.echo("Please run 'moves speaker process' first to generate sections.", err=True)
             raise typer.Exit(1)
 
         # Load sections data
@@ -463,34 +362,32 @@ def presentation_control(
             sections_data = json.loads(data_handler.read(sections_file))
             sections = section_producer.convert_to_objects(sections_data)
         except Exception as e:
-            console.print(f"[red]Error: Failed to load sections data: {str(e)}[/red]")
+            typer.echo(f"Error: Failed to load sections data: {str(e)}", err=True)
             raise typer.Exit(1)
 
         if not sections:
-            console.print("[red]Error: No sections found in processed data.[/red]")
+            typer.echo("Error: No sections found in processed data.", err=True)
             raise typer.Exit(1)
 
         # Determine starting section (first section)
         start_section = sections[0]
 
-        # Create and start presentation controller
-        console.print(
-            f"\n[bold green]Starting presentation control for: {resolved_speaker.name}[/bold green]"
-        )
-        console.print(f"[cyan]Loaded {len(sections)} sections[/cyan]")
-        console.print("[dim]Using default microphone[/dim]")
-        console.print("═" * 50)
+        # Display startup message in Direct Summary format
+        typer.echo(f"Starting presentation control for '{resolved_speaker.name}' ({resolved_speaker.speaker_id}).")
+        typer.echo(f"    {len(sections)} sections loaded")
+        typer.echo("    READY & LISTENING...")
+        typer.echo("---")
 
         controller = presentation_controller_instance(sections, start_section)
         controller.control()
 
     except ValueError as e:
-        console.print(f"[red]Error: {str(e)}[/red]")
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
     except KeyboardInterrupt:
-        console.print("\n[yellow]Presentation control stopped.[/yellow]")
+        typer.echo("\nPresentation control stopped.")
     except Exception as e:
-        console.print(f"[red]Presentation control error: {str(e)}[/red]")
+        typer.echo(f"Presentation control error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -505,38 +402,26 @@ def settings_list():
         settings_editor = settings_editor_instance()
         settings = settings_editor.list()
 
-        # Create settings table
-        table = Table(show_header=True, header_style="bold blue")
-        table.add_column("Setting", style="cyan", width=15)
-        table.add_column("Value", style="green", width=30)
-        table.add_column("Status", style="yellow", width=15)
-
-        # Add model setting
-        model_value = settings.model if settings.model else "[dim]Not configured[/dim]"
-        model_status = (
-            "[green]✓ Set[/green]" if settings.model else "[red]✗ Missing[/red]"
-        )
-        table.add_row("Model", model_value, model_status)
-
-        # Add API key setting (masked)
+        # Display settings in Direct Summary format
+        typer.echo("Application Settings.")
+        
+        # Display model setting
+        model_value = settings.model if settings.model else "Not configured"
+        typer.echo(f"    model (LLM Model) -> {model_value}")
+        
+        # Display API key setting (masked)
         if settings.key:
             masked_key = (
                 settings.key[:8] + "..." + settings.key[-4:]
                 if len(settings.key) > 12
                 else "***"
             )
-            key_status = "[green]✓ Set[/green]"
+            typer.echo(f"    key (API Key) -> {masked_key}")
         else:
-            masked_key = "[dim]Not configured[/dim]"
-            key_status = "[red]✗ Missing[/red]"
-        table.add_row("API Key", masked_key, key_status)
-
-        console.print(
-            Panel(table, title="[bold]Application Settings[/bold]", border_style="blue")
-        )
+            typer.echo("    key (API Key) -> Not configured")
 
     except Exception as e:
-        console.print(f"[red]Error accessing settings: {str(e)}[/red]")
+        typer.echo(f"Error accessing settings: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -554,33 +439,33 @@ def settings_set(
         valid_keys = ["model", "key"]
 
         if key not in valid_keys:
-            console.print(f"[red]Error: Invalid setting key '{key}'[/red]")
-            console.print(f"[yellow]Valid keys: {', '.join(valid_keys)}[/yellow]")
+            typer.echo(f"Error: Invalid setting key '{key}'", err=True)
+            typer.echo(f"Valid keys: {', '.join(valid_keys)}", err=True)
             raise typer.Exit(1)
 
         # Update setting
         success = settings_editor.set(key, value)
 
         if success:
-            # Display confirmation (mask API key in output)
+            # Display confirmation in Direct Summary format (mask API key in output)
             if key == "key":
                 display_value = (
                     value[:8] + "..." + value[-4:] if len(value) > 12 else "***"
                 )
-                console.print(
-                    f"[green]✓ Setting updated: {key} = {display_value}[/green]"
-                )
+                typer.echo(f"Setting '{key}' updated.")
+                typer.echo(f"    New Value -> {display_value}")
             else:
-                console.print(f"[green]✓ Setting updated: {key} = {value}[/green]")
+                typer.echo(f"Setting '{key}' updated.")
+                typer.echo(f"    New Value -> {value}")
         else:
-            console.print(f"[red]Error: Failed to update setting '{key}'[/red]")
+            typer.echo(f"Could not update setting '{key}'.", err=True)
             raise typer.Exit(1)
 
     except ValueError as e:
-        console.print(f"[red]Error: {str(e)}[/red]")
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
     except Exception as e:
-        console.print(f"[red]Unexpected error: {str(e)}[/red]")
+        typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -596,8 +481,8 @@ def settings_unset(
         # Check if key exists in template
         valid_keys = ["model", "key"]
         if key not in valid_keys:
-            console.print(f"[red]Error: Invalid setting key '{key}'[/red]")
-            console.print(f"[yellow]Valid keys: {', '.join(valid_keys)}[/yellow]")
+            typer.echo(f"Error: Invalid setting key '{key}'", err=True)
+            typer.echo(f"Valid keys: {', '.join(valid_keys)}", err=True)
             raise typer.Exit(1)
 
         # Get the template value to show what it will be reset to
@@ -607,8 +492,8 @@ def settings_unset(
         success = settings_editor.unset(key)
 
         if success:
+            # Display confirmation in Direct Summary format
             if key in settings_editor.template_data:
-                # Display confirmation showing the reset value
                 if (
                     key == "key"
                     and template_value
@@ -620,27 +505,26 @@ def settings_unset(
                         if len(str(template_value)) > 12
                         else "***"
                     )
-                    console.print(
-                        f"[green]✓ Setting reset: {key} = {display_value} (default)[/green]"
-                    )
+                    typer.echo(f"Setting '{key}' reset to default.")
+                    typer.echo(f"    New Value -> {display_value}")
                 else:
                     display_value = (
                         "Not configured"
                         if template_value is None
                         else str(template_value)
                     )
-                    console.print(
-                        f"[green]✓ Setting reset: {key} = {display_value} (default)[/green]"
-                    )
+                    typer.echo(f"Setting '{key}' reset to default.")
+                    typer.echo(f"    New Value -> {display_value}")
             else:
                 # Key was removed (not in template)
-                console.print(f"[green]✓ Setting removed: {key}[/green]")
+                typer.echo(f"Setting '{key}' reset to default.")
+                typer.echo("    New Value -> Not configured")
         else:
-            console.print(f"[red]Error: Failed to reset setting '{key}'[/red]")
+            typer.echo(f"Could not reset setting '{key}'.", err=True)
             raise typer.Exit(1)
 
     except Exception as e:
-        console.print(f"[red]Unexpected error: {str(e)}[/red]")
+        typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 

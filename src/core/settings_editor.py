@@ -37,18 +37,24 @@ class SettingsEditor:
             pass
 
     def _save(self):
-        node = (
-            copy.deepcopy(self.template_data)
-            if isinstance(self.template_data, dict)
-            else {}
-        )
-        for key in node.keys():
-            if key in self._data:
-                node[key] = self._data[key]
+        try:
+            # Ensure the data folder exists
+            self.settings.parent.mkdir(parents=True, exist_ok=True)
+            
+            node = (
+                copy.deepcopy(self.template_data)
+                if isinstance(self.template_data, dict)
+                else {}
+            )
+            for key in node.keys():
+                if key in self._data:
+                    node[key] = self._data[key]
 
-        with self.settings.open("w", encoding="utf-8") as f:
-            yaml.dump(node, f)
-        return True
+            with self.settings.open("w", encoding="utf-8") as f:
+                yaml.dump(node, f)
+            return True
+        except Exception as e:
+            raise RuntimeError(f"Failed to save settings: {e}") from e
 
     def set(self, key, value):
         if key not in self.template_data:
@@ -57,8 +63,8 @@ class SettingsEditor:
         try:
             self._save()
             return True
-        except Exception:
-            return False
+        except Exception as e:
+            raise RuntimeError(f"Failed to set key '{key}': {e}") from e
 
     def unset(self, key):
         if key in self.template_data:
@@ -68,8 +74,8 @@ class SettingsEditor:
         try:
             self._save()
             return True
-        except Exception:
-            return False
+        except Exception as e:
+            raise RuntimeError(f"Failed to unset key '{key}': {e}") from e
 
     def list(self) -> Settings:
         return Settings(**self._data)
