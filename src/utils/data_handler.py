@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import List
 import shutil
 
 DATA_FOLDER = Path.home() / ".moves"
@@ -28,12 +27,12 @@ def read(path: Path) -> str:
         raise RuntimeError(f"Read operation failed for {path}: {e}") from e
 
 
-def list(path: Path) -> List[Path]:
+def list(path: Path) -> list[Path]:
     full_path = DATA_FOLDER / Path(path)
     if not full_path.exists():
         return []
 
-    items: List[Path] = []
+    items = []
     try:
         for item in full_path.iterdir():
             items.append(item)
