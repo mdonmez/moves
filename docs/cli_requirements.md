@@ -1,183 +1,190 @@
-moves CLI, moves uygulamasını kullanmak için hızlı, basit ve kullanımı kolay bir komut satırı arayüzüdür.
+# Moves CLI - Komut Satırı Arayüzü Gereksinimleri
 
-İşte CLI hiyerarşisi:
+Bu doküman, `app.py` dosyasında geliştirilecek olan `moves` komut satırı arayüzünün (CLI) tüm gereksinimlerini, komutlarını ve davranışlarını detaylandırmaktadır. Amaç, geliştiriciler için net, eksiksiz ve tutarlı bir referans kaynağı oluşturmaktır.
 
-# Konuşmacı yönetimi
+## 1. Giriş ve Amaç
 
-moves speaker add <name> <source-presentation> <source-transcript>
-moves speaker edit <speaker> <source-presentation> <source-transcript>
-moves speaker list
-moves speaker show <speaker>
-moves speaker process <speaker1> [<speaker2> ... <speakerN>] (--all)
-moves speaker delete <speaker>
+`moves` CLI, kullanıcıların sunumlarını ve ilgili materyallerini (konuşmacı bilgileri, transkriptler vb.) verimli bir şekilde yönetmelerini sağlayan bir araçtır. Bu doküman, CLI'nin işlevselliğini ve `app.py` dosyasının oluşturulması sürecinde birincil referans olarak kullanılacaktır.
 
-# Sunum kontrolü
+## 2. Genel Gereksinimler ve Kurulum
 
-moves presentation control <speaker>
+### 2.1. Teknik Gereksinimler
+- **Kütüphane**: Komut satırı arayüzü `Typer` kütüphanesi kullanılarak geliştirilmelidir.
+- **Hata Yönetimi**: Tüm komutlar, olası hataları yakalamak için `try-except` blokları ile sarmalanmalıdır. Kullanıcıya açık ve anlaşılır hata mesajları gösterilmelidir.
+- **Çıktı Formatı**: Tüm çıktılar, renksiz, emojisiz ve sade bir metin formatında olmalıdır. Çıktılar, kullanıcıyı bilgilendirici, dengeli ve komutlar arası tutarlı olmalıdır.
 
-# Ayarlar
+### 2.2. Kurulum ve Bağımlılıklar
+Gerekli Python kütüphaneleri bir `requirements.txt` dosyasında listelenmeli ve aşağıdaki komutla kurulabilmelidir:
+```bash
+pip install -r requirements.txt
+```
 
-moves settings list
-moves settings set <key> <value>
-moves settings unset <key>
+## 3. Komut Referansı
 
----
+CLI, `speaker`, `presentation` ve `settings` olmak üzere üç ana komut grubundan oluşur.
 
-Genel komut gereksinimleri şunlardır:
-
-- Komutlar, doğru bir şekilde çalışabilmesi için gerekli tüm argümanları içermelidir.
-- CLI, kullanıcı dostu bir deneyim sağlamak için anlamlı hata mesajları göstermelidir.
-- Komutlar try-catch blokları ve if koşulları ile sarılmalıdır, bu en üst high-level hata yakalama sağlar ve alt modüllerin hatalarını daha önceden yakalamayı, eğer yakalanamazsa da alt modüldeki hatayı daha iyi yönetmeyi mümkün kılar.
-- Typer kullanılmalıdır, type-safe için mümkün olduğunda en üstten parametre tip filtrelemesi yapılmalıdır.
-- Her çıktı, çok abartılı formatlama olmayacak ama çok da basit olmayacak şekilde, renksiz, emojisiz ve sade bir metin formatında olmalıdır. Kullanıcıyı bilgilendirmeli, dengeli ve anlaşılır olmalıdır. Sade, minimal bir tasarım benimsenmelidir. Komutlar arası tutarlılık sağlanmalıdır.
+### 3.1. `speaker` Komut Grubu
+Konuşmacı yönetimi ile ilgili işlemleri içerir.
 
 ---
 
-Komut spesifik açıklamalar:
+#### **`speaker add`**
+Yeni bir konuşmacı ekler.
 
-# speaker (Konuşmacı yönetimi)
-
-Bu, sistemdeki konuşmacıları yönetmek için kullanılan komutları içerir:
-
-- speaker add: Yeni bir konuşmacı ekler.
-- speaker edit: Var olan bir konuşmacıyı düzenler.
-- speaker list: Tüm konuşmacıları listeler.
-- speaker show: Belirli bir konuşmacının ayrıntılarını gösterir.
-- speaker process: Belirli bir konuşmacıyı işler.
-- speaker delete: Belirli bir konuşmacıyı siler.
-
-Alt komutlarının detayları şöyledir:
-
-## speaker add
-
-Yeni bir konuşmacı eklemek için kullanılır. Gerekli argümanlar şunlardır:
-
-- `<name>`: [str] -> Konuşmacının adı.
-- `<source-presentation>`: [Path] -> Konuşmacı sunum dosyası.
-- `<source-transcript>`: [Path] -> Konuşmacının bağlı olduğu transkript dosyası.
-
-İşleyiş:
-
-1. speaker_manager'dan add fonksiyonu verilen parametrelerle çağrılır.
-
-## speaker edit
-
-Var olan bir konuşmacıyı düzenlemek için kullanılır. Gerekli argümanlar şunlardır:
-
-- `<speaker>`: [str] -> Konuşmacının adı ve ID'si.
-- `<source-presentation>`: Opsiyonel [Path] -> Konuşmacı sunum dosyası.
-- `<source-transcript>`: Opsiyonel [Path] -> Konuşmacının bağlı olduğu transkript dosyası.
-
-İşleyiş:
-
-1. speaker_manager'dan resolve fonksiyonu <speaker> ile çağrılır, eğer tek bir Speaker eşleşirse devam edilir.
-2. Parametrelere bakılır, eğer iki düzenlenebilir parametreden en az biri varsa devam edilir.
-3. speaker_manager'dan edit, verilen parametrelerle çağrılır.
-
-## speaker list
-
-Sisteme kayıtlı tüm konuşmacıları listeler.
-
-İşleyiş:
-
-1. speaker_manager'dan list fonksiyonu çağrılır.
-
-## speaker show
-
-Var olan bir konuşmacının detaylarını görüntülemek için kullanılır. Gerekli argümanlar şunlardır:
-
-- `<speaker>`: [str] -> Konuşmacının adı ve ID'si.
-
-İşleyiş:
-
-1. speaker_manager'dan resolve fonksiyonu <speaker> ile çağrılır, eğer tek bir Speaker eşleşirse devam edilir.
-2. Speaker nesnesinin detayları görüntülenir.
-
-## speaker process
-
-Var olan konuşmacı(lar)'ı işlemek için kullanılır. Gerekli argümanlar şunlardır:
-
-- `<speakers>`: [list] -> İşlenecek konuşmacıların adı veya ID'si.
-- `--all`: Tüm konuşmacıları işlemek için kullanılır.
-
-İşleyiş:
-
-1. settings_manager'dan llm_model ve llm_api_key alınmaya çalışır, başarılıysa devam edilir.
-2. Eğer `--all` bayrağı verilmişse, speaker_manager'dan list fonksiyonu çağrılır ve tüm konuşmacılar işlenir speaker_manager'dan process fonksiyonu tüm konuşmacı listesiyle çağrılır.
-3. <speakers> listesi boşluklarla ayrılmış bir şekilde liste formatına çevrilir, her bir liste elemanı için speaker_manager'dan resolve fonksiyonu çağrılır ve sonuç olarak bir list[Speaker] beklenir, ardından speaker_manager'dan process fonksiyonu bu liste ile çağrılır.
-
-## speaker delete
-
-Var olan bir konuşmacını silmek için kullanılır. Gerekli argümanlar şunlardır:
-
-- `<speaker>`: [str] -> Silinecek konuşmacının adı ve ID'si.
-
-İşleyiş:
-
-1. speaker_manager'dan resolve fonksiyonu <speaker> ile çağrılır, eğer tek bir Speaker eşleşirse devam edilir.
-2. speaker_manager'dan delete fonksiyonu çağrılır.
+- **Kullanım:** `python app.py speaker add <AD> <SUNUM_DOSYASI> <TRANSKRIPT_DOSYASI>`
+- **Argümanlar:**
+  | Argüman | Tip | Açıklama |
+  |---|---|---|
+  | `AD` | `str` | Konuşmacının adı (boşluk içeriyorsa tırnak içine alınmalıdır). |
+  | `SUNUM_DOSYASI` | `Path` | Sunum dosyasının yolu (`.pptx`, `.pdf`). |
+  | `TRANSKRIPT_DOSYASI`| `Path` | Transkript dosyasının yolu (`.txt`). |
+- **Örnek:**
+  ```bash
+  python app.py speaker add "Ali Veli" "sunumlar/sunum.pptx" "transkriptler/metin.txt"
+  ```
+- **Başarılı Çıktı:**
+  ```
+  Başarılı: "Ali Veli" adlı konuşmacı eklendi (ID: <yeni_id>).
+  ```
+- **Hata Durumları:**
+  - Dosya bulunamazsa: `Hata: Belirtilen dosya yolu bulunamadı: <dosya_yolu>`
+  - Aynı isimde konuşmacı varsa: `Hata: "Ali Veli" adında bir konuşmacı zaten mevcut.`
 
 ---
 
-# presentation (Sunum işlemleri)
+#### **`speaker list`**
+Sistemdeki tüm konuşmacıları listeler.
 
-Bu, sistemdeki konuşmacıların sunumlarını yönetmek için kullanılan tek bir komut içerir:
-
-- presentation control: Sunum kontrolü başlatır.
-
-Alt komutlarının detayları şöyledir:
-
-## presentation control
-
-Sunum kontrolü başlatmak için kullanılır. Gerekli argümanlar şunlardır:
-
-- `<speaker>`: [str] -> Sunumu kontrol edilecek kişinin adı veya ID'si.
-
-İşleyiş:
-
-1. settings_manager'dan varsa mikrofon değeri alınır.
-2. speaker_manager'dan resolve fonksiyonu <speaker> ile çağrılır, eğer tek bir Speaker eşleşirse devam edilir.
-3. Speaker için data_handler kullanılarak konuşmacının dizininde sections.json dosyası aranır, bulunursa devam edilir.
-4. section_producer ile json dosyası list[Section] formatına dönüştürülür.
-5. presentation_controller ile sunum kontrolü başlatılır.
+- **Kullanım:** `python app.py speaker list`
+- **Başarılı Çıktı:**
+  ```
+  Sistemdeki Konuşmacılar
+  ------------------------
+  ID        AD
+  --------  -----------
+  <id_1>    Ali Veli
+  <id_2>    Ayşe Yılmaz
+  ------------------------
+  Toplam: 2 Konuşmacı
+  ```
+- **Hata Durumları:**
+  - Hiç konuşmacı yoksa: `Bilgi: Sistemde kayıtlı konuşmacı bulunmuyor.`
 
 ---
 
-# settings (Ayarlar yönetimi)
+#### **`speaker process`**
+Bir veya daha fazla konuşmacının verilerini işler.
 
-Bu, sistemdeki ayarları yönetmek için kullanılan komutları içerir:
+- **Kullanım:** `python app.py speaker process [<KONUŞMACI_1> <KONUŞMACI_2>...] [--all]`
+- **Argümanlar:**
+  | Argüman | Tip | Açıklama |
+  |---|---|---|
+  | `KONUŞMACILAR` | `list[str]` | İşlenecek konuşmacıların ID veya adları (isteğe bağlı). |
+- **Seçenekler:**
+  | Seçenek | Açıklama |
+  |---|---|
+  | `--all` | Tüm konuşmacıları işlemek için kullanılır. |
+- **Örnek:**
+  ```bash
+  python app.py speaker process "Ali Veli" <id_2> --all
+  ```
+- **Başarılı Çıktı:**
+  ```
+  İşlem başladı: 3 konuşmacı işleniyor...
+  - "Ali Veli" başarıyla işlendi.
+  - "Ayşe Yılmaz" başarıyla işlendi.
+  - "Mehmet Kaya" başarıyla işlendi.
+  İşlem tamamlandı.
+  ```
+- **Hata Durumları:**
+  - LLM ayarları eksikse: `Hata: LLM modeli ve API anahtarı ayarlanmamış.`
+  - Konuşmacı bulunamazsa: `Hata: "<ad>" ile eşleşen konuşmacı bulunamadı.`
 
-- settings list: Tüm ayarları ve mikrofonları listeler.
-- settings set: Belirli bir ayarı düzenler.
-- settings unset: Belirli bir ayarı kaldırır.
+---
+*(Diğer `speaker` alt komutları - `edit`, `show`, `delete` - benzer detay seviyesinde bu yapıya uygun olarak tanımlanmalıdır.)*
 
-Alt komutlarının detayları şöyledir:
+### 3.2. `presentation` Komut Grubu
+Sunum kontrolü ile ilgili işlemleri içerir.
 
-## settings list
+---
 
-Tüm ayarları ve mikrofonları listeler.
+#### **`presentation control`**
+Belirtilen konuşmacı için sunum kontrolünü başlatır.
 
-İşleyiş:
+- **Kullanım:** `python app.py presentation control <KONUŞMACI>`
+- **Argümanlar:**
+  | Argüman | Tip | Açıklama |
+  |---|---|---|
+  | `KONUŞMACI` | `str` | Sunumu kontrol edilecek konuşmacının ID'si veya adı. |
+- **Örnek:**
+  ```bash
+  python app.py presentation control "Ayşe Yılmaz"
+  ```
+- **Başarılı Çıktı:**
+  ```
+  Sunum kontrolü başlatılıyor: Ayşe Yılmaz
+  Mikrofon: <varsayılan_mikrofon>
+  Kontrolü sonlandırmak için CTRL+C tuşlarına basın.
+  ```
+- **Hata Durumları:**
+  - Konuşmacı bulunamazsa: `Hata: "<ad>" ile eşleşen konuşmacı bulunamadı.`
+  - `sections.json` dosyası eksikse: `Hata: Konuşmacı verileri işlenmemiş. Lütfen önce 'speaker process' komutunu çalıştırın.`
 
-1. settings_manager'dan list fonksiyonu çağrılır.
-2. sounddevice'dan query devices kind input ile mikrofonlar alınır.
-3. Mikrofonlar ve ayarlar bir arada listelenir.
+### 3.3. `settings` Komut Grubu
+Uygulama ayarlarını yönetir.
 
-## settings set
+---
+*(`settings list`, `set`, `unset` komutları da yukarıdaki detaylı yapıda tanımlanmalıdır.)*
 
-Belirli bir ayarı düzenler. Gerekli argümanlar şunlardır:
 
-- `<key>`: [str] -> Düzenlenecek ayarın anahtarı.
-- `<value>`: [str] -> Ayarın yeni değeri.
+## 4. `app.py` İçin Uygulama Rehberi
 
-1. settings_manager'dan set fonksiyonu verilen parametrelerle çağrılır.
+Bu bölüm, yukarıdaki gereksinimlerin `app.py` dosyasında nasıl hayata geçirileceğine dair bir yol haritası sunar.
 
-## settings unset
+### 4.1. Proje Yapısı Önerisi
+```
+.
+├── app.py                  # Ana CLI giriş noktası (Typer uygulaması)
+├── requirements.txt        # Proje bağımlılıkları
+└── moves/
+    ├── __init__.py
+    ├── speaker_manager.py    # Konuşmacı ile ilgili iş mantığı
+    ├── settings_manager.py   # Ayarlar ile ilgili iş mantığı
+    ├── presentation_controller.py # Sunum kontrolü mantığı
+    └── ...                   # Diğer yardımcı modüller
+```
 
-Belirli bir ayarı kaldırır. Gerekli argümanlar şunlardır:
+### 4.2. `Typer` ile Komut Yapılandırması
+`app.py`, komutları ve gruplarını tanımlamak için `Typer` kullanmalıdır. İş mantığı (`manager` modülleri) ile sunum katmanı (`app.py`) birbirinden ayrılmalıdır.
 
-- `<key>`: [str] -> Kaldırılacak ayarın anahtarı.
+**`app.py` Örnek Yapısı:**
+```python
+import typer
+from moves import speaker_manager
 
-İşleyiş:
+# Ana uygulama ve alt komut grupları oluşturulur
+app = typer.Typer(help="Moves CLI - Sunum yönetim aracı.")
+speaker_app = typer.Typer(name="speaker", help="Konuşmacı yönetimi komutları.")
+app.add_typer(speaker_app)
 
-1. settings_manager'dan unset fonksiyonu verilen parametrelerle çağrılır.
+@speaker_app.command("add")
+def speaker_add(
+    name: str = typer.Argument(..., help="Konuşmacının adı."),
+    presentation_file: typer.Path = typer.Argument(..., help="Sunum dosyasının yolu."),
+    transcript_file: typer.Path = typer.Argument(..., help="Transkript dosyasının yolu.")
+):
+    """Yeni bir konuşmacı ekler."""
+    try:
+        # İş mantığı manager modülünden çağrılır
+        new_speaker = speaker_manager.add(name, presentation_file, transcript_file)
+        # Çıktı bu katmanda formatlanır
+        print(f"Başarılı: '{name}' adlı konuşmacı eklendi (ID: {new_speaker.id}).")
+    except FileNotFoundError as e:
+        print(f"Hata: Belirtilen dosya yolu bulunamadı: {e.filename}")
+    except Exception as e:
+        print(f"Hata: {e}")
+
+if __name__ == "__main__":
+    app()
+```
+Bu yapı, `app.py` dosyasını sadece kullanıcı girdilerini ayrıştırmak ve sonuçları formatlamakla sorumlu tutar. Tüm temel işlemler (`dosya okuma/yazma`, `veri işleme`) ilgili `manager` sınıflarında gerçekleştirilir, bu da kodun test edilebilirliğini ve modülerliğini artırır.
