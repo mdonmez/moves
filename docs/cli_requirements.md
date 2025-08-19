@@ -228,14 +228,14 @@ Processes speakers to generate presentation sections using LLM analysis.
 
 ```python
 def speaker_process(
-    speakers: str = typer.Argument(..., help="Speaker(s) to process"),
+    speakers: Optional[list[str]] = typer.Argument(None, help="Speaker(s) to process"),
     all: bool = typer.Option(False, "--all", "-a", help="Process all speakers"),
 ):
 ```
 
 **Parameters:**
 
-- `speakers` [str]: Space-separated list of speaker names/IDs (ignored if --all is used)
+- `speakers` [Optional[list[str]]]: List of speaker names/IDs to process (supports quoted names with spaces)
 - `--all/-a` [bool]: Process all registered speakers
 
 **Implementation:**
@@ -245,12 +245,13 @@ def speaker_process(
 3. Validate LLM settings are configured
 4. If `--all` flag is used:
    - Get all speakers using `speaker_manager.list()`
-5. Otherwise:
-   - Split speakers string by spaces
+5. If speakers are provided:
    - Resolve each speaker name/ID using `speaker_manager.resolve()`
    - Collect resolved speakers into list
-6. Call `speaker_manager.process(speaker_list)` with resolved speakers
-7. Display processing results and status
+   - Supports quoted speaker names (e.g., "john doe" "mike adam")
+6. If neither --all nor speakers are provided, show error
+7. Call `speaker_manager.process(speaker_list)` with resolved speakers
+8. Display processing results and status
 
 **Error Handling:**
 
