@@ -110,12 +110,12 @@ def speaker_edit(
     ),
 ):
     """Update speaker's source files (presentation or transcript paths)"""
-    try:
-        # Validate at least one update parameter is provided
-        if not source_presentation and not source_transcript:
-            typer.echo("Error: At least one update parameter (--presentation or --transcript) must be provided", err=True)
-            raise typer.Exit(1)
+    # Validate at least one update parameter is provided
+    if not source_presentation and not source_transcript:
+        typer.echo("Error: At least one update parameter (--presentation or --transcript) must be provided", err=True)
+        raise typer.Exit(1)
 
+    try:
         # Create speaker manager instance and resolve speaker
         speaker_manager = speaker_manager_instance()
         resolved_speaker = speaker_manager.resolve(speaker)
@@ -147,9 +147,9 @@ def speaker_edit(
         if transcript_path:
             typer.echo(f"    Transcript -> {updated_speaker.source_transcript}")
 
-    except ValueError as e:
-        typer.echo(f"Error: {str(e)}", err=True)
-        raise typer.Exit(1)
+    except typer.Exit:
+        # Re-raise typer.Exit to avoid catching it in the generic handler
+        raise
     except Exception as e:
         typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
@@ -216,9 +216,9 @@ def speaker_show(
         typer.echo(f"    Presentation -> {resolved_speaker.source_presentation}")
         typer.echo(f"    Transcript -> {resolved_speaker.source_transcript}")
 
-    except ValueError as e:
-        typer.echo(f"Error: {str(e)}", err=True)
-        raise typer.Exit(1)
+    except typer.Exit:
+        # Re-raise typer.Exit to avoid catching it in the generic handler
+        raise
     except Exception as e:
         typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
@@ -289,9 +289,9 @@ def speaker_process(
                 speaker = speaker_list[i]
                 typer.echo(f"    '{speaker.name}' ({speaker.speaker_id}) -> {result.section_count} sections created.")
 
-    except ValueError as e:
-        typer.echo(f"Error: {str(e)}", err=True)
-        raise typer.Exit(1)
+    except typer.Exit:
+        # Re-raise typer.Exit to avoid catching it in the generic handler
+        raise
     except Exception as e:
         typer.echo(f"Processing error: {str(e)}", err=True)
         raise typer.Exit(1)
@@ -318,9 +318,9 @@ def speaker_delete(
             typer.echo("    Failed to delete speaker data.", err=True)
             raise typer.Exit(1)
 
-    except ValueError as e:
-        typer.echo(f"Error: {str(e)}", err=True)
-        raise typer.Exit(1)
+    except typer.Exit:
+        # Re-raise typer.Exit to avoid catching it in the generic handler
+        raise
     except Exception as e:
         typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
@@ -381,11 +381,11 @@ def presentation_control(
         controller = presentation_controller_instance(sections, start_section)
         controller.control()
 
-    except ValueError as e:
-        typer.echo(f"Error: {str(e)}", err=True)
-        raise typer.Exit(1)
     except KeyboardInterrupt:
         typer.echo("\nPresentation control stopped.")
+    except typer.Exit:
+        # Re-raise typer.Exit to avoid catching it in the generic handler
+        raise
     except Exception as e:
         typer.echo(f"Presentation control error: {str(e)}", err=True)
         raise typer.Exit(1)
@@ -461,9 +461,9 @@ def settings_set(
             typer.echo(f"Could not update setting '{key}'.", err=True)
             raise typer.Exit(1)
 
-    except ValueError as e:
-        typer.echo(f"Error: {str(e)}", err=True)
-        raise typer.Exit(1)
+    except typer.Exit:
+        # Re-raise typer.Exit to avoid catching it in the generic handler
+        raise
     except Exception as e:
         typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
@@ -523,6 +523,9 @@ def settings_unset(
             typer.echo(f"Could not reset setting '{key}'.", err=True)
             raise typer.Exit(1)
 
+    except typer.Exit:
+        # Re-raise typer.Exit to avoid catching it in the generic handler
+        raise
     except Exception as e:
         typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
