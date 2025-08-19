@@ -108,28 +108,33 @@ class SpeakerManager:
                 presentation_path, transcript_path = None, None
                 transcript_from, presentation_from = None, None
 
-                if source_presentation.exists() and source_transcript.exists():
+                # Handle presentation file
+                if source_presentation.exists():
                     data_handler.copy(source_presentation, speaker_path)
-                    data_handler.copy(source_transcript, speaker_path)
                     data_handler.rename(
                         speaker_path / source_presentation.name, "presentation.pdf"
                     )
+                    presentation_path = speaker_path / "presentation.pdf"
+                    presentation_from = "SOURCE"
+                elif local_presentation.exists():
+                    presentation_path = local_presentation
+                    presentation_from = "LOCAL"
+                else:
+                    raise FileNotFoundError(f"Missing presentation file for speaker {speaker.name}")
+
+                # Handle transcript file
+                if source_transcript.exists():
+                    data_handler.copy(source_transcript, speaker_path)
                     data_handler.rename(
                         speaker_path / source_transcript.name, "transcript.pdf"
                     )
-                    presentation_path = speaker_path / "presentation.pdf"
                     transcript_path = speaker_path / "transcript.pdf"
                     transcript_from = "SOURCE"
-                    presentation_from = "SOURCE"
-
-                elif local_presentation.exists() and local_transcript.exists():
-                    presentation_path = local_presentation
+                elif local_transcript.exists():
                     transcript_path = local_transcript
                     transcript_from = "LOCAL"
-                    presentation_from = "LOCAL"
-
                 else:
-                    raise FileNotFoundError("One of the files is missing")
+                    raise FileNotFoundError(f"Missing transcript file for speaker {speaker.name}")
 
                 sections = await asyncio.to_thread(
                     section_producer.generate_sections,
