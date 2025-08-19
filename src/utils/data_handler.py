@@ -43,10 +43,14 @@ def list(path: Path) -> list[Path]:
 
 def rename(path: Path, new_name: str) -> Path:
     full_path = DATA_FOLDER / Path(path)
+    target_path = full_path.parent / new_name
 
     try:
-        full_path.rename(full_path.parent / new_name)
-        return full_path.relative_to(DATA_FOLDER)
+        if target_path.exists():
+            target_path.unlink()
+
+        moved_path = shutil.move(str(full_path), str(target_path))
+        return Path(moved_path).relative_to(DATA_FOLDER)
     except Exception as e:
         raise RuntimeError(
             f"Rename operation failed for {full_path} to {new_name}: {e}"

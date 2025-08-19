@@ -108,33 +108,39 @@ class SpeakerManager:
                 presentation_path, transcript_path = None, None
                 transcript_from, presentation_from = None, None
 
-                # Handle presentation file
                 if source_presentation.exists():
                     data_handler.copy(source_presentation, speaker_path)
-                    data_handler.rename(
-                        speaker_path / source_presentation.name, "presentation.pdf"
-                    )
+                    if source_presentation.name != "presentation.pdf":
+                        relative_file_path = (
+                            speaker_path / source_presentation.name
+                        ).relative_to(data_handler.DATA_FOLDER)
+                        data_handler.rename(relative_file_path, "presentation.pdf")
                     presentation_path = speaker_path / "presentation.pdf"
                     presentation_from = "SOURCE"
                 elif local_presentation.exists():
                     presentation_path = local_presentation
                     presentation_from = "LOCAL"
                 else:
-                    raise FileNotFoundError(f"Missing presentation file for speaker {speaker.name}")
+                    raise FileNotFoundError(
+                        f"Missing presentation file for speaker {speaker.name}"
+                    )
 
-                # Handle transcript file
                 if source_transcript.exists():
                     data_handler.copy(source_transcript, speaker_path)
-                    data_handler.rename(
-                        speaker_path / source_transcript.name, "transcript.pdf"
-                    )
+                    if source_transcript.name != "transcript.pdf":
+                        relative_file_path = (
+                            speaker_path / source_transcript.name
+                        ).relative_to(data_handler.DATA_FOLDER)
+                        data_handler.rename(relative_file_path, "transcript.pdf")
                     transcript_path = speaker_path / "transcript.pdf"
                     transcript_from = "SOURCE"
                 elif local_transcript.exists():
                     transcript_path = local_transcript
                     transcript_from = "LOCAL"
                 else:
-                    raise FileNotFoundError(f"Missing transcript file for speaker {speaker.name}")
+                    raise FileNotFoundError(
+                        f"Missing transcript file for speaker {speaker.name}"
+                    )
 
                 sections = await asyncio.to_thread(
                     section_producer.generate_sections,
