@@ -40,7 +40,7 @@ class SettingsEditor:
         try:
             # Ensure the data folder exists
             self.settings.parent.mkdir(parents=True, exist_ok=True)
-            
+
             node = (
                 copy.deepcopy(self.template_data)
                 if isinstance(self.template_data, dict)

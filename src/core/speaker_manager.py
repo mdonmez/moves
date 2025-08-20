@@ -71,7 +71,9 @@ class SpeakerManager:
             if len(matched_speakers) == 1:
                 return matched_speakers[0]
             else:
-                speaker_list = "\n".join([f"    {s.name} ({s.speaker_id})" for s in matched_speakers])
+                speaker_list = "\n".join(
+                    [f"    {s.name} ({s.speaker_id})" for s in matched_speakers]
+                )
                 raise ValueError(
                     f"Multiple speakers found matching '{speaker_pattern}'. Be more specific:\n{speaker_list}"
                 )

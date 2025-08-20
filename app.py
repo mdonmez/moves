@@ -26,7 +26,6 @@ def settings_editor_instance():
     return SettingsEditor()
 
 
-
 # Initialize Typer CLI application
 app = typer.Typer(
     help="moves CLI - AI-powered presentation control system for seamless slide navigation.",
@@ -454,9 +453,7 @@ def settings_unset(
             # Display confirmation in Direct Summary format
             if key in settings_editor.template_data:
                 display_value = (
-                    "Not configured"
-                    if template_value is None
-                    else str(template_value)
+                    "Not configured" if template_value is None else str(template_value)
                 )
                 typer.echo(f"Setting '{key}' reset to default.")
                 typer.echo(f"    New Value -> {display_value}")
