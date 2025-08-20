@@ -1,6 +1,6 @@
-# Getting Started with Moves
+# Getting Started with moves
 
-This guide will help you set up and start using Moves, the AI-powered presentation control system.
+This guide will help you set up and start using moves, the AI-powered presentation control system.
 
 ## Table of Contents
 
@@ -15,7 +15,7 @@ This guide will help you set up and start using Moves, the AI-powered presentati
 
 ## Prerequisites
 
-Before installing Moves, ensure you have:
+Before installing moves, ensure you have:
 
 ### System Requirements
 
@@ -38,7 +38,7 @@ Before installing Moves, ensure you have:
 
 ## Installation
 
-Moves uses `uv` for dependency management, which simplifies the installation process.
+moves uses `uv` for dependency management, which simplifies the installation process.
 
 ### Step 1: Clone or Download
 
@@ -76,7 +76,7 @@ You should see the main help menu with available commands.
 
 ### Step 1: Configure LLM Settings
 
-Moves requires an LLM (Large Language Model) API for processing presentations:
+moves requires an LLM (Large Language Model) API for processing presentations:
 
 ```bash
 # Set your preferred LLM model
@@ -110,7 +110,7 @@ Application Settings.
 
 ## Creating Your First Speaker Profile
 
-A speaker profile contains your presentation and transcript, which Moves uses for intelligent navigation.
+A speaker profile contains your presentation and transcript, which moves uses for intelligent navigation.
 
 ### Step 1: Prepare Your Files
 
@@ -169,7 +169,7 @@ john-doe-Ax9K2  John    Not Ready
 
 ## Processing Presentation Data
 
-Before using voice navigation, Moves must process your presentation using AI to create intelligent content mappings.
+Before using voice navigation, moves must process your presentation using AI to create intelligent content mappings.
 
 ### Step 1: Process Speaker Data
 
@@ -251,7 +251,7 @@ Waiting for 12 words to first trigger, keep speaking...
 ### Step 3: Begin Presenting
 
 1. **Start Speaking**: Begin your presentation normally
-2. **Automatic Navigation**: Moves will navigate slides based on your speech
+2. **Automatic Navigation**: moves will navigate slides based on your speech
 3. **Manual Override**: Use keyboard controls when needed
 4. **Pause/Resume**: Use Insert key to pause automatic navigation
 
@@ -265,7 +265,7 @@ Match   -> machine learning fundamentals and basic concepts overview
 
 ## Basic Usage Workflow
 
-Here's the typical workflow for using Moves:
+Here's the typical workflow for using moves:
 
 ### 1. Preparation Phase
 
@@ -356,10 +356,10 @@ uv run python app.py speaker delete "Speaker Name"
 
 ## Next Steps
 
-- **Learn More**: Read the [Architecture Overview](./architecture.md) to understand how Moves works
+- **Learn More**: Read the [Architecture Overview](./architecture.md) to understand how moves works
 - **Customize**: Check [Configuration](./configuration.md) for advanced settings
 - **Troubleshoot**: See [Troubleshooting Guide](./troubleshooting.md) for detailed solutions
-- **Contribute**: Read [Development Guide](./development.md) to extend Moves functionality
+- **Contribute**: Read [Development Guide](./development.md) to extend moves functionality
 
 ## Getting Help
 

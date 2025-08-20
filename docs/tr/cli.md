@@ -1,23 +1,23 @@
-# Command Line Interface (CLI)
+# Komut Satırı Arayüzü (CLI)
 
-moves provides a comprehensive command-line interface built with Typer that offers intuitive commands for managing speakers, controlling presentations, and configuring the system. The CLI is organized into logical subcommands with consistent patterns and helpful feedback.
+moves, Typer ile inşa edilmiş kapsamlı bir komut satırı arayüzü sağlayarak konuşmacı yönetimi, sunum kontrolü ve sistem yapılandırması için sezgisel komutlar sunar. CLI, tutarlı desenler ve yardımcı geri bildirimlerle mantıksal alt komutlara organize edilmiştir.
 
-## Table of Contents
+## İçindekiler
 
-- [Overview](#overview)
-- [CLI Structure](#cli-structure)
-- [Speaker Management Commands](#speaker-management-commands)
-- [Presentation Control Commands](#presentation-control-commands)
-- [Settings Management Commands](#settings-management-commands)
-- [Command Patterns](#command-patterns)
-- [Error Handling](#error-handling)
-- [Usage Examples](#usage-examples)
+- [Genel Bakış](#overview)
+- [CLI Yapısı](#cli-structure)
+- [Konuşmacı Yönetimi Komutları](#speaker-management-commands)
+- [Sunum Kontrol Komutları](#presentation-control-commands)
+- [Ayar Yönetimi Komutları](#settings-management-commands)
+- [Komut Desenleri](#command-patterns)
+- [Hata İşleme](#error-handling)
+- [Kullanım Örnekleri](#usage-examples)
 
-## Overview
+## Genel Bakış
 
-**Location**: `app.py`
+**Konum**: `app.py`
 
-The CLI is built using Typer, providing a modern, user-friendly command-line experience with automatic help generation, type validation, and rich formatting. All commands follow consistent patterns for arguments, options, and output formatting.
+CLI, Typer kullanılarak oluşturulmuş olup otomatik yardım üretimi, tip doğrulama ve zengin biçimlendirme sağlayan modern, kullanıcı dostu bir komut satırı deneyimi sunar. Tüm komutlar, argümanlar, seçenekler ve çıktı biçimlendirmesi için tutarlı desenleri izler.
 
 ```python
 # Main CLI application
@@ -32,71 +32,71 @@ presentation_app = typer.Typer(help="Live presentation control with voice naviga
 settings_app = typer.Typer(help="Configure system settings (model, API key)")
 ```
 
-## CLI Structure
+## CLI Yapısı
 
-### Main Command Groups
+### Ana Komut Grupları
 
 ```
 uv run python app.py
-├── speaker          # Speaker profile management
-│   ├── add          # Create new speaker profile
-│   ├── edit         # Update speaker files
-│   ├── list         # Show all speakers
-│   ├── show         # Display speaker details
-│   ├── process      # Generate AI sections
-│   └── delete       # Remove speaker
-├── presentation     # Live presentation control
-│   └── control      # Start voice navigation
-└── settings         # System configuration
-    ├── list         # Show current settings
-    ├── set          # Update setting value
-    └── unset        # Reset to default
+├── speaker          # Konuşmacı profili yönetimi
+│   ├── add          # Yeni konuşmacı profili oluştur
+│   ├── edit         # Konuşmacı dosyalarını güncelle
+│   ├── list         # Tüm konuşmacıları göster
+│   ├── show         # Konuşmacı detaylarını görüntüle
+│   ├── process      # AI bölümleri oluştur
+│   └── delete       # Konuşmacıyı kaldır
+├── presentation     # Canlı sunum kontrolü
+│   └── control      # Sesli gezinmeyi başlat
+└── settings         # Sistem yapılandırması
+    ├── list         # Mevcut ayarları göster
+    ├── set          # Ayar değerini güncelle
+    └── unset        # Varsayılana sıfırla
 ```
 
-### Help System
+### Yardım Sistemi
 
 ```bash
-# Main help
+# Ana yardım
 uv run python app.py --help
 
-# Subcommand help
+# Alt komut yardımı
 uv run python app.py speaker --help
 uv run python app.py speaker add --help
 
-# Command-specific help
+# Komut‑spesifik yardım
 uv run python app.py settings set --help
 ```
 
-## Speaker Management Commands
+## Konuşmacı Yönetimi Komutları
 
-### `speaker add` - Create Speaker Profile
+### `speaker add` - Konuşmacı Profili Oluştur
 
 ```bash
 uv run python app.py speaker add <NAME> <PRESENTATION_FILE> <TRANSCRIPT_FILE>
 ```
 
-**Purpose**: Create a new speaker profile with presentation and transcript files.
+**Amaç**: Sunum ve transkript dosyalarıyla yeni bir konuşmacı profili oluşturur.
 
-**Arguments**:
+**Argümanlar**:
 
-- `NAME`: Speaker's name (used for identification and ID generation)
-- `PRESENTATION_FILE`: Path to presentation PDF file
-- `TRANSCRIPT_FILE`: Path to transcript PDF file
+- `NAME`: Konuşmacının adı (kimlik ve ID üretimi için kullanılır)
+- `PRESENTATION_FILE`: Sunum PDF dosyasının yolu
+- `TRANSCRIPT_FILE`: Transkript PDF dosyasının yolu
 
-**Examples**:
+**Örnekler**:
 
 ```bash
-# Basic usage
+# Temel kullanım
 uv run python app.py speaker add "Dr. Sarah Johnson" ./presentation.pdf ./transcript.pdf
 
-# With spaces in filenames
+# Dosya adlarında boşluklar
 uv run python app.py speaker add "John Doe" "./My Presentation.pdf" "./My Transcript.pdf"
 
-# Using absolute paths
+# Mutlak yollar kullanma
 uv run python app.py speaker add "Prof. Smith" /Users/smith/slides.pdf /Users/smith/notes.pdf
 ```
 
-**Output**:
+**Çıktı**:
 
 ```
 Speaker 'Dr. Sarah Johnson' (dr-sarah-johnson-Ax9K2) added.
@@ -105,51 +105,51 @@ Speaker 'Dr. Sarah Johnson' (dr-sarah-johnson-Ax9K2) added.
     Transcript -> /path/to/transcript.pdf
 ```
 
-**Error Handling**:
+**Hata İşleme**:
 
 ```bash
-# Missing files
+# Eksik dosyalar
 uv run python app.py speaker add "Test Speaker" missing.pdf transcript.pdf
 # Output: Could not add speaker 'Test Speaker'.
 #             Presentation file not found: missing.pdf
 
-# Name conflicts
+# İsim çakışmaları
 uv run python app.py speaker add "dr-sarah-johnson-Ax9K2" presentation.pdf transcript.pdf
 # Output: Could not add speaker 'dr-sarah-johnson-Ax9K2'.
 #             Given name conflicts with existing speaker ID.
 ```
 
-### `speaker edit` - Update Speaker Files
+### `speaker edit` - Konuşmacı Dosyalarını Güncelle
 
 ```bash
 uv run python app.py speaker edit <SPEAKER> [OPTIONS]
 ```
 
-**Purpose**: Update presentation or transcript files for existing speaker.
+**Amaç**: Mevcut konuşmacının sunum veya transkript dosyalarını günceller.
 
-**Arguments**:
+**Argümanlar**:
 
-- `SPEAKER`: Speaker name or ID to update
+- `SPEAKER`: Güncellenecek konuşmacı adı ya da ID
 
-**Options**:
+**Seçenekler**:
 
-- `--presentation, -p`: New presentation file path
-- `--transcript, -t`: New transcript file path
+- `--presentation, -p`: Yeni sunum dosyası yolu
+- `--transcript, -t`: Yeni transkript dosyası yolu
 
-**Examples**:
+**Örnekler**:
 
 ```bash
-# Update presentation only
+# Yalnızca sunumu güncelle
 uv run python app.py speaker edit "Dr. Sarah Johnson" --presentation ./new-presentation.pdf
 
-# Update transcript only
+# Yalnızca transkripti güncelle
 uv run python app.py speaker edit "dr-sarah-johnson-Ax9K2" -t ./updated-transcript.pdf
 
-# Update both files
+# Her iki dosyayı da güncelle
 uv run python app.py speaker edit "Dr. Sarah Johnson" -p ./new-slides.pdf -t ./new-notes.pdf
 ```
 
-**Output**:
+**Çıktı**:
 
 ```
 Speaker 'Dr. Sarah Johnson' updated.
@@ -157,15 +157,15 @@ Speaker 'Dr. Sarah Johnson' updated.
     Transcript -> /path/to/updated-transcript.pdf
 ```
 
-### `speaker list` - Show All Speakers
+### `speaker list` - Tüm Konuşmacıları Göster
 
 ```bash
 uv run python app.py speaker list
 ```
 
-**Purpose**: Display all registered speakers with their status.
+**Amaç**: Kayıtlı tüm konuşmacıları ve durumlarını görüntüler.
 
-**Output**:
+**Çıktı**:
 
 ```
 Registered Speakers (2)
@@ -176,31 +176,31 @@ dr-sarah-johnson Sarah       Ready
 john-doe-Xy5Z8  John         Not Ready
 ```
 
-**Status Meanings**:
+**Durum Anlamları**:
 
-- **Ready**: Speaker has been processed and is ready for voice control
-- **Not Ready**: Speaker added but not yet processed for AI navigation
+- **Ready**: Konuşmacı işlenmiş ve ses kontrolüne hazır
+- **Not Ready**: Konuşmacı eklenmiş ancak AI gezinme için henüz işlenmemiş
 
-### `speaker show` - Display Speaker Details
+### `speaker show` - Konuşmacı Detaylarını Görüntüle
 
 ```bash
 uv run python app.py speaker show <SPEAKER>
 ```
 
-**Purpose**: Show detailed information about a specific speaker.
+**Amaç**: Belirli bir konuşmacı hakkında ayrıntılı bilgi gösterir.
 
-**Arguments**:
+**Argümanlar**:
 
-- `SPEAKER`: Speaker name or ID to display
+- `SPEAKER`: Görüntülenecek konuşmacı adı ya da ID
 
-**Examples**:
+**Örnekler**:
 
 ```bash
 uv run python app.py speaker show "Dr. Sarah Johnson"
 uv run python app.py speaker show "dr-sarah-johnson-Ax9K2"
 ```
 
-**Output**:
+**Çıktı**:
 
 ```
 Showing details for speaker 'Dr. Sarah Johnson' (dr-sarah-johnson-Ax9K2)
@@ -211,36 +211,36 @@ Showing details for speaker 'Dr. Sarah Johnson' (dr-sarah-johnson-Ax9K2)
     Transcript -> /Users/sarah/transcript.pdf
 ```
 
-### `speaker process` - Generate AI Sections
+### `speaker process` - AI Bölümleri Oluştur
 
 ```bash
 uv run python app.py speaker process [SPEAKERS...] [OPTIONS]
 ```
 
-**Purpose**: Use AI to generate navigable sections from presentation and transcript.
+**Amaç**: Sunum ve transkriptten gezinilebilir bölümler üretmek için AI kullanır.
 
-**Arguments**:
+**Argümanlar**:
 
-- `SPEAKERS`: Optional list of speaker names/IDs to process
+- `SPEAKERS`: İşlenecek isteğe bağlı konuşmacı adı/ID listesi
 
-**Options**:
+**Seçenekler**:
 
-- `--all, -a`: Process all registered speakers
+- `--all, -a`: Tüm kayıtlı konuşmacıları işle
 
-**Examples**:
+**Örnekler**:
 
 ```bash
-# Process specific speaker
+# Belirli konuşmacıyı işle
 uv run python app.py speaker process "Dr. Sarah Johnson"
 
-# Process multiple speakers
+# Birden fazla konuşmacıyı işle
 uv run python app.py speaker process "Sarah" "John Doe" "Prof. Smith"
 
-# Process all speakers
+# Tüm konuşmacıları işle
 uv run python app.py speaker process --all
 ```
 
-**Output**:
+**Çıktı**:
 
 ```
 Processing speaker 'Dr. Sarah Johnson' (dr-sarah-johnson-Ax9K2)...
@@ -248,7 +248,7 @@ Speaker 'Dr. Sarah Johnson' (dr-sarah-johnson-Ax9K2) processed.
     25 sections created.
 ```
 
-**Batch Processing Output**:
+**Toplu İşleme Çıktısı**:
 
 ```
 Processing 3 speakers...
@@ -258,53 +258,53 @@ Processing 3 speakers...
     'Prof. Smith' (prof-smith-Ab3C4) -> 32 sections created.
 ```
 
-### `speaker delete` - Remove Speaker
+### `speaker delete` - Konuşmacıyı Kaldır
 
 ```bash
 uv run python app.py speaker delete <SPEAKER>
 ```
 
-**Purpose**: Delete speaker profile and all associated data.
+**Amaç**: Konuşmacı profilini ve ilişkili tüm verileri siler.
 
-**Arguments**:
+**Argümanlar**:
 
-- `SPEAKER`: Speaker name or ID to delete
+- `SPEAKER`: Silinecek konuşmacı adı ya da ID
 
-**Examples**:
+**Örnekler**:
 
 ```bash
 uv run python app.py speaker delete "Dr. Sarah Johnson"
 uv run python app.py speaker delete "dr-sarah-johnson-Ax9K2"
 ```
 
-**Output**:
+**Çıktı**:
 
 ```
 Speaker 'Dr. Sarah Johnson' (dr-sarah-johnson-Ax9K2) deleted.
 ```
 
-## Presentation Control Commands
+## Sunum Kontrol Komutları
 
-### `presentation control` - Start Voice Navigation
+### `presentation control` - Sesli Gezintiyi Başlat
 
 ```bash
 uv run python app.py presentation control <SPEAKER>
 ```
 
-**Purpose**: Begin live voice-controlled presentation navigation.
+**Amaç**: Canlı ses kontrollü sunum gezinmesini başlatır.
 
-**Arguments**:
+**Argümanlar**:
 
-- `SPEAKER`: Speaker name or ID (must be processed)
+- `SPEAKER`: İşlenmiş konuşmacı adı ya da ID
 
-**Examples**:
+**Örnekler**:
 
 ```bash
 uv run python app.py presentation control "Dr. Sarah Johnson"
 uv run python app.py presentation control "dr-sarah-johnson-Ax9K2"
 ```
 
-**Output**:
+**Çıktı**:
 
 ```
 Starting presentation control for 'Dr. Sarah Johnson' (dr-sarah-johnson-Ax9K2).
@@ -321,7 +321,7 @@ Keyboard controls:
 Waiting for 12 words to first trigger, keep speaking...
 ```
 
-**Real-Time Feedback**:
+**Gerçek‑Zamanlı Geri Bildirim**:
 
 ```
 [3/25]
@@ -335,23 +335,23 @@ Match   -> machine learning fundamentals and basic concepts overview
 [Resumed]
 ```
 
-**Exit**:
+**Çıkış**:
 
 ```
 Control session ended.
 ```
 
-## Settings Management Commands
+## Ayar Yönetimi Komutları
 
-### `settings list` - Show Current Configuration
+### `settings list` - Mevcut Yapılandırmayı Göster
 
 ```bash
 uv run python app.py settings list
 ```
 
-**Purpose**: Display current system settings.
+**Amaç**: Mevcut sistem ayarlarını gösterir.
 
-**Output**:
+**Çıktı**:
 
 ```
 Application Settings.
@@ -359,7 +359,7 @@ Application Settings.
     key (API Key) -> your-api-key-here
 ```
 
-**Unconfigured Output**:
+**Yapılandırılmamış Çıktı**:
 
 ```
 Application Settings.
@@ -367,240 +367,240 @@ Application Settings.
     key (API Key) -> Not configured
 ```
 
-### `settings set` - Update Setting Value
+### `settings set` - Ayar Değerini Güncelle
 
 ```bash
 uv run python app.py settings set <KEY> <VALUE>
 ```
 
-**Purpose**: Configure system settings like LLM model and API key.
+**Amaç**: LLM modeli ve API anahtarı gibi sistem ayarlarını yapılandırır.
 
-**Arguments**:
+**Argümanlar**:
 
-- `KEY`: Setting name (`model` or `key`)
-- `VALUE`: New setting value
+- `KEY`: Ayar adı (`model` ya da `key`)
+- `VALUE`: Yeni ayar değeri
 
-**Examples**:
+**Örnekler**:
 
 ```bash
-# Set LLM model
+# LLM modelini ayarla
 uv run python app.py settings set model "gemini/gemini-2.0-flash"
 uv run python app.py settings set model "gpt-4"
 uv run python app.py settings set model "claude-3-opus"
 
-# Set API key
+# API anahtarını ayarla
 uv run python app.py settings set key "your-api-key-here"
 uv run python app.py settings set key "sk-1234567890abcdef..."
 ```
 
-**Output**:
+**Çıktı**:
 
 ```
 Setting 'model' updated.
     New Value -> gemini/gemini-2.0-flash
 ```
 
-**Error Handling**:
+**Hata İşleme**:
 
 ```bash
-# Invalid key
+# Geçersiz anahtar
 uv run python app.py settings set invalid_key "value"
 # Output: Error: Invalid setting key 'invalid_key'
 #         Valid keys: model, key
 ```
 
-### `settings unset` - Reset to Default
+### `settings unset` - Varsayılan Değere Sıfırla
 
 ```bash
 uv run python app.py settings unset <KEY>
 ```
 
-**Purpose**: Reset a setting to its default template value.
+**Amaç**: Bir ayarı varsayılan şablon değerine sıfırlar.
 
-**Arguments**:
+**Argümanlar**:
 
-- `KEY`: Setting name to reset
+- `KEY`: Sıfırlanacak ayar adı
 
-**Examples**:
+**Örnekler**:
 
 ```bash
-# Reset model to default
+# Modeli varsayılana sıfırla
 uv run python app.py settings unset model
 
-# Reset API key (to null)
+# API anahtarını (null'a) sıfırla
 uv run python app.py settings unset key
 ```
 
-**Output**:
+**Çıktı**:
 
 ```
 Setting 'model' reset to default.
     New Value -> gemini/gemini-2.0-flash
 ```
 
-## Command Patterns
+## Komut Desenleri
 
-### Consistent Argument Patterns
+### Tutarlı Argüman Desenleri
 
-All commands follow consistent patterns for common operations:
+Tüm komutlar ortak işlemler için tutarlı desenleri izler:
 
-**Speaker Resolution**:
+**Konuşmacı Çözümlemesi**:
 
-- Commands accept either speaker name or speaker ID
-- Case-sensitive matching for names
-- Automatic disambiguation for unique matches
-- Clear error messages for ambiguous matches
+- Komutlar konuşmacı adı ya da konuşmacı ID'si kabul eder
+- İsimler büyük/küçük harfe duyarlıdır
+- Tek eşleşmeler için otomatik ayrım yapılır
+- Belirsiz eşleşmelerde net hata mesajları verilir
 
-**File Path Handling**:
+**Dosya Yolu İşleme**:
 
-- Support for relative and absolute paths
-- Automatic path resolution and validation
-- Clear error messages for missing files
-- Proper handling of spaces in filenames
+- Göreli ve mutlak yollar desteklenir
+- Otomatik yol çözümlemesi ve doğrulama yapılır
+- Eksik dosyalar için net hata mesajları
+- Dosya adlarındaki boşlukların doğru işlenmesi
 
-**Output Formatting**:
+**Çıktı Biçimlendirme**:
 
-- Consistent "Direct Summary" format
-- Success confirmations with key details
-- Error messages with actionable guidance
-- Progress indicators for long-running operations
+- Tutarlı “Doğrudan Özet” formatı
+- Anahtar ayrıntılarla başarı onayları
+- Eyleme dönük rehberlik içeren hata mesajları
+- Uzun süren işlemler için ilerleme göstergeleri
 
-### Option Conventions
+### Seçenek Kuralları
 
 ```bash
-# Short and long options
---presentation, -p    # File path options
---transcript, -t     # File path options
---all, -a           # Boolean flags
+# Kısa ve uzun seçenekler
+--presentation, -p    # Dosya yolu seçenekleri
+--transcript, -t     # Dosya yolu seçenekleri
+--all, -a           # Boolean bayrakları
 
-# Consistent help text
---help              # Available on all commands
+# Tutarlı yardım metni
+--help              # Tüm komutlarda mevcuttur
 ```
 
-### Return Codes
+### Dönüş Kodları
 
-All commands use consistent exit codes:
+Tüm komutlar tutarlı çıkış kodları kullanır:
 
-- **0**: Success
-- **1**: Error (file not found, validation failure, processing error)
+- **0**: Başarı
+- **1**: Hata (dosya bulunamadı, doğrulama hatası, işleme hatası)
 
-## Error Handling
+## Hata İşleme
 
-### Validation Errors
+### Doğrulama Hataları
 
 ```bash
-# Missing required arguments
+# Gerekli argümanlar eksik
 uv run python app.py speaker add
 # Output: Error: Missing argument 'NAME'
 
-# Invalid file paths
+# Geçersiz dosya yolları
 uv run python app.py speaker add "Test" nonexistent.pdf transcript.pdf
 # Output: Could not add speaker 'Test'.
 #         Presentation file not found: nonexistent.pdf
 ```
 
-### Configuration Errors
+### Yapılandırma Hataları
 
 ```bash
-# LLM not configured
+# LLM yapılandırılmamış
 uv run python app.py speaker process "Test Speaker"
 # Output: Error: LLM model not configured. Use 'moves settings set model <model>' to configure.
 
-# API key not configured
+# API anahtarı yapılandırılmamış
 uv run python app.py speaker process "Test Speaker"
 # Output: Error: LLM API key not configured. Use 'moves settings set key <key>' to configure.
 ```
 
-### Processing Errors
+### İşleme Hataları
 
 ```bash
-# Speaker not found
+# Konuşmacı bulunamadı
 uv run python app.py speaker show "Unknown Speaker"
 # Output: Error: No speaker found matching 'Unknown Speaker'.
 
-# Speaker not processed
+# Konuşmacı işlenmemiş
 uv run python app.py presentation control "Unprocessed Speaker"
 # Output: Error: Speaker 'Unprocessed Speaker' has not been processed yet.
 #         Please run 'moves speaker process' first to generate sections.
 ```
 
-### Network/API Errors
+### Ağ/API Hataları
 
 ```bash
-# LLM processing failure
+# LLM işleme hatası
 uv run python app.py speaker process "Test Speaker"
 # Output: Processing error: LLM call failed: Invalid API key
 ```
 
-## Usage Examples
+## Kullanım Örnekleri
 
-### Complete Workflow Example
+### Tam İş Akışı Örneği
 
 ```bash
-# 1. Configure system
+# 1. Sistemi yapılandır
 uv run python app.py settings set model "gemini/gemini-2.0-flash"
 uv run python app.py settings set key "your-api-key"
 
-# 2. Add speaker
+# 2. Konuşmacı ekle
 uv run python app.py speaker add "Dr. AI Expert" ./ai-presentation.pdf ./ai-transcript.pdf
 
-# 3. Check speaker status
+# 3. Konuşmacı durumunu kontrol et
 uv run python app.py speaker list
-# Shows "Not Ready"
+# "Not Ready" gösterir
 
-# 4. Process for AI navigation
+# 4. AI gezinme için işle
 uv run python app.py speaker process "Dr. AI Expert"
 
-# 5. Verify processing
+# 5. İşlenmeyi doğrula
 uv run python app.py speaker show "Dr. AI Expert"
-# Shows "Ready"
+# "Ready" gösterir
 
-# 6. Start presentation
+# 6. Sunumu başlat
 uv run python app.py presentation control "Dr. AI Expert"
-# Begin voice-controlled navigation
+# Ses kontrollü gezinme başlar
 ```
 
-### Batch Operations Example
+### Toplu İşlemler Örneği
 
 ```bash
-# Add multiple speakers
+# Birden fazla konuşmacı ekle
 uv run python app.py speaker add "Speaker 1" ./pres1.pdf ./trans1.pdf
 uv run python app.py speaker add "Speaker 2" ./pres2.pdf ./trans2.pdf
 uv run python app.py speaker add "Speaker 3" ./pres3.pdf ./trans3.pdf
 
-# Process all at once
+# Hepsini bir kerede işle
 uv run python app.py speaker process --all
 
-# List all speakers
+# Tüm konuşmacıları listele
 uv run python app.py speaker list
 ```
 
-### Configuration Management Example
+### Ayar Yönetimi Örneği
 
 ```bash
-# Check current settings
+# Mevcut ayarları kontrol et
 uv run python app.py settings list
 
-# Try different models
+# Farklı modelleri dene
 uv run python app.py settings set model "gpt-4"
 uv run python app.py settings set model "claude-3-opus"
 
-# Reset to defaults
+# Varsayılanlara sıfırla
 uv run python app.py settings unset model
 uv run python app.py settings unset key
 ```
 
-### Error Recovery Example
+### Hata Kurtarma Örneği
 
 ```bash
-# Update files after initial setup
+# Başlangıçtaki kurulumu takiben dosyaları güncelle
 uv run python app.py speaker edit "Dr. AI Expert" --presentation ./updated-presentation.pdf
 
-# Reprocess after file changes
+# Dosya değişikliklerinden sonra yeniden işle
 uv run python app.py speaker process "Dr. AI Expert"
 
-# Clean up when done
+# İş bittiğinde temizle
 uv run python app.py speaker delete "Dr. AI Expert"
 ```
 
-The CLI provides a powerful, user-friendly interface that makes complex AI-powered presentation control accessible through simple, consistent commands. Its comprehensive help system, error handling, and feedback ensure users can effectively manage speakers, control presentations, and configure the system.
+CLI, karmaşık AI‑tabanlı sunum kontrolünü basit, tutarlı komutlarla erişilebilir kılan güçlü ve kullanıcı dostu bir arayüz sunar. Kapsamlı yardım sistemi, hata işleme ve geri bildirim mekanizmaları, kullanıcıların konuşmacıları yönetmesini, sunumları kontrol etmesini ve sistemi yapılandırmasını etkili bir şekilde yapmasını sağlar.

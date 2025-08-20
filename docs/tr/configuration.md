@@ -1,33 +1,33 @@
-# Configuration
+# Yapılandırma
 
 moves uses a template-based configuration system that provides sensible defaults while allowing full customization. Configuration covers LLM settings, system parameters, and runtime behavior.
 
-## Table of Contents
+## İçindekiler
 
-- [Overview](#overview)
-- [Configuration Files](#configuration-files)
-- [Settings Template](#settings-template)
-- [LLM Configuration](#llm-configuration)
-- [System Parameters](#system-parameters)
-- [Runtime Configuration](#runtime-configuration)
-- [Environment Variables](#environment-variables)
-- [Configuration Management](#configuration-management)
+- [Genel Bakış](#overview)
+- [Yapılandırma Dosyaları](#configuration-files)
+- [Ayar Şablonu](#settings-template)
+- [LLM Yapılandırması](#llm-configuration)
+- [Sistem Parametreleri](#system-parameters)
+- [Çalışma Zamanı Yapılandırması](#runtime-configuration)
+- [Ortam Değişkenleri](#environment-variables)
+- [Yapılandırma Yönetimi](#configuration-management)
 
-## Overview
+## Genel Bakış
 
-moves configuration follows a hierarchical approach:
+moves yapılandırması hiyerarşik bir yaklaşım izler:
 
-1. **Template Defaults**: Base configuration with sensible defaults
-2. **User Settings**: User overrides stored in `~/.moves/settings.yaml`
-3. **Runtime Parameters**: Command-line arguments and code-level configuration
+1. **Şablon Varsayılanları**: Mantıklı varsayılanlarla temel yapılandırma
+2. **Kullanıcı Ayarları**: `~/.moves/settings.yaml` içinde depolanan kullanıcı geçersiz kılmaları
+3. **Çalışma Zamanı Parametreleri**: Komut satırı argümanları ve kod düzeyinde yapılandırma
 
-This layered approach ensures the system always has working defaults while allowing complete customization.
+Bu katmanlı yaklaşım, sistemin her zaman çalışan varsayılanlara sahip olmasını sağlarken tam özelleştirmeye izin verir.
 
-## Configuration Files
+## Yapılandırma Dosyaları
 
-### Settings Template
+### Ayar Şablonu
 
-**Location**: `src/data/settings_template.yaml`
+**Konum**: `src/data/settings_template.yaml`
 
 ```yaml
 # LLM to be used for section generation based on transcript and presentation
@@ -38,30 +38,30 @@ model: gemini/gemini-2.0-flash
 key: null
 ```
 
-**Purpose**:
+**Amaç**:
 
-- Defines available configuration options
-- Provides default values for all settings
-- Serves as documentation for configuration options
-- Used for validation and schema enforcement
+- Mevcut yapılandırma seçeneklerini tanımlar
+- Tüm ayarlar için varsayılan değerler sağlar
+- Yapılandırma seçenekleri için belge işlevi görür
+- Doğrulama ve şema uygulaması için kullanılır
 
-### User Settings File
+### Kullanıcı Ayarları Dosyası
 
-**Location**: `~/.moves/settings.yaml`
+**Konum**: `~/.moves/settings.yaml`
 
 ```yaml
 model: gpt-4
 key: sk-1234567890abcdef...
 ```
 
-**Characteristics**:
+**Özellikler**:
 
-- Automatically created when settings are modified
-- Only contains user-customized values
-- Merged with template defaults at runtime
-- Human-readable YAML format for easy editing
+- Ayarlar değiştirildiğinde otomatik olarak oluşturulur
+- Yalnızca kullanıcı tarafından özelleştirilen değerleri içerir
+- Çalışma zamanında şablon varsayılanları ile birleştirilir
+- Kolay düzenleme için insan tarafından okunabilir YAML formatı
 
-### Data Directory Structure
+### Veri Dizini Yapısı
 
 ```
 ~/.moves/                           # User data directory
@@ -78,9 +78,9 @@ key: sk-1234567890abcdef...
         └── sections.json          # Generated navigation sections
 ```
 
-## Settings Template
+## Ayar Şablonu
 
-### Template Structure and Documentation
+### Şablon Yapısı ve Belgeleri
 
 ```yaml
 # LLM Model Configuration
@@ -97,9 +97,9 @@ model: gemini/gemini-2.0-flash
 key: null
 ```
 
-### Configuration Validation
+### Yapılandırma Doğrulama
 
-The template serves as a schema for validation:
+Şablon, doğrulama için bir şema görevi görür:
 
 ```python
 # Only template keys are allowed
@@ -114,16 +114,16 @@ def set(self, key: str, value: str) -> bool:
     return True
 ```
 
-**Validation Benefits**:
+**Doğrulama Yararları**:
 
-- Prevents typos in configuration keys
-- Ensures consistent configuration structure
-- Provides clear error messages for invalid settings
-- Maintains compatibility across system updates
+- Yapılandırma anahtarlarındaki yazım hatalarını önler
+- Tutarlı yapılandırma yapısını sağlar
+- Geçersiz ayarlar için net hata mesajları sunar
+- Sistem güncellemeleri arasında uyumluluğu korur
 
-## LLM Configuration
+## LLM Yapılandırması
 
-### Supported Models and Providers
+### Desteklenen Modeller ve Sağlayıcılar
 
 #### Gemini (Google)
 
@@ -134,7 +134,7 @@ model: gemini/gemini-pro          # Higher quality
 model: gemini/gemini-1.5-pro      # Advanced capabilities
 ```
 
-**API Key**: Obtain from [Google AI Studio](https://aistudio.google.com/)
+**API Anahtarı**: [Google AI Studio](https://aistudio.google.com/) adresinden alın
 
 #### OpenAI
 
@@ -144,7 +144,7 @@ model: gpt-4-turbo               # Latest GPT-4 variant
 model: gpt-3.5-turbo             # Cost-effective option
 ```
 
-**API Key**: Obtain from [OpenAI Dashboard](https://platform.openai.com/)
+**API Anahtarı**: [OpenAI Dashboard](https://platform.openai.com/) adresinden alın
 
 #### Anthropic
 
@@ -154,11 +154,11 @@ model: claude-3-sonnet           # Balanced performance
 model: claude-3-haiku            # Fastest, most economical
 ```
 
-**API Key**: Obtain from [Anthropic Console](https://console.anthropic.com/)
+**API Anahtarı**: [Anthropic Console](https://console.anthropic.com/) adresinden alın
 
-#### Other Providers
+#### Diğer Sağlayıcılar
 
-moves supports any LiteLLM-compatible provider:
+moves, herhangi bir LiteLLM uyumlu sağlayıcıyı destekler:
 
 ```yaml
 # Cohere
@@ -174,38 +174,38 @@ model: azure/gpt-4
 model: huggingface/microsoft/DialoGPT-medium
 ```
 
-### Model Selection Criteria
+### Model Seçim Kriterleri
 
-**For Development/Testing**:
+**Geliştirme/Test İçin**:
 
 ```yaml
 model: gemini/gemini-2.0-flash # Fast, free tier available
 ```
 
-**For Production Use**:
+**Üretim Kullanımı İçin**:
 
 ```yaml
 model: gpt-4 # Consistent, high-quality results
 ```
 
-**For Budget-Conscious Use**:
+**Bütçe Duyarlı Kullanım İçin**:
 
 ```yaml
 model: gpt-3.5-turbo # Good quality, lower cost
 ```
 
-**For Privacy-Focused Use**:
+**Gizlilik Odaklı Kullanım İçin**:
 
 ```yaml
 # Consider local models via Ollama integration
 model: ollama/llama2 # Self-hosted option
 ```
 
-## System Parameters
+## Sistem Parametreleri
 
-### Audio Processing Configuration
+### Ses İşleme Yapılandırması
 
-These parameters are currently hardcoded but can be modified in the source:
+Bu parametreler şu anda sabit kodlu, ancak kaynakta değiştirilebilir:
 
 ```python
 # In PresentationController.__init__()
@@ -214,13 +214,13 @@ self.sample_rate = 16000           # 16kHz audio sampling
 self.window_size = window_size     # 12 words by default
 ```
 
-**Tuning Guidelines**:
+**Ayarlama Kılavuzları**:
 
-- **frame_duration**: Lower values = more responsive, higher CPU usage
-- **sample_rate**: 16kHz optimal for speech recognition
-- **window_size**: Larger values = more context, slower response
+- **frame_duration**: Daha düşük değerler = daha duyarlı, CPU kullanımı daha yüksek
+- **sample_rate**: Konuşma tanıma için optimal 16kHz
+- **window_size**: Daha büyük değerler = daha fazla bağlam, yanıt daha yavaş
 
-### Speech Recognition Configuration
+### Konuşma Tanıma Yapılandırması
 
 ```python
 # In PresentationController.__init__()
@@ -234,7 +234,7 @@ self.recognizer = OnlineRecognizer.from_transducer(
 )
 ```
 
-### Similarity Calculation Configuration
+### Benzerlik Hesaplama Yapılandırması
 
 ```python
 # In SimilarityCalculator.__init__()
@@ -242,14 +242,14 @@ self.semantic_weight = 0.4         # 40% semantic similarity
 self.phonetic_weight = 0.6         # 60% phonetic similarity
 ```
 
-**Weight Adjustment**:
+**Ağırlık Ayarı**:
 
-- Increase `semantic_weight` for better meaning-based matching
-- Increase `phonetic_weight` for better speech recognition error tolerance
+- Anlam temelli eşleşme için `semantic_weight` artırın
+- Konuşma tanıma hatası toleransı için `phonetic_weight` artırın
 
-## Runtime Configuration
+## Çalışma Zamanı Yapılandırması
 
-### Presentation Controller Parameters
+### Sunum Kontrolcüsü Parametreleri
 
 ```python
 def __init__(
@@ -260,29 +260,29 @@ def __init__(
 ):
 ```
 
-**Window Size Guidelines**:
+**Pencere Boyutu Kılavuzları**:
 
-- **8-10**: Faster response, less context
-- **12-15**: Balanced (recommended)
-- **16-20**: More context, slower response
+- **8-10**: Daha hızlı yanıt, daha az bağlam
+- **12-15**: Dengeli (önerilir)
+- **16-20**: Daha fazla bağlam, daha yavaş yanıt
 
-### Chunk Producer Configuration
+### Parça Üretici Yapılandırması
 
 ```python
 def generate_chunks(sections: list[Section], window_size: int = 12):
     # Window size should match PresentationController
 ```
 
-### Similarity Calculator Configuration
+### Benzerlik Hesaplayıcı Yapılandırması
 
 ```python
 def __init__(self, semantic_weight: float = 0.4, phonetic_weight: float = 0.6):
     # Weights must sum to 1.0
 ```
 
-## Environment Variables
+## Ortam Değişkenleri
 
-### Development Environment
+### Geliştirme Ortamı
 
 ```bash
 # Optional: Override default data directory
@@ -295,7 +295,7 @@ export MOVES_DEBUG=1
 export MOVES_MODEL_CACHE="/path/to/model/cache"
 ```
 
-### Production Environment
+### Üretim Ortamı
 
 ```bash
 # Recommended: Set data directory
@@ -308,9 +308,9 @@ export MOVES_LOG_LEVEL="INFO"
 umask 077
 ```
 
-## Configuration Management
+## Yapılandırma Yönetimi
 
-### CLI Configuration Commands
+### CLI (Komut Satırı) Yapılandırma Komutları
 
 ```bash
 # View current settings
@@ -327,7 +327,7 @@ uv run python app.py settings unset model
 uv run python app.py settings unset key
 ```
 
-### Programmatic Configuration
+### Programatik Yapılandırma
 
 ```python
 from src.core.settings_editor import SettingsEditor
@@ -348,7 +348,7 @@ settings_editor.set("key", "your-api-key")
 settings_editor.unset("model")  # Back to template default
 ```
 
-### Configuration Validation
+### Yapılandırma Doğrulama
 
 ```python
 def validate_configuration(settings_editor: SettingsEditor) -> tuple[bool, list[str]]:
@@ -374,7 +374,7 @@ def validate_configuration(settings_editor: SettingsEditor) -> tuple[bool, list[
     return len(issues) == 0, issues
 ```
 
-### Configuration Backup and Migration
+### Yapılandırma Yedekleme ve Göç
 
 ```python
 import shutil
@@ -396,9 +396,9 @@ def restore_configuration(backup_path: Path):
     print(f"Configuration restored from {backup_path}")
 ```
 
-### Configuration Examples
+### Yapılandırma Örnekleri
 
-#### Basic Setup
+#### Temel Kurulum
 
 ```bash
 # Minimal configuration for getting started
@@ -406,7 +406,7 @@ uv run python app.py settings set model "gemini/gemini-2.0-flash"
 uv run python app.py settings set key "your-gemini-api-key"
 ```
 
-#### Production Setup
+#### Üretim Kurulumu
 
 ```bash
 # High-quality model for production use
@@ -414,7 +414,7 @@ uv run python app.py settings set model "gpt-4"
 uv run python app.py settings set key "sk-your-openai-api-key"
 ```
 
-#### Development Setup
+#### Geliştirme Kurulumu
 
 ```bash
 # Fast model for development and testing
@@ -422,7 +422,7 @@ uv run python app.py settings set model "gemini/gemini-2.0-flash"
 uv run python app.py settings set key "your-development-api-key"
 ```
 
-#### Cost-Optimized Setup
+#### Maliyet Optimize Kurulum
 
 ```bash
 # Budget-friendly model configuration
@@ -430,9 +430,9 @@ uv run python app.py settings set model "gpt-3.5-turbo"
 uv run python app.py settings set key "sk-your-openai-api-key"
 ```
 
-### Advanced Configuration
+### Gelişmiş Yapılandırma
 
-#### Custom Model Weights
+#### Özel Model Ağırlıkları
 
 ```python
 # Create custom similarity calculator with adjusted weights
@@ -453,7 +453,7 @@ controller = PresentationController(
 controller.similarity_calculator = custom_calculator
 ```
 
-#### Performance Tuning
+#### Performans Ayarı
 
 ```python
 # Tune for different hardware configurations
@@ -478,4 +478,4 @@ recognizer_config = {
 }
 ```
 
-The configuration system provides flexibility for different use cases while maintaining simplicity for basic usage. The template-based approach ensures reliability and provides clear guidance for customization.
+Yapılandırma sistemi, farklı kullanım senaryoları için esneklik sağlarken temel kullanım için sadeliği korur. Şablon tabanlı yaklaşım güvenilirlik sağlar ve özelleştirme için net rehberlik sunar.

@@ -1,20 +1,20 @@
-# Machine Learning Models
+# Makine Öğrenimi Modelleri
 
-moves integrates multiple machine learning models to provide intelligent presentation control. This includes local speech-to-text models, embedding models for semantic similarity, and cloud-based large language models for content generation.
+moves, akıllı sunum kontrolü sağlamak için birden çok makine öğrenimi modelini birleştirir. Buna, yerel konuşmadan metne modelleri, anlamsal benzerlik için gömme modelleri ve içerik üretimi için bulut tabanlı büyük dil modelleri dahil edilir.
 
-## Table of Contents
+## İçindekiler
 
-- [Overview](#overview)
-- [Speech-to-Text Models](#speech-to-text-models)
-- [Embedding Models](#embedding-models)
-- [Large Language Models](#large-language-models)
-- [Model Integration](#model-integration)
-- [Performance Optimization](#performance-optimization)
-- [Model Management](#model-management)
+- [Genel Bakış](#genel-bakış)
+- [Konuşmadan Metne Modelleri](#konuşmadan-metne-modelleri)
+- [Gömme Modelleri](#gömme-modelleri)
+- [Büyük Dil Modelleri](#büyük-dil-modelleri)
+- [Model Entegrasyonu](#model-entegrasyonu)
+- [Performans Optimizasyonu](#performans-optimizasyonu)
+- [Model Yönetimi](#model-yonetimi)
 
-## Overview
+## Genel Bakış
 
-moves employs a hybrid ML architecture that combines local models for privacy and performance with cloud models for advanced AI capabilities:
+moves, gizlilik ve performans için yerel modelleri, gelişmiş AI yetenekleri için bulut modelleriyle birleştiren hibrit bir ML mimarisi kullanır:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -34,11 +34,11 @@ moves employs a hybrid ML architecture that combines local models for privacy an
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Speech-to-Text Models
+## Konuşmadan Metne Modelleri
 
-### Model Location and Structure
+### Model Konumu ve Yapısı
 
-**Location**: `src/core/components/ml_models/stt/`
+**Konum**: `src/core/components/ml_models/stt/`
 
 ```
 ml_models/stt/
@@ -48,7 +48,7 @@ ml_models/stt/
 └── tokens.txt             # Token vocabulary
 ```
 
-### Sherpa-ONNX Integration
+### Sherpa-ONNX Entegrasyonu
 
 ```python
 from sherpa_onnx import OnlineRecognizer
@@ -63,15 +63,15 @@ self.recognizer = OnlineRecognizer.from_transducer(
 )
 ```
 
-**Model Characteristics**:
+**Model Özellikleri**:
 
-- **Architecture**: Transducer-based neural network
-- **Quantization**: INT8 for optimized performance
-- **Deployment**: Local inference, no network dependency
-- **Latency**: Real-time streaming recognition
-- **Privacy**: Audio never leaves local system
+- **Mimari**: Transdüser tabanlı sinir ağı
+- **Kuantizasyon**: OPTİMİZE performans için INT8
+- **Dağıtım**: Yerel çıkarım, ağ bağımlılığı yok
+- **Gecikme**: Gerçek zamanlı akış tanıma
+- **Gizlilik**: Ses, yerel sistemden dışarı çıkmaz
 
-### STT Model Performance
+### STT Model Performansı
 
 ```python
 # Performance configuration
@@ -80,15 +80,15 @@ self.sample_rate = 16000       # 16kHz audio sampling
 num_threads = 8                # Multi-threaded inference
 ```
 
-**Performance Characteristics**:
+**Performans Özellikleri**:
 
-- **Latency**: ~100-200ms from audio to text
-- **Accuracy**: Optimized for conversational English
-- **CPU Usage**: Moderate (scales with thread count)
-- **Memory**: ~200MB model memory footprint
-- **Throughput**: Real-time processing at 16kHz
+- **Gecikme**: ~100-200ms sesden metne
+- **Doğruluk**: Konuşma İngilizcesi için optimize edilmiş
+- **CPU Kullanımı**: Orta (iş parçacığı sayısına göre ölçeklenir)
+- **Bellek**: ~200MB model bellek ayak izi
+- **Verim**: 16kHz'de gerçek zamanlı işleme
 
-### STT Usage Pattern
+### STT Kullanım Deseni
 
 ```python
 def process_audio(self):
@@ -109,11 +109,11 @@ def process_audio(self):
             self.handle_recognized_text(text)
 ```
 
-## Embedding Models
+## Gömme Modelleri
 
-### Model Location and Structure
+### Model Konumu ve Yapısı
 
-**Location**: `src/core/components/ml_models/embedding/`
+**Konum**: `src/core/components/ml_models/embedding/`
 
 ```
 ml_models/embedding/
@@ -131,7 +131,7 @@ ml_models/embedding/
     └── config.json
 ```
 
-### Sentence Transformers Integration
+### Sentence Transformers Entegrasyonu
 
 ```python
 from sentence_transformers import SentenceTransformer
@@ -158,15 +158,15 @@ class Semantic:
         cosine_scores = np.dot(candidate_embeddings, input_embedding)
 ```
 
-**Model Characteristics**:
+**Model Özellikleri**:
 
-- **Architecture**: Pre-trained sentence transformer model
-- **Output**: 384 or 768-dimensional embeddings (model-dependent)
-- **Normalization**: L2-normalized for cosine similarity
-- **Language**: Optimized for English text
-- **Privacy**: Local inference, no data transmission
+- **Mimari**: Önceden eğitilmiş cümle dönüştürücü model
+- **Çıktı**: 384 veya 768 boyutlu gömüler (model bağımlı)
+- **Normalizasyon**: Kosine benzerliği için L2 normalize edilmiş
+- **Dil**: İngilizce metin için optimize edilmiş
+- **Gizlilik**: Yerel çıkarım, veri iletimi yok
 
-### Embedding Model Performance
+### Gömme Model Performansı
 
 ```python
 # Performance optimization
@@ -179,19 +179,17 @@ embeddings = self.model.encode(
 )
 ```
 
-**Performance Characteristics**:
+**Performans Özellikleri**:
 
-- **Latency**: ~10-50ms per batch (depends on batch size)
-- **Accuracy**: High semantic similarity accuracy
-- **CPU Usage**: Moderate (can utilize GPU if available)
-- **Memory**: ~500MB model memory footprint
-- **Scalability**: Batch processing for efficiency
+- **Gecikme**: ~10-50ms her batch için (batch boyutuna bağlı)
+- **Doğruluk**: Yüksek anlamsal benzerlik doğruluğu
+- **CPU Kullanımı**: Orta (varsa GPU kullanılabilir)
+- **Bellek**: ~500MB model bellek ayak izi
+- **Ölçeklenebilirlik**: Verimlilik için batch işleme
 
-## Large Language Models
+## Büyük Dil Modelleri
 
-### LiteLLM Integration
-
-moves uses LiteLLM for unified access to multiple LLM providers:
+### LiteLLM Entegrasyonu
 
 ```python
 import instructor
@@ -213,25 +211,25 @@ response = client.chat.completions.create(
 )
 ```
 
-### Supported LLM Providers
+### Desteklenen LLM Sağlayıcıları
 
-#### Primary Models
+#### Birincil Modeller
 
 ```python
-# Google Gemini (Recommended)
-model = "gemini/gemini-2.0-flash"      # Fast, cost-effective
-model = "gemini/gemini-pro"            # Higher quality
+# Google Gemini (Önerilen)
+model = "gemini/gemini-2.0-flash"      # Hızlı, maliyet etkin
+model = "gemini/gemini-pro"            # Daha yüksek kalite
 
 # OpenAI
-model = "gpt-4"                        # High quality
-model = "gpt-3.5-turbo"               # Cost-effective
+model = "gpt-4"                        # Yüksek kalite
+model = "gpt-3.5-turbo"               # Maliyet etkin
 
 # Anthropic
-model = "claude-3-opus"                # Highest quality
-model = "claude-3-sonnet"              # Balanced
+model = "claude-3-opus"                # En yüksek kalite
+model = "claude-3-sonnet"              # Dengeli
 ```
 
-#### Alternative Providers
+#### Alternatif Sağlayıcılar
 
 ```python
 # Cohere
@@ -247,7 +245,7 @@ model = "azure/gpt-4"
 model = "ollama/llama2"
 ```
 
-### LLM Configuration and Usage
+### LLM Yapılandırması ve Kullanımı
 
 ```python
 def _call_llm(presentation_data: str, transcript_data: str, llm_model: str, llm_api_key: str):
@@ -281,9 +279,9 @@ def _call_llm(presentation_data: str, transcript_data: str, llm_model: str, llm_
     return [item.content for item in response.sections]
 ```
 
-## Model Integration
+## Model Entegrasyonu
 
-### Multi-Model Pipeline
+### Çoklu Model Boru Hattı
 
 ```python
 # Real-time processing pipeline
@@ -293,7 +291,7 @@ Audio Input → STT Model → Text Normalization → Embedding Model → Similar
 PDF Files → Text Extraction → LLM Processing → Section Generation → Chunk Creation → Storage
 ```
 
-### Model Coordination
+### Model Koordinasyonu
 
 ```python
 class PresentationController:
@@ -308,29 +306,29 @@ class PresentationController:
         self.chunks = chunk_producer.generate_chunks(sections, window_size)
 ```
 
-### Model Lifecycle Management
+### Model Yaşam Döngüsü Yönetimi
 
 ```python
-# Initialization phase (one-time setup)
-1. Load STT models into memory
-2. Initialize embedding model
-3. Validate LLM API connectivity
+# Başlatma aşaması (tek seferlik kurulum)
+1. STT modellerini belleğe yükle
+2. Gömme modelini başlat
+3. LLM API bağlantısını doğrula
 
-# Processing phase (per speaker)
-1. Extract PDFs using text processing
-2. Generate sections using LLM
-3. Create chunks for navigation
-4. Store results for runtime use
+# İşleme aşaması (konuşmacı başına)
+1. Metin işleme ile PDF'leri çıkar
+2. LLM kullanarak bölümler oluştur
+3. Navigasyon için parçalar oluştur
+4. Çalışma zamanında kullanım için sonuçları depola
 
-# Runtime phase (during presentation)
-1. Continuous STT processing
-2. Real-time embedding generation
-3. Similarity calculation and navigation
+# Çalışma zamanı aşaması (sunum sırasında)
+1. Sürekli STT işleme
+2. Gerçek zamanlı gömme üretimi
+3. Benzerlik hesaplama ve navigasyon
 ```
 
-## Performance Optimization
+## Performans Optimizasyonu
 
-### Local Model Optimization
+### Yerel Model Optimizasyonu
 
 ```python
 # STT Model Optimization
@@ -349,7 +347,7 @@ embeddings = self.model.encode(
 )
 ```
 
-### Cloud Model Optimization
+### Bulut Model Optimizasyonu
 
 ```python
 # LLM Optimization
@@ -361,7 +359,7 @@ response = client.chat.completions.create(
 )
 ```
 
-### Caching Strategies
+### Önbellekleme Stratejileri
 
 ```python
 # Phonetic code caching
@@ -377,9 +375,9 @@ def cache_embeddings(texts: list[str]) -> dict[str, np.ndarray]:
     return cache
 ```
 
-## Model Management
+## Model Yönetimi
 
-### Model Updates and Versioning
+### Model Güncellemeleri ve Versiyonlama
 
 ```python
 # Model version tracking
@@ -395,7 +393,7 @@ def check_model_compatibility():
     pass
 ```
 
-### Model Health Monitoring
+### Model Sağlık İzleme
 
 ```python
 def test_model_health():
@@ -432,7 +430,7 @@ def test_model_health():
     }
 ```
 
-### Performance Benchmarking
+### Performans Ölçümü
 
 ```python
 import time
@@ -460,7 +458,7 @@ def benchmark_models():
     return results
 ```
 
-### Model Resource Management
+### Model Kaynak Yönetimi
 
 ```python
 def optimize_for_hardware():
@@ -488,4 +486,4 @@ def optimize_for_hardware():
     }
 ```
 
-The ML models in moves are carefully orchestrated to provide fast, accurate, and privacy-preserving presentation control. The combination of local models for real-time processing and cloud models for advanced AI capabilities delivers the best of both worlds - performance and intelligence.
+moves'taki ML modelleri, hızlı, doğru ve gizliliği koruyan bir sunum kontrolü sağlamak için dikkatle düzenlenmiştir. Gerçek zamanlı işleme için yerel modeller ile gelişmiş AI yetenekleri için bulut modellerinin kombinasyonu, iki dünyanın en iyisini sunar - performans ve zekâ.

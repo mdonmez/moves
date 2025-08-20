@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide provides comprehensive information for developers who want to contribute to, extend, or customize the moves application. It covers setup procedures, development workflows, testing strategies, and best practices.
+Bu kılavuz, moves uygulamasına katkıda bulunmak, genişletmek veya özelleştirmek isteyen geliştiriciler için kapsamlı bilgiler sağlar. Kurulum prosedürlerini, geliştirme iş akışlarını, test stratejilerini ve en iyi uygulamaları kapsar.
 
 ## Table of Contents
 
@@ -177,11 +177,11 @@ moves/
 
 **Dependency Rules**:
 
-1. CLI depends on Core modules only
-2. Core modules can depend on Components and Utilities
-3. Components can depend on Utilities only
-4. Utilities have no internal dependencies
-5. No circular dependencies allowed
+1. CLI sadece Core modüllerine bağımlıdır
+2. Core modülleri Components ve Utilities’e bağımlı olabilir
+3. Components yalnızca Utilities’e bağımlı olabilir
+4. Utilities’in iç bağımlılıkları yoktur
+5. Dairesel bağımlılık yoktur
 
 ## Development Workflow
 
@@ -234,11 +234,11 @@ git commit -m "test(core): add unit tests for speaker manager"
 
 ### Code Review Process
 
-1. **Self-Review**: Review your own changes before submitting
-2. **Automated Checks**: Ensure all CI checks pass
-3. **Peer Review**: At least one team member reviews changes
-4. **Documentation**: Update relevant documentation
-5. **Testing**: Verify functionality works as expected
+1. **Self-Review**: Gönderimden önce değişikliklerinizi gözden geçirin
+2. **Automated Checks**: Tüm CI kontrollerinin geçtiğinden emin olun
+3. **Peer Review**: En az bir ekip üyesi değişiklikleri incelesin
+4. **Documentation**: İlgili dokümantasyonu güncelleyin
+5. **Testing**: İşlevlerin beklendiği gibi çalıştığını doğrulayın
 
 ## Testing
 
@@ -941,4 +941,4 @@ Steps to migrate from previous version (if applicable).
 - Issue 1 (if any)
 ```
 
-This development guide provides a comprehensive foundation for contributing to and extending the moves application. Following these guidelines ensures code quality, maintainability, and consistency across the project.
+Bu geliştirme kılavuzu, moves uygulamasına katkı sağlamak ve uygulamayı genişletmek için kapsamlı bir temel sunar. Bu yönergeleri izlemek, kod kalitesini, sürdürülebilirliği ve proje genelindeki tutarlılığı garanti eder.

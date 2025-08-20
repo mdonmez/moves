@@ -1,6 +1,6 @@
-# Moves Documentation
+# moves Documentation
 
-**Moves** is an AI-powered presentation control system that enables seamless voice-controlled slide navigation during live presentations. The system uses advanced speech recognition, natural language processing, and machine learning to automatically navigate presentation slides based on what the speaker is saying.
+**moves** is an AI-powered presentation control system that enables seamless voice-controlled slide navigation during live presentations. The system uses advanced speech recognition, natural language processing, and machine learning to automatically navigate presentation slides based on what the speaker is saying.
 
 ## Table of Contents
 
@@ -107,7 +107,7 @@ moves/
 
 ## Documentation Status
 
-This documentation set is now complete and provides comprehensive coverage of the Moves application:
+This documentation set is now complete and provides comprehensive coverage of the moves application:
 
 - ✅ **Index** - This overview document
 - ✅ **Getting Started** - Installation and basic usage

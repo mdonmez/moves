@@ -1,23 +1,23 @@
-# Troubleshooting Guide
+# Sorun Giderme Kılavuzu
 
-This guide provides solutions for common issues, error messages, and performance problems you might encounter when using the moves application.
+Bu kılavuz, moves uygulamasını kullanırken karşılaşabileceğiniz yaygın sorunlar, hata mesajları ve performans problemleri için çözümler sunar.
 
-## Table of Contents
+## İçindekiler
 
-- [Quick Diagnosis](#quick-diagnosis)
-- [Installation Issues](#installation-issues)
-- [Audio System Problems](#audio-system-problems)
-- [AI Model Issues](#ai-model-issues)
-- [Configuration Problems](#configuration-problems)
-- [Performance Issues](#performance-issues)
-- [Common Error Messages](#common-error-messages)
-- [Data and File Issues](#data-and-file-issues)
-- [Network and API Issues](#network-and-api-issues)
-- [Advanced Debugging](#advanced-debugging)
+- [Hızlı Tanı](#quick-diagnosis)
+- [Kurulum Sorunları](#installation-issues)
+- [Ses Sistemi Problemleri](#audio-system-problems)
+- [Yapay Zeka Modeli Sorunları](#ai-model-issues)
+- [Yapılandırma Problemleri](#configuration-problems)
+- [Performans Sorunları](#performance-issues)
+- [Yaygın Hata Mesajları](#common-error-messages)
+- [Veri ve Dosya Sorunları](#data-and-file-issues)
+- [Ağ ve API Sorunları](#network-and-api-issues)
+- [İleri Düzey Hata Ayıklama](#advanced-debugging)
 
-## Quick Diagnosis
+## Hızlı Tanı
 
-### Health Check Command
+### Sağlık Kontrol Komutu
 
 ```bash
 # Run system health check
@@ -26,7 +26,7 @@ python -c "from src.utils.logger import logger; logger.info('System check')"  # 
 python -c "from src.core.settings_editor import SettingsEditor; print('Settings OK')"  # Configuration
 ```
 
-### Common Quick Fixes
+### Yaygın Hızlı Çözümler
 
 ```bash
 # 1. Clear cache and restart
@@ -42,7 +42,7 @@ ls -la ~/.moves/
 chmod 755 ~/.moves/
 ```
 
-### Log Analysis
+### Log Analizi
 
 ```bash
 # View recent logs
@@ -56,11 +56,11 @@ grep -i "exception" ~/.moves/logs/moves.log
 grep "ERROR\|CRITICAL" ~/.moves/logs/moves.log
 ```
 
-## Installation Issues
+## Kurulum Sorunları
 
-### Python Version Problems
+### Python Sürüm Problemleri
 
-**Issue**: `Python version 3.13+ required`
+**Sorun**: `Python version 3.13+ required`
 
 ```bash
 # Check Python version
@@ -78,9 +78,9 @@ sudo apt install python3.13 python3.13-venv
 # On Windows: Download from python.org
 ```
 
-### Dependency Installation Failures
+### Bağımlılık Kurulum Hataları
 
-**Issue**: `Failed to install packages`
+**Sorun**: `Failed to install packages`
 
 ```bash
 # Common solutions:
@@ -100,7 +100,7 @@ uv sync
 pip install -v -r requirements.txt
 ```
 
-**Issue**: `Microsoft Visual C++ 14.0 required` (Windows)
+**Sorun**: `Microsoft Visual C++ 14.0 required` (Windows)
 
 ```bash
 # Solution: Install Microsoft C++ Build Tools
@@ -110,9 +110,9 @@ pip install -v -r requirements.txt
 pip install --only-binary=all package_name
 ```
 
-### Virtual Environment Issues
+### Sanal Ortam Sorunları
 
-**Issue**: `Virtual environment not activated`
+**Sorun**: `Virtual environment not activated`
 
 ```bash
 # Check if venv is active
@@ -129,11 +129,11 @@ source .venv/bin/activate
 which python  # Should show path in .venv
 ```
 
-## Audio System Problems
+## Ses Sistemi Problemleri
 
-### Microphone Not Detected
+### Mikrofon Algılanmadı
 
-**Issue**: `AudioError: No audio input device found`
+**Sorun**: `AudioError: No audio input device found`
 
 ```bash
 # Diagnose audio system
@@ -147,28 +147,26 @@ for i in range(p.get_device_count()):
         print(f'Input device {i}: {info[\"name\"]}')
 p.terminate()
 "
-
-# Solutions:
-
-# 1. Check system audio settings
-# - Ensure microphone is enabled
-# - Check privacy settings (macOS/Windows)
-# - Verify microphone permissions
-
-# 2. Install audio drivers
-# - Update audio drivers
-# - Restart audio services
-
-# 3. Test with different microphone
-# - Try USB microphone
-# - Try headset microphone
 ```
 
-### Audio Permission Denied
+**Çözümler:**
 
-**Issue**: `PermissionError: Audio access denied`
+1. **Check system audio settings**
+   - Ensure microphone is enabled
+   - Check privacy settings (macOS/Windows)
+   - Verify microphone permissions
+2. **Install audio drivers**
+   - Update audio drivers
+   - Restart audio services
+3. **Test with different microphone**
+   - Try USB microphone
+   - Try headset microphone
 
-**macOS Solution**:
+### Ses İzni Reddedildi
+
+**Sorun**: `PermissionError: Audio access denied`
+
+**macOS Çözümü**:
 
 ```bash
 # Check microphone permissions
@@ -179,7 +177,7 @@ p.terminate()
 sudo tccutil reset Microphone
 ```
 
-**Linux Solution**:
+**Linux Çözümü**:
 
 ```bash
 # Check audio group membership
@@ -193,7 +191,7 @@ sudo usermod -a -G audio $USER
 pulseaudio --check
 ```
 
-**Windows Solution**:
+**Windows Çözümü**:
 
 ```powershell
 # Check Windows privacy settings
@@ -204,92 +202,97 @@ pulseaudio --check
 # Device Manager > Audio inputs > Uninstall > Scan for hardware changes
 ```
 
-### Poor Audio Quality
+### Kötü Ses Kalitesi
 
-**Issue**: Speech recognition accuracy is low
+**Sorun**: Konuşma tanıma doğruluğu düşük
 
-```bash
-# Solutions:
+**Çözümler:**
 
-# 1. Check microphone placement
-# - Position 6-12 inches from mouth
-# - Avoid background noise
-# - Use directional microphone
+1. **Check microphone placement**
+   - Position 6-12 inches from mouth
+   - Avoid background noise
+   - Use directional microphone
+2. **Adjust audio settings**
+   ```bash
+   python app.py settings set audio_sample_rate 44100  # Higher quality
+   python app.py settings set audio_frame_duration 0.05  # More responsive
+   ```
+3. **Test audio quality**
+   - Record test audio and check clarity
 
-# 2. Adjust audio settings
-python app.py settings set audio_sample_rate 44100  # Higher quality
-python app.py settings set audio_frame_duration 0.05  # More responsive
+## Yapay Zeka Modeli Sorunları
 
-# 3. Test audio quality
-# Record test audio and check clarity
-```
+### Konuşma‑Metin Modeli Problemleri
 
-## AI Model Issues
-
-### Speech-to-Text Model Problems
-
-**Issue**: `ModelLoadError: Failed to load STT model`
+**Sorun**: `ModelLoadError: Failed to load STT model`
 
 ```bash
 # Check model files
 ls -la src/core/components/ml_models/stt/
 # Should contain: encoder.int8.onnx, decoder.int8.onnx, joiner.int8.onnx, tokens.txt
-
-# Re-download models if missing
-# Models should be included in repository
-# If missing, check git LFS or download separately
-
-# Check file permissions
-chmod 644 src/core/components/ml_models/stt/*
-
-# Verify ONNX runtime
-python -c "import onnxruntime; print(onnxruntime.__version__)"
 ```
 
-**Issue**: `RuntimeError: ONNX model execution failed`
+- Re-download models if missing
+- Models should be included in repository
+- If missing, check git LFS or download separately
+- Check file permissions
+  ```bash
+  chmod 644 src/core/components/ml_models/stt/*
+  ```
+- Verify ONNX runtime
+  ```bash
+  python -c "import onnxruntime; print(onnxruntime.__version__)"
+  ```
 
-```bash
-# Solutions:
+**Sorun**: `RuntimeError: ONNX model execution failed`
 
-# 1. Check available compute providers
-python -c "
-import onnxruntime
-print('Available providers:', onnxruntime.get_available_providers())
-"
+**Çözümler:**
 
-# 2. Use CPU-only execution
-python -c "
-import onnxruntime
-session = onnxruntime.InferenceSession('model.onnx', providers=['CPUExecutionProvider'])
-"
+1. **Check available compute providers**
+   ```bash
+   python -c "
+   import onnxruntime
+   print('Available providers:', onnxruntime.get_available_providers())
+   "
+   ```
+2. **Use CPU-only execution**
+   ```bash
+   python -c "
+   import onnxruntime
+   session = onnxruntime.InferenceSession('model.onnx', providers=['CPUExecutionProvider'])
+   "
+   ```
+3. **Update ONNX runtime**
+   ```bash
+   pip install --upgrade onnxruntime
+   ```
 
-# 3. Update ONNX runtime
-pip install --upgrade onnxruntime
-```
+### Gömme Modeli Sorunları
 
-### Embedding Model Issues
-
-**Issue**: `Failed to load embedding model`
+**Sorun**: `Failed to load embedding model`
 
 ```bash
 # Check embedding model
 ls -la src/core/components/ml_models/embedding/
 # Should contain model files and configuration
-
-# Verify sentence-transformers
-python -c "
-from sentence_transformers import SentenceTransformer
-model = SentenceTransformer('src/core/components/ml_models/embedding')
-print('Model loaded successfully')
-"
-
-# Clear transformers cache if corrupted
-rm -rf ~/.cache/huggingface/transformers/
 ```
 
-### Large Language Model API Issues
+- Verify sentence-transformers
+  ```bash
+  python -c "
+  from sentence_transformers import SentenceTransformer
+  model = SentenceTransformer('src/core/components/ml_models/embedding')
+  print('Model loaded successfully')
+  "
+  ```
+- Clear transformers cache if corrupted
+  ```bash
+  rm -rf ~/.cache/huggingface/transformers/
+  ```
 
-**Issue**: `API key not configured`
+### Büyük Dil Modeli API Sorunları
+
+**Sorun**: `API key not configured`
 
 ```bash
 # Check API key configuration
@@ -311,24 +314,23 @@ print('API test successful')
 "
 ```
 
-**Issue**: `Rate limit exceeded`
+**Sorun**: `Rate limit exceeded`
 
-```bash
-# Solutions:
+**Çözümler:**
 
-# 1. Wait for rate limit reset
-# 2. Switch to different model/provider
-python app.py settings set llm_model "gpt-3.5-turbo"
+1. Wait for rate limit reset
+2. Switch to different model/provider
+   ```bash
+   python app.py settings set llm_model "gpt-3.5-turbo"
+   ```
+3. Implement exponential backoff in code  
+   (Already implemented in section_producer.py)
 
-# 3. Implement exponential backoff in code
-# Already implemented in section_producer.py
-```
+## Yapılandırma Problemleri
 
-## Configuration Problems
+### Ayarlar Dosyası Sorunları
 
-### Settings File Issues
-
-**Issue**: `Settings file corrupted or invalid`
+**Sorun**: `Settings file corrupted or invalid`
 
 ```bash
 # Backup current settings
@@ -347,7 +349,7 @@ with open('~/.moves/settings.yaml') as f:
 "
 ```
 
-**Issue**: `SettingNotFoundError: Setting key not found`
+**Sorun**: `SettingNotFoundError: Setting key not found`
 
 ```bash
 # List all available settings
@@ -360,9 +362,9 @@ python app.py settings list | grep -i "setting_name"
 cat src/data/settings_template.yaml
 ```
 
-### Environment Variables
+### Ortam Değişkenleri
 
-**Issue**: Environment variables not recognized
+**Sorun**: Ortam değişkenleri tanınmıyor
 
 ```bash
 # Check environment variables
@@ -377,11 +379,11 @@ echo 'export GEMINI_API_KEY="your-key"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-## Performance Issues
+## Performans Sorunları
 
-### Slow Speech Recognition
+### Yavaş Konuşma Tanıma
 
-**Issue**: High latency in speech recognition
+**Sorun**: Konuşma tanıma gecikmesi yüksek
 
 ```bash
 # Diagnose performance
@@ -397,22 +399,24 @@ start = time.time()
 # controller initialization happens here
 print(f'Model loading time: {time.time() - start:.2f}s')
 "
-
-# Solutions:
-
-# 1. Reduce audio processing load
-python app.py settings set audio_frame_duration 0.2  # Less frequent processing
-
-# 2. Optimize thread count
-python app.py settings set stt_threads 4  # Match CPU cores
-
-# 3. Check CPU usage
-htop  # or Task Manager on Windows
 ```
 
-### High Memory Usage
+**Çözümler:**
 
-**Issue**: Application consuming excessive memory
+1. Reduce audio processing load
+   ```bash
+   python app.py settings set audio_frame_duration 0.2  # Less frequent processing
+   ```
+2. Optimize thread count
+   ```bash
+   python app.py settings set stt_threads 4  # Match CPU cores
+   ```
+3. Check CPU usage  
+   `htop` # or Task Manager on Windows
+
+### Yüksek Bellek Kullanımı
+
+**Sorun**: Uygulama aşırı bellek tüketiyor
 
 ```bash
 # Monitor memory usage
@@ -422,23 +426,23 @@ import os
 process = psutil.Process(os.getpid())
 print(f'Memory usage: {process.memory_info().rss / 1024 / 1024:.1f} MB')
 "
-
-# Solutions:
-
-# 1. Reduce batch sizes
-# Edit similarity calculation batch sizes
-
-# 2. Clear caches periodically
-# Implement cache cleanup in long-running sessions
-
-# 3. Use memory profiler
-pip install memory-profiler
-python -m memory_profiler your_script.py
 ```
 
-### Slow Similarity Calculation
+**Çözümler:**
 
-**Issue**: Navigation response is slow
+1. Reduce batch sizes
+   - Edit similarity calculation batch sizes
+2. Clear caches periodically
+   - Implement cache cleanup in long-running sessions
+3. Use memory profiler
+   ```bash
+   pip install memory-profiler
+   python -m memory_profiler your_script.py
+   ```
+
+### Yavaş Benzerlik Hesaplama
+
+**Sorun**: Navigasyon yanıtı yavaş
 
 ```bash
 # Profile similarity calculation
@@ -456,25 +460,27 @@ start = time.time()
 results = calculator.calculate_similarity('test input', chunks)
 print(f'Similarity calculation time: {time.time() - start:.2f}s')
 "
-
-# Solutions:
-
-# 1. Adjust similarity weights
-python app.py settings set similarity_semantic_weight 0.8
-python app.py settings set similarity_phonetic_weight 0.2
-
-# 2. Reduce chunk count
-# Use smaller window size when processing presentations
-
-# 3. Enable GPU acceleration (if available)
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 ```
 
-## Common Error Messages
+**Çözümler:**
+
+1. Adjust similarity weights
+   ```bash
+   python app.py settings set similarity_semantic_weight 0.8
+   python app.py settings set similarity_phonetic_weight 0.2
+   ```
+2. Reduce chunk count
+   - Use smaller window size when processing presentations
+3. Enable GPU acceleration (if available)
+   ```bash
+   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+   ```
+
+## Yaygın Hata Mesajları
 
 ### `FileNotFoundError`
 
-**Error**: `FileNotFoundError: [Errno 2] No such file or directory: '~/.moves/...'`
+**Hata**: `FileNotFoundError: [Errno 2] No such file or directory: '~/.moves/...'`
 
 ```bash
 # Solution: Create missing directories
@@ -488,7 +494,7 @@ chmod 755 ~/.moves/
 
 ### `ImportError`
 
-**Error**: `ImportError: No module named 'module_name'`
+**Hata**: `ImportError: No module named 'module_name'`
 
 ```bash
 # Solution: Install missing dependencies
@@ -503,7 +509,7 @@ which python  # Should show venv path
 
 ### `ValidationError`
 
-**Error**: `ValidationError: Setting value validation failed`
+**Hata**: `ValidationError: Setting value validation failed`
 
 ```bash
 # Check setting type requirements
@@ -517,7 +523,7 @@ python app.py settings set boolean_setting true
 
 ### `ProcessingError`
 
-**Error**: `ProcessingError: PDF processing failed`
+**Hata**: `ProcessingError: PDF processing failed`
 
 ```bash
 # Check PDF file accessibility
@@ -530,16 +536,15 @@ with open('file.pdf', 'rb') as f:
     reader = PyPDF2.PdfReader(f)
     print(f'PDF has {len(reader.pages)} pages')
 "
-
 # Try with different PDF file
 # Ensure PDF contains extractable text (not scanned images)
 ```
 
-## Data and File Issues
+## Veri ve Dosya Sorunları
 
-### Corrupted Data Files
+### Bozuk Veri Dosyaları
 
-**Issue**: Speaker or presentation data is corrupted
+**Sorun**: Konuşmacı veya sunum verileri bozuk
 
 ```bash
 # Check data file integrity
@@ -556,15 +561,14 @@ for json_file in data_dir.rglob('*.json'):
     except json.JSONDecodeError as e:
         print(f'✗ {json_file}: {e}')
 "
-
 # Backup and recreate corrupted files
 cp ~/.moves/speaker_id/presentation.json ~/.moves/speaker_id/presentation.json.backup
 # Reprocess the presentation to recreate data
 ```
 
-### Disk Space Issues
+### Disk Alanı Sorunları
 
-**Issue**: Insufficient disk space
+**Sorun**: Disk alanı yetersiz
 
 ```bash
 # Check available space
@@ -582,9 +586,9 @@ tar -czf backup.tar.gz ~/.moves/old_speaker_data/
 rm -rf ~/.moves/old_speaker_data/
 ```
 
-### File Permission Issues
+### Dosya İzin Sorunları
 
-**Issue**: Permission denied accessing files
+**Sorun**: Dosyalara erişim izni reddedildi
 
 ```bash
 # Fix permissions
@@ -594,11 +598,11 @@ chown -R $USER:$USER ~/.moves/
 # On Windows, check file properties and security settings
 ```
 
-## Network and API Issues
+## Ağ ve API Sorunları
 
-### Connection Timeouts
+### Bağlantı Zaman Aşımı
 
-**Issue**: `ConnectionError: API request timed out`
+**Sorun**: `ConnectionError: API request timed out`
 
 ```bash
 # Check internet connectivity
@@ -617,9 +621,9 @@ curl -I https://api.openai.com/v1/models
 # Switch to 8.8.8.8 or 1.1.1.1
 ```
 
-### SSL/TLS Issues
+### SSL/TLS Sorunları
 
-**Issue**: `SSLError: certificate verify failed`
+**Sorun**: `SSLError: certificate verify failed`
 
 ```bash
 # Update certificates
@@ -632,9 +636,9 @@ date
 export SSL_VERIFY=false
 ```
 
-### API Authentication Issues
+### API Kimlik Doğrulama Sorunları
 
-**Issue**: `AuthenticationError: Invalid API key`
+**Sorun**: `AuthenticationError: Invalid API key`
 
 ```bash
 # Verify API key format
@@ -648,11 +652,11 @@ curl -H "Authorization: Bearer $OPENAI_API_KEY" \
 echo $API_KEY | hexdump -C
 ```
 
-## Advanced Debugging
+## İleri Düzey Hata Ayıklama
 
-### Debug Mode
+### Hata Ayıklama Modu
 
-Enable detailed debugging:
+Ayrıntılı hata ayıklamayı etkinleştir:
 
 ```bash
 # Set debug logging level
@@ -666,7 +670,7 @@ export PYTHONPATH=src:$PYTHONPATH
 python -m pdb app.py speaker list
 ```
 
-### Memory Debugging
+### Bellek Hata Ayıklama
 
 ```bash
 # Install memory debugging tools
@@ -682,7 +686,7 @@ objgraph.show_most_common_types(limit=10)
 python -m memory_profiler your_script.py
 ```
 
-### Performance Profiling
+### Performans Profilleme
 
 ```bash
 # Profile application performance
@@ -693,7 +697,7 @@ pip install line_profiler
 kernprof -l -v your_script.py
 ```
 
-### Network Debugging
+### Ağ Hata Ayıklama
 
 ```bash
 # Monitor network requests
@@ -708,16 +712,15 @@ logging.basicConfig(level=logging.DEBUG)
 requests.get('https://api.openai.com/v1/models',
              headers={'Authorization': 'Bearer your-key'})
 "
-
-# Use network monitoring tools
-# - Wireshark for detailed packet analysis
-# - curl -v for HTTP debugging
-# - tcpdump for low-level network analysis
 ```
 
-### System Information Collection
+- Wireshark for detailed packet analysis
+- curl -v for HTTP debugging
+- tcpdump for low-level network analysis
 
-Create a debug report:
+### Sistem Bilgisi Toplama
+
+Bir hata raporu oluştur:
 
 ```bash
 # Create system info script
@@ -757,11 +760,11 @@ EOF
 python debug_info.py > debug_report.txt
 ```
 
-If you encounter an issue not covered in this guide, please:
+Bu kılavuzda ele alınmayan bir sorunla karşılaşırsanız, lütfen:
 
-1. **Check the logs**: `~/.moves/logs/moves.log`
-2. **Create a debug report**: Use the debug info script above
-3. **Search existing issues**: Check GitHub issues for similar problems
-4. **Create a detailed bug report**: Include error messages, debug report, and steps to reproduce
+1. **Logları kontrol edin**: `~/.moves/logs/moves.log`
+2. **Bir hata raporu oluşturun**: Yukarıdaki debug bilgi betiğini kullanın
+3. **Mevcut sorunları ara**: Benzer problemler için GitHub issue'larını kontrol edin
+4. **Ayrıntılı bir bug raporu oluşturun**: Hata mesajlarını, debug raporunu ve yeniden üretme adımlarını ekleyin
 
-Remember: Most issues can be resolved by ensuring proper installation, configuration, and file permissions. Start with the quick diagnosis steps before moving to advanced debugging techniques.
+Unutmayın: Çoğu sorun, doğru kurulum, yapılandırma ve dosya izinlerinin sağlanmasıyla çözülebilir. İleri düzey hata ayıklama tekniklerine geçmeden önce hızlı tanı adımlarıyla başlayın.

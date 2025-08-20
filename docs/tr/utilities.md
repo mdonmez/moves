@@ -1,55 +1,55 @@
-# Utilities
+# Yardımcı Araçlar
 
-The utilities module provides essential support functions for the moves application. These utilities handle common tasks like data management, logging, text processing, and unique ID generation.
+Yardımcı araçlar modülü, moves uygulaması için temel destek fonksiyonlarını sağlar. Bu yardımcı araçlar, veri yönetimi, günlük tutma, metin işleme ve benzersiz kimlik oluşturma gibi ortak görevleri yönetir.
 
-## Table of Contents
+## İçindekiler
 
-- [Overview](#overview)
-- [Data Handler](#data-handler)
-- [Logger](#logger)
-- [Text Normalizer](#text-normalizer)
-- [ID Generator](#id-generator)
-- [Integration Patterns](#integration-patterns)
-- [Error Handling](#error-handling)
-- [Testing Utilities](#testing-utilities)
+- [Genel Bakış](#overview)
+- [Veri İşleyici](#data-handler)
+- [Günlük Kaydedici](#logger)
+- [Metin Normalleştirici](#text-normalizer)
+- [Kimlik Üreteci](#id-generator)
+- [Entegrasyon Kalıpları](#integration-patterns)
+- [Hata Yönetimi](#error-handling)
+- [Test Yardımcıları](#testing-utilities)
 
-## Overview
+## Genel Bakış
 
-The utilities are located in `src/utils/` and provide foundational capabilities:
+Yardımcı araçlar `src/utils/` içinde bulunur ve temel yetenekleri sunar:
 
 ```
 src/utils/
-├── data_handler.py      # File system operations and data management
-├── logger.py           # Centralized logging system
-├── text_normalizer.py  # Text cleaning and standardization
-└── id_generator.py     # Unique identifier generation
+├── data_handler.py      # Dosya sistemi işlemleri ve veri yönetimi
+├── logger.py           # Merkezi günlük kaydetme sistemi
+├── text_normalizer.py  # Metin temizleme ve standartlaştırma
+└── id_generator.py     # Benzersiz tanımlayıcı oluşturma
 ```
 
-**Architecture Pattern**:
+**Mimari Kalıp**:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│                  Core Application                       │
+│                  Çekirdek Uygulama                       │
 ├─────────────────────────────────────────────────────────┤
-│                     Utilities                           │
+│                     Yardımcı Araçlar                     │
 │  ┌──────────────┐ ┌─────────────┐ ┌──────────────────┐  │
-│  │ Data Handler │ │   Logger    │ │ Text Normalizer  │  │
+│  │ Veri İşleyici│ │   Günlük   │ │ Metin Normalleştirici │  │
 │  └──────────────┘ └─────────────┘ └──────────────────┘  │
 │                    ┌─────────────┐                      │
-│                    │ID Generator │                      │
+│                    │Kimlik Üreteci│                      │
 │                    └─────────────┘                      │
 └─────────────────────────────────────────────────────────┘
 ```
 
-## Data Handler
+## Veri İşleyici
 
-**Location**: `src/utils/data_handler.py`
+**Konum**: `src/utils/data_handler.py`
 
-The data handler manages file system operations and data persistence for the moves application.
+Veri işleyici, moves uygulaması için dosya sistemi işlemlerini ve veri kalıcılığını yönetir.
 
-### Core Functions
+### Temel Fonksiyonlar
 
-#### Directory Management
+#### Dizin Yönetimi
 
 ```python
 def get_user_moves_dir() -> Path:
@@ -71,7 +71,7 @@ def ensure_presentation_dir(speaker_id: str, presentation_id: str) -> Path:
     return presentation_dir
 ```
 
-**Directory Structure Created**:
+**Oluşturulan Dizin Yapısı**:
 
 ```
 ~/.moves/
@@ -89,7 +89,7 @@ def ensure_presentation_dir(speaker_id: str, presentation_id: str) -> Path:
         └── chunks.json
 ```
 
-#### File Operations
+#### Dosya İşlemleri
 
 ```python
 def save_data_to_file(data: Any, file_path: Path, encoding: str = "utf-8") -> None:
@@ -128,7 +128,7 @@ def load_data_from_file(file_path: Path, encoding: str = "utf-8") -> Any:
         return None
 ```
 
-#### Data Validation
+#### Veri Doğrulama
 
 ```python
 def validate_data_structure(data: Any, expected_type: type) -> bool:
@@ -155,7 +155,7 @@ def backup_file(file_path: Path, backup_suffix: str = ".backup") -> Path:
     return backup_path
 ```
 
-### Usage Examples
+### Kullanım Örnekleri
 
 ```python
 from src.utils.data_handler import (
@@ -165,27 +165,27 @@ from src.utils.data_handler import (
     load_data_from_file
 )
 
-# Get application data directory
+# Uygulama veri dizinini al
 data_dir = get_user_moves_dir()  # ~/.moves
 
-# Ensure speaker directory exists
+# Konuşmacı dizininin var olduğunu garanti et
 speaker_dir = ensure_speaker_dir("speaker_123")
 
-# Save structured data
+# Yapılandırılmış veriyi kaydet
 sections_data = [{"index": 0, "content": "Introduction"}]
 save_data_to_file(sections_data, speaker_dir / "sections.json")
 
-# Load data with automatic format detection
+# Otomatik biçim algılamasıyla veriyi yükle
 loaded_sections = load_data_from_file(speaker_dir / "sections.json")
 ```
 
-## Logger
+## Günlük Kaydedici
 
-**Location**: `src/utils/logger.py`
+**Konum**: `src/utils/logger.py`
 
-Centralized logging system with configurable levels and output formatting.
+Konfigüre edilebilir seviyeler ve çıktı formatlamasıyla merkezi bir günlük sistemi.
 
-### Logger Configuration
+### Günlük Kaydedici Yapılandırması
 
 ```python
 import logging
@@ -229,7 +229,7 @@ def setup_logger(name: str = "moves", level: str = "INFO") -> logging.Logger:
 logger = setup_logger()
 ```
 
-### Logging Levels and Usage
+### Günlük Seviyeleri ve Kullanım
 
 ```python
 # Import the configured logger
@@ -253,7 +253,7 @@ except Exception as e:
     logger.exception(f"Unexpected error in operation: {e}")
 ```
 
-### Log File Management
+### Günlük Dosyası Yönetimi
 
 ```python
 def rotate_logs(max_size_mb: int = 10) -> None:
@@ -287,13 +287,13 @@ def get_recent_logs(lines: int = 100) -> list[str]:
         return f.readlines()[-lines:]
 ```
 
-## Text Normalizer
+## Metin Normalleştirici
 
-**Location**: `src/utils/text_normalizer.py`
+**Konum**: `src/utils/text_normalizer.py`
 
-Provides text cleaning and standardization for consistent processing across the application.
+Uygulama genelinde tutarlı işleme sağlamak için metin temizleme ve standartlaştırma sunar.
 
-### Core Normalization Functions
+### Temel Normalleştirme Fonksiyonları
 
 ```python
 import re
@@ -418,7 +418,7 @@ class TextNormalizer:
         return ' '.join(filtered)
 ```
 
-### Specialized Normalization
+### Özelleştirilmiş Normalleştirme
 
 ```python
 def normalize_for_similarity(self, text: str) -> str:
@@ -449,7 +449,7 @@ def normalize_for_search(self, text: str) -> str:
     return text.strip()
 ```
 
-### Usage Examples
+### Kullanım Örnekleri
 
 ```python
 from src.utils.text_normalizer import TextNormalizer
@@ -470,13 +470,13 @@ search_text = normalizer.normalize_for_search(raw_text)
 print(search_text)  # "doctor smith's presentation one its really good"
 ```
 
-## ID Generator
+## Kimlik Üreteci
 
-**Location**: `src/utils/id_generator.py`
+**Konum**: `src/utils/id_generator.py`
 
-Generates unique identifiers for speakers, presentations, and other entities.
+Konuşmacılar, sunumlar ve diğer varlıklar için benzersiz tanımlayıcılar üretir.
 
-### Core ID Generation
+### Temel Kimlik Oluşturma
 
 ```python
 import uuid
@@ -520,7 +520,7 @@ class IDGenerator:
         return '_'.join(parts)
 ```
 
-### Specialized ID Types
+### Özelleştirilmiş Kimlik Türleri
 
 ```python
 def generate_speaker_id(name: Optional[str] = None) -> str:
@@ -555,7 +555,7 @@ def generate_session_id() -> str:
     return f"session_{IDGenerator.generate_timestamp_id()}"
 ```
 
-### ID Validation and Utilities
+### Kimlik Doğrulama ve Yardımcı Fonksiyonlar
 
 ```python
 def validate_id_format(id_string: str, pattern: str) -> bool:
@@ -585,7 +585,7 @@ def extract_timestamp_from_id(id_string: str) -> Optional[int]:
     return None
 ```
 
-### Usage Examples
+### Kullanım Örnekleri
 
 ```python
 from src.utils.id_generator import (
@@ -609,9 +609,9 @@ chunk_id = generate_chunk_id(0, 1)              # "chunk_000_001"
 content_id = IDGenerator.generate_hash_id("Important content")  # "f8e7d6c5b4a39281"
 ```
 
-## Integration Patterns
+## Entegrasyon Kalıpları
 
-### Cross-Utility Coordination
+### Çapraz-Yardımcı Koordinasyon
 
 ```python
 # Common usage pattern across the application
@@ -646,7 +646,7 @@ class UtilityIntegration:
         return speaker_id
 ```
 
-### Error Handling Patterns
+### Hata Yönetimi Kalıpları
 
 ```python
 from src.utils.logger import logger
@@ -675,9 +675,9 @@ if data is None:
     data = default_data
 ```
 
-## Error Handling
+## Hata Yönetimi
 
-### Common Error Patterns
+### Yaygın Hata Kalıpları
 
 ```python
 # File system errors
@@ -705,9 +705,9 @@ except Exception as e:
     new_id = IDGenerator.generate_uuid()  # Fallback to UUID
 ```
 
-## Testing Utilities
+## Test Yardımcıları
 
-### Unit Test Helpers
+### Birim Test Yardımcıları
 
 ```python
 import tempfile
@@ -770,4 +770,4 @@ def test_data_handler():
         test_utils.cleanup_temp_directory()
 ```
 
-The utilities module provides the foundational layer that supports all other components of the moves application. These utilities are designed to be reliable, efficient, and easily testable, ensuring consistent behavior across the entire system.
+Yardımcı araçlar modülü, moves uygulamasının diğer tüm bileşenlerini destekleyen temel katmanı sağlar. Bu yardımcı araçlar, güvenilir, verimli ve kolay test edilebilir olacak şekilde tasarlanmıştır; böylece sistem genelinde tutarlı davranış sağlanır.

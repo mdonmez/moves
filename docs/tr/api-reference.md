@@ -1,40 +1,40 @@
-# API Reference
+# API Referansı
 
-This document provides a comprehensive reference for all public APIs, interfaces, and classes in the moves application. These APIs enable integration with external tools and facilitate extension of the system.
+Bu belge, moves uygulamasındaki tüm genel API'ler, arayüzler ve sınıflar için kapsamlı bir referans sağlar. Bu API'ler, harici araçlarla entegrasyonu mümkün kılar ve sistemin genişletilmesini kolaylaştırır.
 
-## Table of Contents
+## İçindekiler
 
-- [Overview](#overview)
-- [Core APIs](#core-apis)
-- [Data Models](#data-models)
-- [Component APIs](#component-apis)
-- [Utility APIs](#utility-apis)
-- [Configuration APIs](#configuration-apis)
-- [Error Classes](#error-classes)
-- [Type Definitions](#type-definitions)
-- [Constants](#constants)
+- [Genel Bakış](#genel-bakış)
+- [Temel API'ler](#temel-api'ler)
+- [Veri Modelleri](#veri-modelleri)
+- [Bileşen API'leri](#bileşen-api'leri)
+- [Yardımcı API'ler](#yardımcı-api'ler)
+- [Konfigürasyon API'leri](#konfigürasyon-api'leri)
+- [Hata Sınıfları](#hata-sınıfları)
+- [Tip Tanımları](#tip-tanımları)
+- [Sabitler](#sabitler)
 
-## Overview
+## Genel Bakış
 
-The moves API is designed with modularity and extensibility in mind. All public interfaces follow consistent patterns and provide clear separation of concerns.
+moves API, modülerlik ve genişletilebilirlik düşünülerek tasarlanmıştır. Tüm genel arayüzler tutarlı desenleri izler ve sorumlulukların net bir şekilde ayrılmasını sağlar.
 
-**API Design Principles**:
+**API Tasarım İlkeleri**:
 
-- **Immutability**: Data structures are immutable where possible
-- **Type Safety**: Full type hints for all public interfaces
-- **Error Handling**: Explicit error types and handling patterns
-- **Documentation**: Comprehensive docstrings following Google style
-- **Backwards Compatibility**: Semantic versioning for breaking changes
+- **Değişmezlik**: Veri yapıları mümkün olduğunca değişmezdir
+- **Tip Güvenliği**: Tüm genel arayüzler için tam tip ipuçları
+- **Hata Yönetimi**: Açık hata tipleri ve yönetim kalıpları
+- **Dokümantasyon**: Google stiline uygun kapsamlı docstring'ler
+- **Geriye Uyumluluk**: Kırıcı değişiklikler için semantik versiyonlama
 
-## Core APIs
+## Temel API'ler
 
 ### PresentationController
 
-**Location**: `src/core/presentation_controller.py`
+**Konum**: `src/core/presentation_controller.py`
 
-Main interface for voice-controlled presentation navigation.
+Ses kontrollü sunum gezintisi için ana arayüz.
 
-#### Class Definition
+#### Sınıf Tanımı
 
 ```python
 class PresentationController:
@@ -63,7 +63,7 @@ class PresentationController:
         """
 ```
 
-#### Public Methods
+#### Genel Metotlar
 
 ```python
 def start_listening(self) -> None:
@@ -131,7 +131,7 @@ def get_recognition_status(self) -> dict[str, Any]:
     """
 ```
 
-#### Events and Callbacks
+#### Olaylar ve Geri Çağrılar
 
 ```python
 def on_section_changed(self, callback: Callable[[int, str], None]) -> None:
@@ -158,11 +158,11 @@ def on_navigation_event(self, callback: Callable[[str, dict], None]) -> None:
 
 ### SpeakerManager
 
-**Location**: `src/core/speaker_manager.py`
+**Konum**: `src/core/speaker_manager.py`
 
-Interface for managing speaker profiles and presentation data.
+Konuşmacı profilleri ve sunum verilerini yönetmek için arayüz.
 
-#### Class Definition
+#### Sınıf Tanımı
 
 ```python
 class SpeakerManager:
@@ -176,7 +176,7 @@ class SpeakerManager:
         """Initialize speaker manager with default configuration."""
 ```
 
-#### Public Methods
+#### Genel Metotlar
 
 ```python
 async def add_speaker(
@@ -292,11 +292,11 @@ def get_presentations(self, speaker_id: str) -> list[PresentationInfo]:
 
 ### SettingsEditor
 
-**Location**: `src/core/settings_editor.py`
+**Konum**: `src/core/settings_editor.py`
 
-Interface for configuration management.
+Konfigürasyon yönetimi için arayüz.
 
-#### Class Definition
+#### Sınıf Tanımı
 
 ```python
 class SettingsEditor:
@@ -314,7 +314,7 @@ class SettingsEditor:
         """
 ```
 
-#### Public Methods
+#### Genel Metotlar
 
 ```python
 def list_settings(self) -> dict[str, Any]:
@@ -405,9 +405,9 @@ def import_settings(self, file_path: Path) -> int:
     """
 ```
 
-## Data Models
+## Veri Modelleri
 
-### Core Data Structures
+### Temel Veri Yapıları
 
 #### SpeakerInfo
 
@@ -512,13 +512,13 @@ class SimilarityResult:
         return self.similarity_score < other.similarity_score
 ```
 
-## Component APIs
+## Bileşen API'leri
 
 ### SimilarityCalculator
 
-**Location**: `src/core/components/similarity_calculator.py`
+**Konum**: `src/core/components/similarity_calculator.py`
 
-#### Class Definition
+#### Sınıf Tanımı
 
 ```python
 class SimilarityCalculator:
@@ -544,7 +544,7 @@ class SimilarityCalculator:
         """
 ```
 
-#### Public Methods
+#### Genel Metotlar
 
 ```python
 def calculate_similarity(
@@ -615,9 +615,9 @@ def update_weights(
 
 ### ChunkProducer
 
-**Location**: `src/core/components/chunk_producer.py`
+**Konum**: `src/core/components/chunk_producer.py`
 
-#### Class Definition
+#### Sınıf Tanımı
 
 ```python
 class ChunkProducer:
@@ -636,7 +636,7 @@ class ChunkProducer:
         """
 ```
 
-#### Public Methods
+#### Genel Metotlar
 
 ```python
 def generate_chunks(
@@ -689,13 +689,13 @@ def get_chunk_statistics(self, chunks: list[Chunk]) -> dict[str, Any]:
     """
 ```
 
-## Utility APIs
+## Yardımcı API'ler
 
 ### TextNormalizer
 
-**Location**: `src/utils/text_normalizer.py`
+**Konum**: `src/utils/text_normalizer.py`
 
-#### Class Definition
+#### Sınıf Tanımı
 
 ```python
 class TextNormalizer:
@@ -709,7 +709,7 @@ class TextNormalizer:
         """Initialize text normalizer with default rules."""
 ```
 
-#### Public Methods
+#### Genel Metotlar
 
 ```python
 def normalize_text(self, text: str) -> str:
@@ -748,9 +748,9 @@ def normalize_for_search(self, text: str) -> str:
 
 ### IDGenerator
 
-**Location**: `src/utils/id_generator.py`
+**Konum**: `src/utils/id_generator.py`
 
-#### Static Methods
+#### Statik Metotlar
 
 ```python
 class IDGenerator:
@@ -788,9 +788,9 @@ class IDGenerator:
         """
 ```
 
-## Configuration APIs
+## Konfigürasyon API'leri
 
-### Settings Schema
+### Ayarlar Şeması
 
 ```python
 class SettingsSchema:
@@ -830,9 +830,9 @@ class SettingsSchema:
     }
 ```
 
-## Error Classes
+## Hata Sınıfları
 
-### Custom Exceptions
+### Özel İstisnalar
 
 ```python
 class MovesError(Exception):
@@ -872,9 +872,9 @@ class ConfigurationError(MovesError):
     pass
 ```
 
-## Type Definitions
+## Tip Tanımları
 
-### Type Aliases
+### Tip Takma Adları
 
 ```python
 from typing import TypeAlias, Callable, Any
@@ -901,7 +901,7 @@ SimilarityScore: TypeAlias = float
 ModelName: TypeAlias = str
 ```
 
-### Protocol Definitions
+### Protokol Tanımları
 
 ```python
 from typing import Protocol, runtime_checkable
@@ -947,9 +947,9 @@ class DataPersistence(Protocol):
         ...
 ```
 
-## Constants
+## Sabitler
 
-### Application Constants
+### Uygulama Sabitleri
 
 ```python
 # Application metadata
@@ -990,7 +990,7 @@ SUPPORTED_AUDIO_EXTENSIONS = [".wav", ".mp3", ".flac"]
 SUPPORTED_CONFIG_EXTENSIONS = [".yaml", ".yml", ".json"]
 ```
 
-### Error Codes
+### Hata Kodları
 
 ```python
 class ErrorCodes:
@@ -1020,4 +1020,4 @@ class ErrorCodes:
     SETTING_NOT_FOUND = 4002
 ```
 
-This API reference provides comprehensive documentation for all public interfaces in the moves application, enabling developers to integrate with and extend the system effectively.
+Bu API referansı, moves uygulamasındaki tüm genel arayüzler için kapsamlı bir dokümantasyon sunar; geliştiricilerin sistemi etkili bir şekilde entegre etmelerini ve genişletmelerini sağlar.

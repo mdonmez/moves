@@ -1,6 +1,6 @@
 # Architecture Overview
 
-Moves is designed as a modular, real-time system that combines speech recognition, natural language processing, and machine learning to provide intelligent presentation navigation. This document provides a comprehensive overview of the system architecture, design patterns, and component interactions.
+moves is designed as a modular, real-time system that combines speech recognition, natural language processing, and machine learning to provide intelligent presentation navigation. This document provides a comprehensive overview of the system architecture, design patterns, and component interactions.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ Moves is designed as a modular, real-time system that combines speech recognitio
 
 ## System Architecture
 
-Moves follows a layered architecture with clear separation of concerns:
+moves follows a layered architecture with clear separation of concerns:
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -245,7 +245,7 @@ normalized_words → chunk_matching → similarity_scoring → navigation_decisi
 
 ### Threading Model
 
-Moves uses a multi-threaded architecture for real-time performance:
+moves uses a multi-threaded architecture for real-time performance:
 
 ```python
 # Main Threads
@@ -484,4 +484,4 @@ except Exception as e:
 - **Frame Rate**: 100ms audio frames for responsive recognition
 - **Thread Priorities**: Audio processing gets highest priority
 
-This architecture enables Moves to provide reliable, real-time presentation navigation while maintaining modularity and extensibility for future enhancements.
+This architecture enables moves to provide reliable, real-time presentation navigation while maintaining modularity and extensibility for future enhancements.
