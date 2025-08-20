@@ -359,6 +359,10 @@ def presentation_control(
         typer.echo(f"    {len(sections)} sections loaded")
         typer.echo("    READY & LISTENING\n")
         typer.echo("    Press Ctrl+C to exit.")
+        typer.echo("    \nKeyboard controls:")
+        typer.echo("      → (Right Arrow): Next section")
+        typer.echo("      ← (Left Arrow): Previous section")
+        typer.echo("      Space: Pause/Resume automatic navigation")
         typer.echo("    \nWaiting for 12 words to first trigger, keep speaking...\n")
 
         controller.control()
