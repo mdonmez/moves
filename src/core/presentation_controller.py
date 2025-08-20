@@ -54,7 +54,7 @@ class PresentationController:
         self.navigator = threading.Thread(
             target=self.navigate_presentation, daemon=True
         )
-        
+
         self.keyboard_listener = Listener(on_press=self._on_key_press)
 
         # Always use the default sounddevice input
@@ -168,7 +168,7 @@ class PresentationController:
                 self._next_section()
             elif key == Key.left:
                 self._prev_section()
-            elif key == Key.space:
+            elif key == Key.insert:
                 self._toggle_pause()
         except Exception:
             pass
@@ -177,14 +177,19 @@ class PresentationController:
         current_idx = self.current_section.section_index
         if current_idx < len(self.sections) - 1:
             self.current_section = self.sections[current_idx + 1]
-            print("\n[Next Section]")
-    
+            print(
+                f"\n[Next Section] ({self.current_section.section_index}/{len(self.sections)} -> {self.current_section.section_index + 1}/{len(self.sections)})"
+            )
+
     def _prev_section(self):
         current_idx = self.current_section.section_index
         if current_idx > 0:
+            prev_idx = current_idx
             self.current_section = self.sections[current_idx - 1]
-            print("\n[Previous Section]")
-    
+            print(
+                f"\n[Previous Section] ({prev_idx + 1}/{len(self.sections)} -> {self.current_section.section_index + 1}/{len(self.sections)})"
+            )
+
     def _toggle_pause(self):
         self.paused = not self.paused
         if self.paused:

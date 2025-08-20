@@ -362,10 +362,12 @@ def presentation_control(
         typer.echo("    \nKeyboard controls:")
         typer.echo("      → (Right Arrow): Next section")
         typer.echo("      ← (Left Arrow): Previous section")
-        typer.echo("      Space: Pause/Resume automatic navigation")
+        typer.echo("      Ins (Insert): Pause/Resume automatic navigation")
         typer.echo("    \nWaiting for 12 words to first trigger, keep speaking...\n")
 
         controller.control()
+
+        typer.echo("\nControl session ended.\n")
 
     except Exception as e:
         typer.echo(f"Presentation control error: {str(e)}", err=True)
