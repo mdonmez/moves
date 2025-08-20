@@ -4,7 +4,7 @@ from pathlib import Path
 from collections import deque
 
 import sounddevice as sd
-from pynput.keyboard import Key, Controller
+from pynput.keyboard import Key, Controller, Listener
 from sherpa_onnx import OnlineRecognizer
 
 from ..data.models import Section
@@ -49,10 +49,13 @@ class PresentationController:
 
         self.keyboard_controller = Controller()
         self.navigator_working = False
+        self.paused = False
 
         self.navigator = threading.Thread(
             target=self.navigate_presentation, daemon=True
         )
+        
+        self.keyboard_listener = Listener(on_press=self._on_key_press)
 
         # Always use the default sounddevice input
         self.selected_mic = sd.default.device[0]
@@ -87,6 +90,11 @@ class PresentationController:
                 current_words = list(self.recent_words)
 
                 if len(current_words) < self.window_size:
+                    self.shutdown_flag.wait(0.001)
+                    continue
+
+                # Skip automatic navigation when paused
+                if self.paused:
                     self.shutdown_flag.wait(0.001)
                     continue
 
@@ -154,10 +162,41 @@ class PresentationController:
             except Exception as e:
                 raise RuntimeError(f"Navigation error: {e}") from e
 
+    def _on_key_press(self, key):
+        try:
+            if key == Key.right:
+                self._next_section()
+            elif key == Key.left:
+                self._prev_section()
+            elif key == Key.space:
+                self._toggle_pause()
+        except Exception:
+            pass
+
+    def _next_section(self):
+        current_idx = self.current_section.section_index
+        if current_idx < len(self.sections) - 1:
+            self.current_section = self.sections[current_idx + 1]
+            print("\n[Next Section]")
+    
+    def _prev_section(self):
+        current_idx = self.current_section.section_index
+        if current_idx > 0:
+            self.current_section = self.sections[current_idx - 1]
+            print("\n[Previous Section]")
+    
+    def _toggle_pause(self):
+        self.paused = not self.paused
+        if self.paused:
+            print("\n[Paused]")
+        else:
+            print("\n[Resumed]")
+
     def control(self):
         audio_thread = threading.Thread(target=self.process_audio, daemon=True)
         audio_thread.start()
         self.navigator.start()
+        self.keyboard_listener.start()
 
         blocksize = int(self.sample_rate * self.frame_duration)
 
@@ -186,6 +225,8 @@ class PresentationController:
                 audio_thread.join(timeout=1.0)
             if self.navigator.is_alive():
                 self.navigator.join(timeout=1.0)
+            if self.keyboard_listener.is_alive():
+                self.keyboard_listener.stop()
 
 
 if __name__ == "__main__":
@@ -325,4 +366,4 @@ if __name__ == "__main__":
     )
     controller.control()
 
-    # todo: klavye dinleyicisi yapılacak ve section kontrolü supervised hale getirilecek
+    # Keyboard listener implemented for supervised section control
