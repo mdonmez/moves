@@ -1,21 +1,48 @@
-clean up the app.py's try-except blocks and syntax
+[DONE] clean up the app.py's try-except blocks and syntax
 add keyboard listener to the presentation controller
 add documentation
 add test
 
 ---
 
-In the app.py:
+In the `presentation_controller.py`:
 
-Remove unnecessary validate_speaker_resolution function and replace it with the speaker_manager.resolve function usages in commands, so it does same things, just adjust the command logic accordingly or edit speaker_manager.resolve implementation if needed.
+Add a **keyboard listener** to allow manual section control, improving startup usability when waiting for the warm-up phase (`window size = 12`) and mid-control adjustments. The listener must let the user override section navigation or pause/resume listening without interfering with automatic operations.
 
-Merge all try-except blocks' expect commands only one same as 'except Exception as e', don't make separate except blocks like 'except ValueError as e' for each command. All should use 'except Exception as e' in high level, no extra exception blocks.
-Don't make extra catches like this:
-except typer.Exit: # Re-raise typer.Exit to avoid catching it in the generic handler
-raise
+### Requirements
 
-Just catch them with `except Exception as e:`
+1. **Keyboard Listener Functionality**
 
-Remove masking in API key
+   - **Right Arrow (`→`)**: Move to the **next section**. Update section index only. Do **not** trigger keypress events via Key Controller. Automatic control logic should continue using this new section index.
+   - **Left Arrow (`←`)**: Move to the **previous section**. Update section index only. Do **not** trigger keypress events via Key Controller. Automatic control logic should continue using this new section index.
+   - **Space (`␣`)**: Toggle **pause/resume** of the listener.
 
-Clean up the code to be more concise and readable, avoid long comments and docstrings. Apply KISS, DRY, and YAGNI principles.
+     - When paused: ignore controlling inputs (other than arrow keys).
+     - Do not clear buffers, states, or recent words.
+     - When resumed: continue listening from the same state.
+
+   **Special Rule:** Right and Left arrow keys must **always remain active**, even while paused.
+
+2. **Status Messages**
+
+   - Print clear indicators to standard output whenever state changes:
+
+     - `"\n[Paused]"` when paused.
+     - `"\n[Resumed]"` when resumed.
+     - `"\n[Next Section]"` when moving forward.
+     - `"\n[Previous Section]"` when moving backward.
+
+3. **Code Quality Constraints**
+
+   - Refactor for **clarity and conciseness**.
+   - Follow **KISS**, **DRY**, and **YAGNI** principles.
+   - Eliminate redundant comments and long docstrings; code should be mostly self-explanatory.
+   - Ensure manual overrides integrate cleanly with existing logic (automatic slide/section progression must remain intact).
+
+### Outcome
+
+- Startup feels more responsive by allowing manual intervention during warm-up.
+- User can directly adjust section index or toggle pause/resume.
+- Arrow keys always function, even during pause.
+- Console feedback provides immediate awareness of current state.
+- Codebase remains clean, minimal, and maintainable.
