@@ -1,34 +1,34 @@
-# Presentation Controller
+# Sunum Kontrolcüsü
 
 The `PresentationController` is the core component responsible for real-time voice-controlled presentation navigation. It integrates speech recognition, similarity matching, and slide navigation into a cohesive system that responds to speaker's voice in real-time.
 
 ## Table of Contents
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Key Features](#key-features)
-- [Threading Model](#threading-model)
-- [Audio Processing](#audio-processing)
-- [Navigation Logic](#navigation-logic)
-- [Manual Controls](#manual-controls)
-- [Configuration](#configuration)
-- [Performance Optimization](#performance-optimization)
-- [Error Handling](#error-handling)
-- [Usage Examples](#usage-examples)
+- [Genel Bakış](#overview)
+- [Mimari](#architecture)
+- [Temel Özellikler](#key-features)
+- [İş Parçacığı Modeli](#threading-model)
+- [Ses İşleme](#audio-processing)
+- [Gezinme Mantığı](#navigation-logic)
+- [Manuel Kontroller](#manual-controls)
+- [Konfigürasyon](#configuration)
+- [Performans Optimizasyonu](#performance-optimization)
+- [Hata Yönetimi](#error-handling)
+- [Kullanım Örnekleri](#usage-examples)
 
-## Overview
+## Genel Bakış
 
-**Location**: `src/core/presentation_controller.py`
+**Konum**: `src/core/presentation_controller.py`
 
-The PresentationController manages the entire real-time presentation control session, from audio input to slide navigation. It operates as a multi-threaded system that continuously:
+PresentationController, ses girişinden slayt gezinmesine kadar tüm gerçek zamanlı sunum kontrol oturumunu yönetir. Sürekli çalışan çok iş parçacıklı bir sistem olarak çalışır:
 
-1. **Captures Audio**: Records microphone input with low latency
-2. **Recognizes Speech**: Converts audio to text using local ONNX models
-3. **Matches Content**: Compares speech against presentation sections
-4. **Navigates Slides**: Automatically moves to appropriate slides
-5. **Provides Feedback**: Shows real-time matching information
+1. **Ses Yakalar**: Düşük gecikmeli mikrofon girişini kaydeder
+2. **Konuşmayı Tanır**: Yerel ONNX modelleri kullanarak sesi metne dönüştürür
+3. **İçeriği Eşleştirir**: Konuşmayı sunum bölümleriyle karşılaştırır
+4. **Slaytları Gezer**: Otomatik olarak uygun slaytlara geçer
+5. **Geri Bildirim Sağlar**: Gerçek zamanlı eşleştirme bilgilerini gösterir
 
-## Architecture
+## Mimari
 
 ```python
 class PresentationController:
@@ -52,29 +52,29 @@ class PresentationController:
         self.paused = False
 ```
 
-### Key Components
+### Temel Bileşenler
 
-#### 1. Speech Recognition Engine
+#### 1. Konuşma Tanıma Motoru
 
-- **Technology**: Sherpa-ONNX with local transducer models
-- **Models**: INT8 quantized for optimal performance
-- **Processing**: Real-time streaming recognition
+- **Teknoloji**: Yerel transdüser modelleriyle Sherpa-ONNX
+- **Modeller**: Optimal performans için INT8 kuantize edilmiş
+- **İşleme**: Gerçek zamanlı akış tanıma
 
-#### 2. Similarity Calculator
+#### 2. Benzerlik Hesaplayıcı
 
-- **Hybrid Approach**: Combines semantic and phonetic matching
-- **Weights**: Configurable balance between similarity types
-- **Performance**: Optimized for real-time operation
+- **Hibrit Yaklaşım**: Anlamsal ve fonetik eşleşmeyi birleştirir
+- **Ağırlıklar**: Benzerlik türleri arasında yapılandırılabilir denge
+- **Performans**: Gerçek zamanlı çalışma için optimize edilmiştir
 
-#### 3. Navigation Engine
+#### 3. Gezinme Motoru
 
-- **State Management**: Tracks current position and target slides
-- **Keyboard Simulation**: Programmatic slide navigation
-- **Manual Override**: Seamless keyboard control integration
+- **Durum Yönetimi**: Mevcut konumu ve hedef slaytları izler
+- **Klavye Simülasyonu**: Programatik slayt gezinmesi
+- **Manuel Geçersiz Kılma**: Kesintisiz klavye kontrol entegrasyonu
 
-## Key Features
+## Temel Özellikler
 
-### 1. Real-Time Speech Processing
+### 1. Gerçek Zamanlı Konuşma İşleme
 
 ```python
 def process_audio(self):
@@ -89,13 +89,13 @@ def process_audio(self):
                 self.recent_words.extend(words)
 ```
 
-**Features**:
+**Özellikler**:
 
-- **Continuous Processing**: Non-blocking audio stream processing
-- **Word Window**: Maintains sliding window of recent speech
-- **Text Normalization**: Standardizes text for consistent matching
+- **Sürekli İşleme**: Engellemesiz ses akışı işleme
+- **Kelime Penceresi**: Son konuşmanın kayan penceresini tutar
+- **Metin Normalizasyonu**: Tutarlı eşleşme için metni standartlaştırır
 
-### 2. Intelligent Navigation
+### 2. Akıllı Gezinme
 
 ```python
 def navigate_presentation(self):
@@ -120,29 +120,29 @@ def navigate_presentation(self):
             self._navigate_to_section(target_section)
 ```
 
-**Navigation Logic**:
+**Gezinme Mantığı**:
 
-- **Contextual Matching**: Only considers slides near current position
-- **Best Match Selection**: Chooses highest similarity score
-- **Smooth Transitions**: Handles multi-slide jumps gracefully
+- **Bağlamsal Eşleşme**: Yalnızca mevcut konuma yakın slaytları dikkate alır
+- **En İyi Eşleşme Seçimi**: En yüksek benzerlik puanını seçer
+- **Yumuşak Geçişler**: Çoklu slayt atlamalarını sorunsuz yönetir
 
-### 3. Multi-Modal Control
+### 3. Çok Modlu Kontrol
 
 The controller supports both automatic and manual navigation:
 
-**Automatic Navigation**:
+**Otomatik Gezinme**:
 
-- Speech-driven slide transitions
-- Real-time similarity matching
-- Contextual positioning
+- Konuşma tabanlı slayt geçişleri
+- Gerçek zamanlı benzerlik eşleşmesi
+- Bağlamsal konumlandırma
 
-**Manual Override**:
+**Manuel Geçersiz Kılma**:
 
-- **Right Arrow**: Next slide
-- **Left Arrow**: Previous slide
-- **Insert Key**: Pause/resume automatic navigation
+- **Sağ Ok**: Sonraki slayt
+- **Sol Ok**: Önceki slayt
+- **Insert Tuşu**: Otomatik gezinmeyi duraklat/ devam ettir
 
-## Threading Model
+## İş Parçacığı Modeli
 
 The PresentationController uses a sophisticated multi-threaded architecture:
 
@@ -154,7 +154,7 @@ The PresentationController uses a sophisticated multi-threaded architecture:
 └── Keyboard Listener Thread (Manual Controls)
 ```
 
-### Thread Coordination
+### İş Parçacığı Koordinasyonu
 
 ```python
 # Global coordination
@@ -174,15 +174,15 @@ self.navigator.join(timeout=1.0)
 self.keyboard_listener.stop()
 ```
 
-**Benefits**:
+**Faydalar**:
 
-- **Responsiveness**: Audio and navigation processing run independently
-- **Thread Safety**: Proper synchronization prevents race conditions
-- **Clean Shutdown**: Graceful termination of all threads
+- **Duyarlılık**: Ses ve gezinme işleme bağımsız çalışır
+- **İş Parçacığı Güvenliği**: Doğru senkronizasyon yarış durumlarını önler
+- **Temiz Kapatma**: Tüm iş parçacıklarının sorunsuz sonlandırılması
 
-## Audio Processing
+## Ses İşleme
 
-### Audio Configuration
+### Ses Yapılandırması
 
 ```python
 # Audio parameters optimized for speech recognition
@@ -191,7 +191,7 @@ self.sample_rate = 16000       # Standard speech recognition rate
 self.selected_mic = sd.default.device[0]  # Auto-detect microphone
 ```
 
-### Processing Pipeline
+### İşleme Boru Hattı
 
 ```python
 # Audio capture → Queue → Recognition → Normalization → Word extraction
@@ -203,15 +203,15 @@ with sd.InputStream(
     # Continuous audio stream processing
 ```
 
-**Optimization Features**:
+**Optimizasyon Özellikleri**:
 
-- **Low Latency**: 100ms frame processing for responsive recognition
-- **Buffer Management**: Bounded queues prevent memory buildup
-- **Device Flexibility**: Automatic microphone detection and configuration
+- **Düşük Gecikme**: Tepkili tanıma için 100ms çerçeve işleme
+- **Arabellek Yönetimi**: Sınırlı kuyruklar bellek birikimini önler
+- **Cihaz Esnekliği**: Otomatik mikrofon algılama ve yapılandırma
 
-## Navigation Logic
+## Gezinme Mantığı
 
-### Contextual Matching
+### Bağlamsal Eşleşme
 
 The controller doesn't match against all slides, but uses contextual windows:
 
@@ -224,13 +224,13 @@ def get_candidate_chunks(current_section, all_chunks):
             if all(start <= s.section_index <= end for s in chunk.source_sections)]
 ```
 
-**Benefits**:
+**Faydalar**:
 
-- **Performance**: Reduces computation by limiting search space
-- **Accuracy**: Prevents jumping to unrelated distant slides
-- **Context Preservation**: Maintains logical presentation flow
+- **Performans**: Arama alanını sınırlayarak işlemi azaltır
+- **Doğruluk**: Alakasız uzak slaytlara atlamayı önler
+- **Bağlam Koruma**: Mantıksal sunum akışını sürdürür
 
-### Navigation Execution
+### Gezinme Yürütme
 
 ```python
 def _navigate_to_section(self, target_section):
@@ -251,9 +251,9 @@ def _navigate_to_section(self, target_section):
     self.current_section = target_section
 ```
 
-## Manual Controls
+## Manuel Kontroller
 
-### Keyboard Integration
+### Klavye Entegrasyonu
 
 The controller seamlessly integrates manual keyboard controls:
 
@@ -271,13 +271,13 @@ def _toggle_pause(self):
     print("\n[Paused]" if self.paused else "\n[Resumed]")
 ```
 
-**Manual Controls**:
+**Manuel Kontroller**:
 
-- **Arrow Keys**: Override automatic navigation
-- **Insert Key**: Toggle automatic navigation on/off
-- **Seamless Integration**: Manual controls update internal state
+- **Ok Tuşları**: Otomatik gezinmeyi geçersiz kılar
+- **Insert Tuşu**: Otomatik gezinmeyi açıp kapatır
+- **Sorunsuz Entegrasyon**: Manuel kontroller iç durumu günceller
 
-### State Management
+### Durum Yönetimi
 
 ```python
 def _next_section(self):
@@ -287,9 +287,9 @@ def _next_section(self):
         print(f"\n[Manual Next] {current_idx + 1} → {current_idx + 2}")
 ```
 
-## Configuration
+## Konfigürasyon
 
-### Initialization Parameters
+### Başlatma Parametreleri
 
 ```python
 def __init__(
@@ -300,7 +300,7 @@ def __init__(
 ):
 ```
 
-### Runtime Configuration
+### Çalışma Zamanı Konfigürasyonu
 
 ```python
 # Audio settings
@@ -316,15 +316,15 @@ maxlen=window_size             # Word window size
 maxlen=5                       # Audio queue size
 ```
 
-**Tunable Parameters**:
+**Ayarlanabilir Parametreler**:
 
-- **Window Size**: Balance between context and responsiveness
-- **Frame Duration**: Trade-off between latency and recognition accuracy
-- **Queue Sizes**: Memory vs. processing buffer management
+- **Pencere Boyutu**: Bağlam ve duyarlılık arasında denge
+- **Çerçeve Süresi**: Gecikme ve tanıma doğruluğu arasında taviz
+- **Kuyruk Boyutları**: Bellek ve işleme arabellek yönetimi
 
-## Performance Optimization
+## Performans Optimizasyonu
 
-### 1. Audio Processing Optimization
+### 1. Ses İşleme Optimizasyonu
 
 ```python
 # Efficient audio handling
@@ -333,7 +333,7 @@ blocksize = int(self.sample_rate * self.frame_duration)  # Optimal block size
 dtype="float32"                           # Efficient audio format
 ```
 
-### 2. Recognition Optimization
+### 2. Tanıma Optimizasyonu
 
 ```python
 # Local ONNX models for zero network latency
@@ -345,7 +345,7 @@ self.recognizer = OnlineRecognizer.from_transducer(
 )
 ```
 
-### 3. Navigation Optimization
+### 3. Gezinme Optimizasyonu
 
 ```python
 # Prevent navigation conflicts
@@ -358,13 +358,13 @@ if not self.navigator_working:
         self.navigator_working = False
 ```
 
-**Performance Features**:
+**Performans Özellikleri**:
 
-- **Thread Isolation**: Prevents blocking between audio and navigation
-- **Efficient Data Structures**: Bounded collections for memory management
-- **Local Processing**: No network dependency during presentations
+- **İş Parçacığı İzolasyonu**: Ses ve gezinme arasında engelleme önler
+- **Verimli Veri Yapıları**: Bellek yönetimi için sınırlı koleksiyonlar
+- **Yerel İşleme**: Sunum sırasında ağ bağımlılığı yok
 
-## Error Handling
+## Hata Yönetimi
 
 ### Graceful Degradation
 
@@ -395,15 +395,15 @@ def control(self):
             audio_thread.join(timeout=1.0)
 ```
 
-**Error Handling Strategy**:
+**Hata Yönetim Stratejisi**:
 
-- **Fail Fast**: Detect errors early and provide clear messages
-- **Resource Cleanup**: Ensure proper thread and resource cleanup
-- **User Experience**: Handle interruptions gracefully
+- **Hızlı Başarısızlık**: Hataları erken algılar ve net mesajlar verir
+- **Kaynak Temizliği**: İş parçacığı ve kaynakların doğru temizlenmesini sağlar
+- **Kullanıcı Deneyimi**: Kesintileri sorunsuz yönetir
 
-## Usage Examples
+## Kullanım Örnekleri
 
-### Basic Usage
+### Temel Kullanım
 
 ```python
 # Initialize with processed sections
@@ -417,7 +417,7 @@ controller = PresentationController(
 controller.control()  # Blocks until Ctrl+C or error
 ```
 
-### Custom Configuration
+### Özel Konfigürasyon
 
 ```python
 # Custom window size for different speech patterns
@@ -432,7 +432,7 @@ current_slide = controller.current_section.section_index
 print(f"Currently on slide {current_slide + 1}")
 ```
 
-### Integration Example
+### Entegrasyon Örneği
 
 ```python
 # CLI integration
@@ -460,7 +460,7 @@ def presentation_control(speaker: str):
         raise typer.Exit(1)
 ```
 
-## Real-Time Feedback
+## Gerçek Zamanlı Geri Bildirim
 
 The controller provides continuous feedback during operation:
 
@@ -475,6 +475,6 @@ print(f"\n[Manual Next] {prev_idx + 1} → {current_idx + 1}")
 print(f"\n[Paused]" if paused else "\n[Resumed]")
 ```
 
-This comprehensive feedback helps users understand system behavior and troubleshoot navigation issues in real-time.
+Bu kapsamlı geri bildirim, kullanıcıların sistem davranışını anlamalarına ve gerçek zamanlı olarak gezinme sorunlarını çözmelerine yardımcı olur.
 
-The PresentationController represents the culmination of all system components working together to provide seamless, intelligent presentation navigation that responds naturally to the speaker's voice while maintaining full manual control when needed.
+PresentationController, konuşmacının sesine doğal bir şekilde yanıt verirken gerektiğinde tam manuel kontrolü sağlayan sorunsuz ve akıllı sunum gezinmesini sunmak için birlikte çalışan tüm sistem bileşenlerinin bir araya gelmesidir.

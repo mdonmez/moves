@@ -1,22 +1,22 @@
-# Settings Editor
+# Ayarlar Düzenleyicisi
 
-The `SettingsEditor` manages system configuration with a template-based approach that provides default values while allowing user customization. It handles LLM model selection, API key management, and other system settings with automatic validation and fallback mechanisms.
+`SettingsEditor`, varsayılan değerler sağlayan ve kullanıcı özelleştirmesine izin veren şablon‑tabanlı bir yaklaşımla sistem yapılandırmasını yönetir. LLM modeli seçimi, API anahtarı yönetimi ve diğer sistem ayarlarını otomatik doğrulama ve yedekleme mekanizmalarıyla ele alır.
 
-## Table of Contents
+## İçindekiler
 
-- [Overview](#overview)
-- [Template-Based Configuration](#template-based-configuration)
-- [Configuration Management](#configuration-management)
-- [Settings Operations](#settings-operations)
-- [Data Persistence](#data-persistence)
-- [Validation and Error Handling](#validation-and-error-handling)
-- [Usage Examples](#usage-examples)
+- [Genel Bakış](#overview)
+- [Şablon Tabanlı Yapılandırma](#template-based-configuration)
+- [Yapılandırma Yönetimi](#configuration-management)
+- [Ayar İşlemleri](#settings-operations)
+- [Veri Kalıcılığı](#data-persistence)
+- [Doğrulama ve Hata Yönetimi](#validation-and-error-handling)
+- [Kullanım Örnekleri](#usage-examples)
 
-## Overview
+## Genel Bakış
 
-**Location**: `src/core/settings_editor.py`
+**Konum**: `src/core/settings_editor.py`
 
-The SettingsEditor provides a robust configuration management system that combines default templates with user customizations. It ensures system reliability by maintaining fallback defaults while allowing full user control over configurable parameters.
+SettingsEditor, varsayılan şablonları kullanıcı özelleştirmeleriyle birleştiren sağlam bir yapılandırma yönetim sistemi sunar. Yedek varsayılanları korurken yapılandırılabilir parametreler üzerinde tam kullanıcı kontrolüne izin vererek sistem güvenilirliğini sağlar.
 
 ```python
 class SettingsEditor:
@@ -34,11 +34,11 @@ class SettingsEditor:
         self._data = {**self.template_data, **user_data}
 ```
 
-## Template-Based Configuration
+## Şablon Tabanlı Yapılandırma
 
-### Template Structure
+### Şablon Yapısı
 
-**Location**: `src/data/settings_template.yaml`
+**Konum**: `src/data/settings_template.yaml`
 
 ```yaml
 # LLM to be used for section generation based on transcript and presentation
@@ -49,7 +49,7 @@ model: gemini/gemini-2.0-flash
 key: null
 ```
 
-### Template Loading Strategy
+### Şablon Yükleme Stratejisi
 
 ```python
 def __init__(self):
@@ -72,28 +72,28 @@ def __init__(self):
                   if isinstance(self.template_data, dict) else user_data)
 ```
 
-**Template Features**:
+**Şablon Özellikleri**:
 
-- **Default Values**: Provides sensible defaults for all settings
-- **Documentation**: Includes comments explaining each setting
-- **Extensibility**: Easy to add new configuration options
-- **Validation**: Serves as schema for valid configuration keys
+- **Varsayılan Değerler**: Tüm ayarlar için mantıklı varsayılanlar sağlar
+- **Belgelendirme**: Her ayarı açıklayan yorumlar içerir
+- **Genişletilebilirlik**: Yeni yapılandırma seçenekleri eklemek kolaydır
+- **Doğrulama**: Geçerli yapılandırma anahtarları için şema işlevi görür
 
-## Configuration Management
+## Yapılandırma Yönetimi
 
-### Settings Hierarchy
+### Ayarlar Hiyerarşisi
 
-The SettingsEditor implements a three-tier configuration hierarchy:
+SettingsEditor, üç seviyeli bir yapılandırma hiyerarşisi uygular:
 
 ```
-1. Template Defaults (lowest priority)
+1. Şablon Varsayılanları (en düşük öncelik)
    ↓
-2. User Settings (medium priority)
+2. Kullanıcı Ayarları (orta öncelik)
    ↓
-3. Runtime Values (highest priority)
+3. Çalışma Zamanı Değerleri (en yüksek öncelik)
 ```
 
-### Data Merging Logic
+### Veri Birleştirme Mantığı
 
 ```python
 # Configuration merge priority:
@@ -118,7 +118,7 @@ final_data = {
 }
 ```
 
-### Automatic Initialization
+### Otomatik Başlatma
 
 ```python
 def __init__(self):
@@ -133,9 +133,9 @@ def __init__(self):
         pass
 ```
 
-## Settings Operations
+## Ayar İşlemleri
 
-### Setting Values
+### Değer Ayarlama
 
 ```python
 def set(self, key: str, value: str) -> bool:
@@ -154,14 +154,14 @@ def set(self, key: str, value: str) -> bool:
         raise RuntimeError(f"Failed to set key '{key}': {e}") from e
 ```
 
-**Setting Process**:
+**Ayar Süreci**:
 
-1. **Validation**: Ensure key exists in template schema
-2. **Memory Update**: Update in-memory configuration
-3. **Persistence**: Save to disk with error handling
-4. **Result**: Return success/failure status
+1. **Doğrulama**: Anahtarın şablon şemasında bulunduğunu doğrula
+2. **Bellek Güncellemesi**: Bellekteki yapılandırmayı güncelle
+3. **Kalıcı Kılma**: Diskte kaydet, hata yönetimi uygula
+4. **Sonuç**: Başarı/başarısızlık durumunu döndür
 
-### Unsetting Values (Reset to Default)
+### Değer Kaldırma (Varsayılanına Sıfırlama)
 
 ```python
 def unset(self, key: str) -> bool:
@@ -179,30 +179,30 @@ def unset(self, key: str) -> bool:
         raise RuntimeError(f"Failed to unset key '{key}': {e}") from e
 ```
 
-**Unset Logic**:
+**Kaldırma Mantığı**:
 
-- **Template Keys**: Reset to template default value
-- **Non-Template Keys**: Remove entirely from configuration
-- **Persistence**: Save changes to disk
+- **Şablon Anahtarları**: Şablon varsayılan değerine sıfırla
+- **Şablon Dışı Anahtarlar**: Yapılandırmadan tamamen kaldır
+- **Kalıcı Kılma**: Değişiklikleri diske kaydet
 
-### Retrieving Settings
+### Ayarları Getirme
 
 ```python
 def list(self) -> Settings:
     return Settings(**self._data)
 ```
 
-The `list()` method returns a strongly-typed `Settings` object that provides structure and validation for configuration data.
+`list()` yöntemi, yapılandırma verileri için yapı ve doğrulama sağlayan güçlü tiplenmiş bir `Settings` nesnesi döndürür.
 
-## Data Persistence
+## Veri Kalıcılığı
 
-### File Format and Location
+### Dosya Biçimi ve Konumu
 
-- **Format**: YAML for human readability and editability
-- **Location**: `~/.moves/settings.yaml`
-- **Encoding**: UTF-8 for international character support
+- **Biçim**: İnsan tarafından okunabilir ve düzenlenebilir olması için YAML
+- **Konum**: `~/.moves/settings.yaml`
+- **Kodlama**: Uluslararası karakter desteği için UTF-8
 
-### Save Operation
+### Kaydetme İşlemi
 
 ```python
 def _save(self) -> bool:
@@ -227,14 +227,14 @@ def _save(self) -> bool:
         raise RuntimeError(f"Failed to save settings: {e}") from e
 ```
 
-**Save Features**:
+**Kaydetme Özellikleri**:
 
-- **Directory Creation**: Automatically creates data directories
-- **Template Structure**: Preserves template formatting and order
-- **Atomic Operations**: File operations are atomic where possible
-- **Error Handling**: Comprehensive error reporting
+- **Dizin Oluşturma**: Veri dizinlerini otomatik olarak oluşturur
+- **Şablon Yapısı**: Şablon formatını ve sırasını korur
+- **Atomik İşlemler**: Mümkün olduğunda dosya işlemleri atomiktir
+- **Hata Yönetimi**: Kapsamlı hata raporlaması sağlar
 
-### Example Saved Configuration
+### Örnek Kaydedilmiş Yapılandırma
 
 ```yaml
 # ~/.moves/settings.yaml
@@ -242,9 +242,9 @@ model: gpt-4
 key: sk-1234567890abcdef...
 ```
 
-## Validation and Error Handling
+## Doğrulama ve Hata Yönetimi
 
-### Key Validation
+### Anahtar Doğrulama
 
 ```python
 def set(self, key: str, value: str) -> bool:
@@ -253,9 +253,9 @@ def set(self, key: str, value: str) -> bool:
     # Proceed with setting
 ```
 
-The SettingsEditor validates all setting keys against the template schema, preventing invalid configurations.
+SettingsEditor, şablon şemasına karşı tüm ayar anahtarlarını doğrular; geçersiz yapılandırmaların önüne geçilir.
 
-### Error Recovery
+### Hata Kurtarma
 
 ```python
 def __init__(self):
@@ -272,13 +272,13 @@ def __init__(self):
         user_data = {}
 ```
 
-**Recovery Strategies**:
+**Kurtarma Stratejileri**:
 
-- **Template Fallback**: Continue with empty template if loading fails
-- **User Settings Fallback**: Use defaults if user settings corrupted
-- **Graceful Degradation**: System remains functional with minimal configuration
+- **Şablon Yedekleme**: Yükleme başarısız olursa boş şablonla devam eder
+- **Kullanıcı Ayarları Yedekleme**: Kullanıcı ayarları bozuksa varsayılanları kullanır
+- **Zarif Azalma**: Sistem minimal yapılandırma ile işlevsel kalır
 
-### Error Propagation
+### Hata Yayma
 
 ```python
 def set(self, key: str, value: str) -> bool:
@@ -290,9 +290,9 @@ def set(self, key: str, value: str) -> bool:
         raise RuntimeError(f"Failed to set key '{key}': {e}") from e
 ```
 
-## Usage Examples
+## Kullanım Örnekleri
 
-### Basic Configuration Operations
+### Temel Ayar İşlemleri
 
 ```python
 # Initialize settings editor
@@ -315,7 +315,7 @@ settings_editor.set("key", "sk-1234567890abcdef...")
 settings_editor.unset("model")  # Back to gemini/gemini-2.0-flash
 ```
 
-### CLI Integration
+### CLI Entegrasyonu
 
 ```python
 @settings_app.command("set")
@@ -344,7 +344,7 @@ def settings_set(key: str, value: str):
         raise typer.Exit(1)
 ```
 
-### Settings Display
+### Ayar Görüntüleme
 
 ```python
 @settings_app.command("list")
@@ -369,7 +369,7 @@ def settings_list():
         raise typer.Exit(1)
 ```
 
-### Configuration Validation
+### Yapılandırma Doğrulama
 
 ```python
 def validate_settings(settings_editor: SettingsEditor) -> tuple[bool, list[str]]:
@@ -395,7 +395,7 @@ if not valid:
     print("Please configure settings before processing speakers.")
 ```
 
-### Advanced Template Management
+### Gelişmiş Şablon Yönetimi
 
 ```python
 # Access template information
@@ -414,7 +414,7 @@ for key in template_keys:
         print(f"{key}: {current_value} (default)")
 ```
 
-### Error Handling Examples
+### Hata Yönetimi Örnekleri
 
 ```python
 try:
@@ -434,4 +434,4 @@ except Exception as e:
     print(f"Unexpected error: {e}")
 ```
 
-The SettingsEditor provides a robust, user-friendly configuration management system that balances flexibility with reliability. Its template-based approach ensures the system always has sensible defaults while allowing full customization of user preferences.
+SettingsEditor, esnekliği güvenilirlikle dengeleyen sağlam ve kullanıcı dostu bir yapılandırma yönetim sistemi sunar. Şablon‑tabanlı yaklaşımı, sistemin her zaman mantıklı varsayılanlara sahip olmasını sağlarken kullanıcı tercihlerini tam anlamıyla özelleştirmeye olanak tanır.

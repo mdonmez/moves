@@ -1,21 +1,21 @@
-# Chunk Producer
+# Parça Üreticisi
 
-The `ChunkProducer` creates navigable text segments from processed presentation sections, enabling efficient real-time speech matching. It generates sliding window chunks and provides contextual candidate selection for optimal navigation performance.
+`ChunkProducer`, işlenmiş sunum bölümlerinden gezilebilir metin segmentleri oluşturur, verimli gerçek zamanlı konuşma eşleştirmesini sağlar. Kaydırmalı pencere parçaları üretir ve optimal gezinme performansı için bağlamsal aday seçimi sunar.
 
-## Table of Contents
+## İçindekiler
 
-- [Overview](#overview)
-- [Chunk Generation](#chunk-generation)
-- [Sliding Window Algorithm](#sliding-window-algorithm)
-- [Contextual Candidate Selection](#contextual-candidate-selection)
-- [Performance Optimization](#performance-optimization)
-- [Usage Examples](#usage-examples)
+- [Genel Bakış](#overview)
+- [Parça Üretimi](#chunk-generation)
+- [Kaydırmalı Pencere Algoritması](#sliding-window-algorithm)
+- [Bağlamsal Aday Seçimi](#contextual-candidate-selection)
+- [Performans Optimizasyonu](#performance-optimization)
+- [Kullanım Örnekleri](#usage-examples)
 
-## Overview
+## Genel Bakış
 
 **Location**: `src/core/components/chunk_producer.py`
 
-The ChunkProducer transforms linear presentation sections into overlapping text chunks that represent natural speech patterns. This chunking approach enables the system to match speech fragments against presentation content while maintaining context across section boundaries.
+ChunkProducer, doğrusal sunum bölümlerini doğal konuşma kalıplarını temsil eden üst üste binen metin parçalarına dönüştürür. Bu parçalama yaklaşımı, sistemin konuşma parçacıklarını sunum içeriğiyle eşleştirmesini sağlarken bölüm sınırları arasında bağlamı korur.
 
 ```python
 def generate_chunks(sections: list[Section], window_size: int = 12) -> list[Chunk]:
@@ -34,11 +34,11 @@ def generate_chunks(sections: list[Section], window_size: int = 12) -> list[Chun
     ]
 ```
 
-## Chunk Generation
+## Parça Üretimi
 
-### Word-Level Processing
+### Kelime Düzeyi İşleme
 
-The ChunkProducer works at the word level to create fine-grained matching opportunities:
+ChunkProducer, kelime düzeyinde çalışarak ince ayrıntılı eşleştirme fırsatları yaratır:
 
 ```python
 def generate_chunks(sections: list[Section], window_size: int = 12) -> list[Chunk]:
@@ -71,13 +71,13 @@ def generate_chunks(sections: list[Section], window_size: int = 12) -> list[Chun
 
 **Processing Steps**:
 
-1. **Word Extraction**: Flatten all sections into word-level tokens
-2. **Source Tracking**: Maintain section references for each word
-3. **Window Creation**: Generate overlapping windows of specified size
-4. **Content Normalization**: Apply text normalization for consistent matching
-5. **Section Aggregation**: Track all contributing sections per chunk
+1. **Kelime Çıkarımı**: Tüm bölümleri kelime düzeyinde token'lara düzleştir
+2. **Kaynak İzleme**: Her kelime için bölüm referanslarını tut
+3. **Pencere Oluşturma**: Belirtilen boyutta üst üste binen pencereler oluştur
+4. **İçerik Normalizasyonu**: Tutarlı eşleştirme için metin normalizasyonu uygula
+5. **Bölüm Toplama**: Her parça için katkıda bulunan tüm bölümleri izle
 
-### Chunk Structure
+### Parça Yapısı
 
 ```python
 @dataclass(frozen=True)
@@ -88,14 +88,14 @@ class Chunk:
 
 **Chunk Characteristics**:
 
-- **Fixed Size**: Consistent 12-word windows for uniform processing
-- **Overlapping**: Adjacent chunks share 11 words for smooth transitions
-- **Multi-Section**: Single chunk can span multiple presentation sections
-- **Normalized Content**: Consistent text format for reliable matching
+- **Sabit Boyut**: Tutarlı işleme için 12 kelimelik pencereler
+- **Üst Üste Binen**: Komşu parçalar 11 kelimeyi paylaşarak sorunsuz geçiş sağlar
+- **Çok Bölümlü**: Tek bir parça birden fazla sunum bölümünü kapsayabilir
+- **Normalleştirilmiş İçerik**: Güvenilir eşleştirme için tutarlı metin formatı
 
-## Sliding Window Algorithm
+## Kaydırmalı Pencere Algoritması
 
-### Window Size Rationale
+### Pencere Boyutu Gerekçesi
 
 ```python
 window_size: int = 12  # Default configuration
@@ -103,12 +103,12 @@ window_size: int = 12  # Default configuration
 
 **Why 12 Words?**:
 
-- **Speech Patterns**: Natural phrase length in conversational speech
-- **Context Preservation**: Sufficient context for meaningful matching
-- **Performance Balance**: Large enough for accuracy, small enough for speed
-- **Recognition Window**: Matches typical STT recognition buffers
+- **Konuşma Kalıpları**: Konuşma dilinde doğal ifade uzunluğu
+- **Bağlam Koruma**: Anlamlı eşleştirme için yeterli bağlam
+- **Performans Dengelemesi**: Doğruluk için yeterince büyük, hız için yeterince küçük
+- **Tanıma Penceresi**: Tipik STT tanıma tamponlarıyla eşleşir
 
-### Overlap Strategy
+### Üst Üste Binen Strateji
 
 ```
 Section 1: "Welcome to our presentation on machine learning"
@@ -123,12 +123,12 @@ Chunks generated:
 
 **Overlap Benefits**:
 
-- **Smooth Transitions**: No gaps between navigable content
-- **Boundary Handling**: Captures speech that spans section transitions
-- **Redundancy**: Multiple chances to match similar content
-- **Error Resilience**: Reduces impact of individual chunk matching failures
+- **Sorunsuz Geçişler**: Gezilebilir içerik arasında boşluk yok
+- **Sınır İşleme**: Bölüm geçişlerini kapsayan konuşmayı yakalar
+- **Yedeklilik**: Benzer içeriği eşleştirme şansı birden fazla
+- **Hata Dayanıklılığı**: Tek bir parçanın eşleştirme hatalarının etkisini azaltır
 
-### Cross-Section Chunks
+### Bölümler Arası Parçalar
 
 ```python
 # Example chunk spanning sections
@@ -143,13 +143,13 @@ chunk = Chunk(
 
 **Cross-Section Features**:
 
-- **Natural Boundaries**: Matches natural speech flow across slides
-- **Transition Capture**: Handles speaker transitions between topics
-- **Context Continuity**: Maintains narrative flow for matching
+- **Doğal Sınırlar**: Slaytlar arasında doğal konuşma akışını eşleştirir
+- **Geçiş Yakalama**: Konular arasında konuşmacı geçişlerini yönetir
+- **Bağlam Sürekliliği**: Eşleştirme için anlatım akışını korur
 
-## Contextual Candidate Selection
+## Bağlamsal Aday Seçimi
 
-### Navigation Context Algorithm
+### Gezinme Bağlam Algoritması
 
 ```python
 def get_candidate_chunks(current_section: Section, all_chunks: list[Chunk]) -> list[Chunk]:
@@ -168,37 +168,37 @@ def get_candidate_chunks(current_section: Section, all_chunks: list[Chunk]) -> l
 
 **Selection Logic**:
 
-1. **Window Definition**: ±2-3 slides from current position
-2. **Boundary Inclusion**: All chunk sections must be within window
-3. **Edge Filtering**: Exclude single-section chunks at window edges
-4. **Navigation Scope**: Limits search to contextually relevant content
+1. **Pencere Tanımı**: Mevcut konumdan ±2-3 slayt
+2. **Sınır Dahil Etme**: Tüm parça bölümleri pencere içinde olmalı
+3. **Kenar Filtreleme**: Pencere kenarındaki tek bölümlü parçaları dışla
+4. **Geçiş Kapsamı**: Aramayı bağlamsal olarak ilgili içeriğe sınırlar
 
-### Context Window Visualization
+### Bağlam Pencere Görselleştirme
 
 ```
-Current Position: Slide 10
+Mevcut Konum: Slayt 10
 
-Window: Slides 8-13
+Pencere: Slaytlar 8-13
     ┌─────┬─────┬─────┬──█──┬─────┬─────┐
     │  8  │  9  │ 10  │ 11 │ 12  │ 13  │
     └─────┴─────┴─────┴─█──┴─────┴─────┘
-                     Current
+                     Mevcut
 
-Candidate Chunks:
-✓ Chunks spanning slides 8-13
-✓ Chunks crossing section boundaries within window
-✗ Single-section chunks at edges (8, 13)
-✗ Chunks extending beyond window boundaries
+Aday Parçalar:
+✓ 8-13 slaytları kapsayan parçalar
+✓ Pencere içinde bölüm sınırlarını geçen parçalar
+✗ Kenarlarda tek bölümlü parçalar (8, 13)
+✗ Pencere sınırlarını aşan parçalar
 ```
 
-**Context Benefits**:
+**Bağlam Faydaları**:
 
-- **Performance**: Reduces similarity calculations by ~70%
-- **Accuracy**: Prevents jumping to unrelated distant slides
-- **User Experience**: Maintains logical presentation flow
-- **Predictability**: Navigation feels natural and expected
+- **Performans**: Benzerlik hesaplamalarını yaklaşık %70 azaltır
+- **Doğruluk**: Alakasız uzak slaytlara atlamayı önler
+- **Kullanıcı Deneyimi**: Mantıksal sunum akışını korur
+- **Öngörülebilirlik**: Gezinme doğal ve beklenen hissettirir
 
-### Edge Case Handling
+### Kenar Durumları İşleme
 
 ```python
 # Handle presentation boundaries
@@ -217,9 +217,9 @@ for chunk in filtered_chunks:
     valid_chunks.append(chunk)
 ```
 
-## Performance Optimization
+## Performans Optimizasyonu
 
-### Efficient Data Structures
+### Verimli Veri Yapıları
 
 ```python
 # Pre-computed chunks for entire presentation
@@ -231,11 +231,11 @@ candidate_chunks = [chunk for chunk in self.chunks if meets_criteria(chunk)]
 
 **Optimization Features**:
 
-- **Pre-Computation**: Generate all chunks once during initialization
-- **Memory Efficiency**: Shared section references across chunks
-- **Fast Filtering**: Efficient candidate selection algorithms
+- **Ön Hesaplama**: Başlatma sırasında tüm parçaları bir kez üret
+- **Bellek Verimliliği**: Parçalar arasında paylaşılan bölüm referansları
+- **Hızlı Filtreleme**: Verimli aday seçme algoritmaları
 
-### Memory Management
+### Bellek Yönetimi
 
 ```python
 # Immutable chunks prevent accidental modification
@@ -250,11 +250,11 @@ words_with_sources = [(word, section) for section in sections ...]
 
 **Memory Benefits**:
 
-- **Reference Sharing**: Section objects shared across multiple chunks
-- **Immutability**: Prevents memory leaks from modification
-- **Efficient Storage**: Optimized data structure layout
+- **Referans Paylaşımı**: Bölüm nesneleri birden fazla parça arasında paylaşılır
+- **Değişmezlik**: Değişikliklerden kaynaklanan bellek sızıntılarını önler
+- **Verimli Depolama**: Optimize edilmiş veri yapısı düzeni
 
-### Computational Efficiency
+### Hesaplamalı Verimlilik
 
 ```python
 # Single normalization pass during chunk creation
@@ -264,9 +264,9 @@ partial_content=text_normalizer.normalize_text(" ".join(words))
 source_sections=sorted(sections_in_window, key=lambda s: s.section_index)
 ```
 
-## Usage Examples
+## Kullanım Örnekleri
 
-### Basic Chunk Generation
+### Temel Parça Üretimi
 
 ```python
 from src.core.components.chunk_producer import generate_chunks
@@ -288,7 +288,7 @@ for i, chunk in enumerate(chunks[:3]):  # Show first 3 chunks
     print(f"  Spans sections: {[s.section_index for s in chunk.source_sections]}")
 ```
 
-### Contextual Candidate Selection
+### Bağlamsal Aday Seçimi
 
 ```python
 from src.core.components.chunk_producer import get_candidate_chunks
@@ -308,7 +308,7 @@ for chunk in candidate_chunks:
     print(f"    Content: {chunk.partial_content[:50]}...")
 ```
 
-### Integration with Presentation Controller
+### Sunum Kontrolörü ile Entegrasyon
 
 ```python
 class PresentationController:
@@ -340,7 +340,7 @@ class PresentationController:
             self._navigate_to_section(target_section)
 ```
 
-### Performance Testing
+### Performans Testi
 
 ```python
 import time
@@ -372,7 +372,7 @@ def test_chunk_generation_performance():
 test_chunk_generation_performance()
 ```
 
-### Chunk Analysis and Debugging
+### Parça Analizi ve Hata Ayıklama
 
 ```python
 def analyze_chunks(chunks):
@@ -410,7 +410,7 @@ chunks = generate_chunks(sections, window_size=12)
 analyze_chunks(chunks)
 ```
 
-### Custom Window Size Optimization
+### Özel Pencere Boyutu Optimizasyonu
 
 ```python
 def find_optimal_window_size(sections, test_queries):
@@ -444,4 +444,4 @@ def find_optimal_window_size(sections, test_queries):
     return best_window
 ```
 
-The ChunkProducer enables efficient real-time navigation by transforming linear presentation content into overlapping, contextual segments that match natural speech patterns. Its sliding window approach combined with intelligent candidate selection provides the foundation for accurate and responsive voice-controlled navigation.
+ChunkProducer, doğrusal sunum içeriğini doğal konuşma kalıplarına uyan üst üste binen, bağlamsal segmentlere dönüştürerek verimli gerçek zamanlı gezinmeyi sağlar. Kaydırmalı pencere yaklaşımı ve akıllı aday seçimi, doğru ve duyarlı ses kontrollü gezinme için temel oluşturur.

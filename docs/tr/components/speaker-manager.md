@@ -1,24 +1,24 @@
-# Speaker Manager
+# Konuşmacı Yöneticisi
 
-The `SpeakerManager` is responsible for managing speaker profiles, handling their presentation and transcript files, and coordinating AI-powered processing to generate navigable sections. It serves as the primary interface for speaker-related operations and data management.
+`SpeakerManager`, konuşmacı profillerini yönetmek, sunum ve transkript dosyalarını işlemek ve gezilebilir bölümler oluşturmak için AI‑destekli işleme koordine etmekten sorumludur. Konuşmacı ile ilgili işlemler ve veri yönetimi için birincil arayüz olarak hizmet verir.
 
-## Table of Contents
+## İçindekiler
 
-- [Overview](#overview)
-- [Core Functionality](#core-functionality)
-- [Speaker Lifecycle](#speaker-lifecycle)
-- [File Management](#file-management)
-- [AI Processing Pipeline](#ai-processing-pipeline)
-- [Data Persistence](#data-persistence)
-- [Speaker Resolution](#speaker-resolution)
-- [Error Handling](#error-handling)
-- [Usage Examples](#usage-examples)
+- [Genel Bakış](#genel-bakış)
+- [Temel İşlevsellik](#temel-işlevsellik)
+- [Konuşmacı Yaşam Döngüsü](#konuşmacı-yaşam-döngüsü)
+- [Dosya Yönetimi](#dosya-yonetimi)
+- [AI İşleme Boru Hattı](#ai-işleme-boru-hatti)
+- [Veri Kalıcılaştırma](#veri-kalıcılaştırma)
+- [Konuşmacı Çözümleme](#konuşmacı-çözümleme)
+- [Hata Yönetimi](#hata-yonetimi)
+- [Kullanım Örnekleri](#kullanım-örnekleri)
 
-## Overview
+## Genel Bakış
 
-**Location**: `src/core/speaker_manager.py`
+**Konum**: `src/core/speaker_manager.py`
 
-The SpeakerManager handles the complete lifecycle of speaker profiles, from initial creation through AI processing to deletion. It manages both the metadata (speaker information) and associated files (presentations and transcripts) while coordinating with AI services to generate navigable content.
+SpeakerManager, konuşmacı profillerinin oluşturulmasından AI işleme ve silinmeye kadar tam yaşam döngüsünü yönetir. Hem meta verileri (konuşmacı bilgileri) hem de ilişkili dosyaları (sunumlar ve transkriptler) kontrol ederken, gezilebilir içerik oluşturmak için AI servisleriyle koordinasyon sağlar.
 
 ```python
 class SpeakerManager:
@@ -34,30 +34,30 @@ class SpeakerManager:
     def resolve(self, speaker_pattern) -> Speaker
 ```
 
-## Core Functionality
+## Temel İşlevsellik
 
-### 1. Speaker Profile Management
+### 1. Konuşmacı Profili Yönetimi
 
-- **Creation**: Generate unique speaker profiles with ID generation
-- **Modification**: Update presentation or transcript files
-- **Deletion**: Clean removal of speaker data and files
-- **Listing**: Enumerate all registered speakers with status
+- **Oluşturma**: Kimlik oluşturma ile benzersiz konuşmacı profilleri üret
+- **Değiştirme**: Sunum veya transkript dosyalarını güncelle
+- **Silme**: Konuşmacı verisi ve dosyalarının temiz kaldırılması
+- **Listeleme**: Durum bilgisiyle tüm kayıtlı konuşmacıları enumerate et
 
-### 2. File System Operations
+### 2. Dosya Sistemi İşlemleri
 
-- **File Copying**: Manage presentation and transcript files
-- **Path Resolution**: Handle both source and local file paths
-- **Storage Organization**: Structured directory layout per speaker
+- **Dosya Kopyalama**: Sunum ve transkript dosyalarını yönet
+- **Yol Çözümleme**: Hem kaynak hem de yerel dosya yollarını ele al
+- **Depolama Organizasyonu**: Konuşmacı bazında yapılandırılmış dizin düzeni
 
-### 3. AI Integration Coordination
+### 3. AI Entegrasyonu Koordinasyonu
 
-- **Batch Processing**: Handle multiple speakers simultaneously
-- **Async Operations**: Non-blocking processing with proper coordination
-- **Result Aggregation**: Collect and return processing outcomes
+- **Toplu İşleme**: Birden fazla konuşmacıyı aynı anda ele al
+- **Async İşlemler**: Doğru koordinasyonla bloklamayan işleme
+- **Sonuç Toplama**: İşleme çıktılarının toplanması ve döndürülmesi
 
-## Speaker Lifecycle
+## Konuşmacı Yaşam Döngüsü
 
-### 1. Creation Phase
+### 1. Oluşturma Aşaması
 
 ```python
 def add(self, name: str, source_presentation: Path, source_transcript: Path) -> Speaker:
@@ -81,15 +81,15 @@ def add(self, name: str, source_presentation: Path, source_transcript: Path) -> 
     return speaker
 ```
 
-**Creation Process**:
+**Oluşturma Süreci**:
 
-1. **ID Generation**: Create unique, human-readable identifier
-2. **Path Resolution**: Convert relative paths to absolute
-3. **Validation**: Ensure required files exist and are accessible
-4. **Persistence**: Store speaker metadata as JSON
-5. **Directory Structure**: Create organized speaker-specific directories
+1. **Kimlik Oluşturma**: Benzersiz, insan‑okunur kimlik üret
+2. **Yol Çözümleme**: Göreli yolları mutlak yollara çevir
+3. **Doğrulama**: Gerekli dosyaların var ve erişilebilir olduğunu teyit et
+4. **Kalıcılaştırma**: Konuşmacı meta verisini JSON olarak sakla
+5. **Dizin Yapısı**: Düzenli konuşmacı‑özel dizinler oluştur
 
-### 2. Processing Phase
+### 2. İşleme Aşaması
 
 ```python
 async def process_speaker(speaker, speaker_path, delay):
@@ -118,14 +118,14 @@ async def process_speaker(speaker, speaker_path, delay):
     )
 ```
 
-**Processing Pipeline**:
+**İşleme Boru Hattı**:
 
-1. **File Preparation**: Copy and organize source files locally
-2. **AI Generation**: Create aligned sections using LLM
-3. **Data Storage**: Persist generated sections for navigation
-4. **Result Reporting**: Provide processing outcomes and statistics
+1. **Dosya Hazırlama**: Kaynak dosyaları yerel olarak kopyala ve düzenle
+2. **AI Üretimi**: LLM kullanarak hizalanmış bölümler oluştur
+3. **Veri Depolama**: Gezinti için üretilen bölümleri kalıcıla
+4. **Sonuç Raporlama**: İşleme çıktıları ve istatistikleri sağla
 
-### 3. Resolution and Retrieval
+### 3. Çözümleme ve Alma
 
 ```python
 def resolve(self, speaker_pattern: str) -> Speaker:
@@ -149,20 +149,20 @@ def resolve(self, speaker_pattern: str) -> Speaker:
     raise ValueError(f"No speaker found matching '{speaker_pattern}'.")
 ```
 
-## File Management
+## Dosya Yönetimi
 
-### File Organization Strategy
+### Dosya Organizasyon Stratejisi
 
 ```
 ~/.moves/speakers/
-└── {speaker-id}/              # e.g., "john-doe-Ax9K2"
-    ├── speaker.json           # Speaker metadata
-    ├── presentation.pdf       # Local presentation copy
-    ├── transcript.pdf         # Local transcript copy
-    └── sections.json          # Generated navigation sections (after processing)
+└── {speaker-id}/              # örn., "john-doe-Ax9K2"
+    ├── speaker.json           # Konuşmacı meta verisi
+    ├── presentation.pdf       # Yerel sunum kopyası
+    ├── transcript.pdf         # Yerel transkript kopyası
+    └── sections.json          # İşleme sonrası oluşturulan gezinti bölümleri
 ```
 
-### File Handling Logic
+### Dosya İşleme Mantığı
 
 ```python
 # Source file priority
@@ -183,16 +183,16 @@ else:
     raise FileNotFoundError(f"Missing presentation file for speaker {speaker.name}")
 ```
 
-**File Management Features**:
+**Dosya Yönetimi Özellikleri**:
 
-- **Source Priority**: Prefer source files over cached local copies
-- **Name Normalization**: Standardize filenames for consistent access
-- **Fallback Strategy**: Use local copies when source files unavailable
-- **Error Handling**: Clear error messages for missing files
+- **Kaynak Önceliği**: Kaynak dosyalar, önbelleğe alınmış yerel kopyalardan tercih edilir
+- **İsim Normalizasyonu**: Tutarlı erişim için dosya adları standartlaştırılır
+- **Geri Dönüş Stratejisi**: Kaynak dosyalar bulunamadığında yerel kopyalar kullanılır
+- **Hata Yönetimi**: Eksik dosyalar için net hata mesajları sağlanır
 
-## AI Processing Pipeline
+## AI İşleme Boru Hattı
 
-### Batch Processing Architecture
+### Toplu İşleme Mimarisi
 
 ```python
 def process(self, speakers: list[Speaker], llm_model: str, llm_api_key: str) -> list[ProcessResult]:
@@ -210,14 +210,14 @@ def process(self, speakers: list[Speaker], llm_model: str, llm_api_key: str) -> 
     return asyncio.run(run())
 ```
 
-**Processing Features**:
+**İşleme Özellikleri**:
 
-- **Concurrent Execution**: Process multiple speakers simultaneously
-- **Staggered Delays**: Prevent API rate limiting with delayed starts
-- **Error Isolation**: Individual failures don't affect other speakers
-- **Result Aggregation**: Collect outcomes for batch reporting
+- **Eşzamanlı Çalıştırma**: Birden fazla konuşmacıyı aynı anda işle
+- **Sırayla Gecikmeler**: API oran sınırlamasını önlemek için gecikmeli başlangıçlar
+- **Hata İzolasyonu**: Bireysel hatalar diğer konuşmacıları etkilemez
+- **Sonuç Toplama**: Toplu raporlama için çıktıları birleştir
 
-### AI Integration Workflow
+### AI Entegrasyon Akışı
 
 ```python
 # 1. File Preparation
@@ -239,9 +239,9 @@ structured_sections = [
 ]
 ```
 
-## Data Persistence
+## Veri Kalıcılaştırma
 
-### Speaker Metadata Format
+### Konuşmacı Meta Verisi Biçimi
 
 ```json
 {
@@ -252,7 +252,7 @@ structured_sections = [
 }
 ```
 
-### Generated Sections Format
+### Oluşturulan Bölümler Biçimi
 
 ```json
 [
@@ -267,7 +267,7 @@ structured_sections = [
 ]
 ```
 
-### Data Serialization
+### Veri Serileştirme
 
 ```python
 # Speaker metadata serialization
@@ -283,11 +283,11 @@ data_handler.write(
 )
 ```
 
-## Speaker Resolution
+## Konuşmacı Çözümleme
 
-### Flexible Lookup System
+### Esnek Arama Sistemi
 
-The SpeakerManager provides flexible speaker resolution supporting both IDs and names:
+SpeakerManager, hem kimlikleri hem de isimleri destekleyen esnek bir konuşmacı çözümlemesi sunar:
 
 ```python
 # Resolution strategies
@@ -297,7 +297,7 @@ The SpeakerManager provides flexible speaker resolution supporting both IDs and 
 4. Ambiguity handling: Multiple matches → error with suggestions
 ```
 
-### Resolution Examples
+### Çözümleme Örnekleri
 
 ```python
 # Direct ID resolution
@@ -313,9 +313,9 @@ except ValueError as e:
     print(e)  # "Multiple speakers found matching 'John': ..."
 ```
 
-## Error Handling
+## Hata Yönetimi
 
-### Validation and Error Prevention
+### Doğrulama ve Hata Önleme
 
 ```python
 def add(self, name: str, source_presentation: Path, source_transcript: Path) -> Speaker:
@@ -330,7 +330,7 @@ def add(self, name: str, source_presentation: Path, source_transcript: Path) -> 
     # File validation occurs before SpeakerManager methods are called
 ```
 
-### Processing Error Management
+### İşleme Hata Yönetimi
 
 ```python
 async def process_speaker(speaker, speaker_path, delay):
@@ -351,16 +351,16 @@ async def process_speaker(speaker, speaker_path, delay):
         raise RuntimeError(f"Failed to process speaker {speaker.name}: {e}") from e
 ```
 
-**Error Handling Principles**:
+**Hata Yönetimi Prensipleri**:
 
-- **Early Validation**: Check preconditions before operations
-- **Contextual Errors**: Provide clear error messages with speaker context
-- **Resource Cleanup**: Ensure proper cleanup on failures
-- **Error Propagation**: Pass errors up with additional context
+- **Erken Doğrulama**: İşlemlerden önce ön koşulları kontrol et
+- **Bağlamlı Hatalar**: Konuşmacı bağlamı içeren net hata mesajları sağla
+- **Kaynak Temizliği**: Başarısızlıklarda uygun temizlik yap
+- **Hata Yayma**: Ek bağlamla hataları üst katmanlara aktar
 
-## Usage Examples
+## Kullanım Örnekleri
 
-### Basic Speaker Operations
+### Temel Konuşmacı İşlemleri
 
 ```python
 # Initialize manager
@@ -382,7 +382,7 @@ for speaker in speakers:
 found_speaker = speaker_manager.resolve("Dr. Smith")
 ```
 
-### File Management Operations
+### Dosya Yönetimi İşlemleri
 
 ```python
 # Update speaker files
@@ -399,7 +399,7 @@ status = "Ready" if sections_file.exists() else "Not Ready"
 print(f"Speaker {speaker.name} is {status}")
 ```
 
-### Batch Processing
+### Toplu İşleme
 
 ```python
 # Process multiple speakers
@@ -420,7 +420,7 @@ for speaker, result in zip(speakers_to_process, results):
     print(f"  Sources: {result.presentation_from}, {result.transcript_from}")
 ```
 
-### Cleanup Operations
+### Temizleme İşlemleri
 
 ```python
 # Delete speaker and all associated data
@@ -431,7 +431,7 @@ else:
     print(f"Failed to delete speaker {speaker.name}")
 ```
 
-### Integration with CLI
+### CLI Entegrasyonu
 
 ```python
 # CLI command integration example
@@ -453,4 +453,4 @@ def speaker_add(name: str, source_presentation: Path, source_transcript: Path):
         raise typer.Exit(1)
 ```
 
-The SpeakerManager provides a robust foundation for managing speaker profiles and their associated data, handling everything from initial file management through AI processing to final cleanup. Its flexible resolution system and comprehensive error handling make it reliable for both programmatic use and CLI integration.
+SpeakerManager, konuşmacı profillerini ve ilişkili verilerini yönetmek için sağlam bir temel sunar; ilk dosya yönetiminden AI işleme ve son temizlik aşamasına kadar her adımı ele alır. Esnek çözümleme sistemi ve kapsamlı hata yönetimi, hem programatik kullanım hem de CLI entegrasyonu için güvenilirliğini artırır.

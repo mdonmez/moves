@@ -1,22 +1,22 @@
-# Section Producer
+# Bölüm Üreticisi
 
-The `SectionProducer` is responsible for AI-powered content generation that aligns presentation slides with speaker transcripts. It uses Large Language Models (LLMs) to create navigable sections that enable intelligent voice-controlled presentation navigation.
+`SectionProducer`, sunum slaytlarını konuşmacı transkriptleriyle hizalayan AI destekli içerik üretiminden sorumludur. Navigasyon yeteneği olan bölümler oluşturmak için Büyük Dil Modellerini (LLM) kullanır ve bu sayede akıllı ses kontrollü sunum navigasyonu sağlanır.
 
-## Table of Contents
+## İçindekiler
 
-- [Overview](#overview)
-- [PDF Processing](#pdf-processing)
-- [LLM Integration](#llm-integration)
-- [Content Alignment](#content-alignment)
-- [Data Conversion](#data-conversion)
-- [Error Handling](#error-handling)
-- [Usage Examples](#usage-examples)
+- [Genel Bakış](#genel-bakış)
+- [PDF İşleme](#pdf-işleme)
+- [LLM Entegrasyonu](#llm-entegrasyonu)
+- [İçerik Hizalama](#içerik-hizalama)
+- [Veri Dönüştürme](#veri-dönüştürme)
+- [Hata Yönetimi](#hata-yönetimi)
+- [Kullanım Örnekleri](#kullanım-örnekleri)
 
-## Overview
+## Genel Bakış
 
-**Location**: `src/core/components/section_producer.py`
+**Konum**: `src/core/components/section_producer.py`
 
-The SectionProducer bridges the gap between static presentation content and dynamic speech patterns by generating aligned sections that represent what the speaker says for each slide. This enables the system to match real-time speech against appropriate slide content.
+SectionProducer, statik sunum içeriği ile dinamik konuşma kalıpları arasındaki boşluğu, her slayt için konuşmacının söylediği şeyleri temsil eden hizalanmış bölümler üreterek doldurur. Bu sayede sistem, gerçek zamanlı konuşmayı uygun slayt içeriğiyle eşleştirebilir.
 
 ```python
 def generate_sections(
@@ -37,11 +37,11 @@ def generate_sections(
             for idx, content in enumerate(section_contents)]
 ```
 
-## PDF Processing
+## PDF İşleme
 
-### Dual-Mode Extraction
+### Çift Modlu Çıkarma
 
-The SectionProducer handles two types of PDF content with different extraction strategies:
+SectionProducer, farklı çıkarma stratejileri gerektiren iki tür PDF içeriğini yönetir:
 
 ```python
 def _extract_pdf(pdf_path: Path, extraction_type: Literal["transcript", "presentation"]) -> str:
@@ -66,29 +66,29 @@ def _extract_pdf(pdf_path: Path, extraction_type: Literal["transcript", "present
         raise RuntimeError(f"PDF extraction failed for {pdf_path} ({extraction_type}): {e}") from e
 ```
 
-### Transcript Processing
+### Transkript İşleme
 
-**Purpose**: Extract continuous speech content for analysis
+**Amaç**: Analiz için sürekli konuşma içeriğini çıkarmak
 
-**Process**:
+**İşlem**:
 
-1. **Text Extraction**: Extract all text from PDF pages
-2. **Normalization**: Join all content into continuous text
-3. **Cleaning**: Remove excessive whitespace and formatting artifacts
+1. **Metin Çıkarma**: PDF sayfalarından tüm metni çıkar
+2. **Normalleştirme**: Tüm içeriği sürekli bir metin haline getir
+3. **Temizleme**: Aşırı boşlukları ve biçimlendirme kalıntılarını kaldır
 
-**Result**: Single continuous string representing the speaker's complete speech
+**Sonuç**: Konuşmacının tam konuşmasını temsil eden tek bir sürekli dize
 
-### Presentation Processing
+### Sunum İşleme
 
-**Purpose**: Maintain slide structure for content alignment
+**Amaç**: İçerik hizalaması için slayt yapısını korumak
 
-**Process**:
+**İşlem**:
 
-1. **Page-by-Page Processing**: Extract content from each slide separately
-2. **Markdown Formatting**: Structure content with slide headers
-3. **Content Cleaning**: Normalize whitespace while preserving structure
+1. **Sayfa Sayfa İşleme**: Her slayttan içeriği ayrı ayrı çıkar
+2. **Markdown Biçimlendirme**: Slayt başlıklarıyla içeriği yapılandır
+3. **İçerik Temizleme**: Yapıyı korurken boşlukları normalleştir
 
-**Result**: Structured markdown with clear slide boundaries:
+**Sonuç**: Açık slayt sınırlarıyla yapılandırılmış markdown:
 
 ```markdown
 # Slide Page 0
@@ -104,11 +104,11 @@ Today we'll cover three main topics: machine learning, natural language processi
 Let's start with machine learning fundamentals.
 ```
 
-## LLM Integration
+## LLM Entegrasyonu
 
-### Structured Output Generation
+### Yapılandırılmış Çıktı Oluşturma
 
-The SectionProducer uses the `instructor` library with LiteLLM to ensure structured, validated output:
+SectionProducer, yapılandırılmış ve doğrulanmış çıktı sağlamak için `instructor` kütüphanesini LiteLLM ile birlikte kullanır:
 
 ```python
 class SectionsOutputModel(BaseModel):
@@ -124,14 +124,14 @@ class SectionsOutputModel(BaseModel):
     )
 ```
 
-**Validation Features**:
+**Doğrulama Özellikleri**:
 
-- **Section Count Enforcement**: Ensures exactly one section per slide
-- **Index Validation**: Validates section indices start from 0
-- **Content Requirements**: Ensures all sections have content
-- **Type Safety**: Strong typing for all fields
+- **Bölüm Sayısı Zorlaması**: Her slayt için tam bir bölüm garantiler
+- **Dizin Doğrulaması**: Bölüm dizinlerinin 0’dan başlamasını teyit eder
+- **İçerik Gereklilikleri**: Tüm bölümlerin içerik taşıdığını kontrol eder
+- **Tür Güvenliği**: Tüm alanlar için güçlü tip tanımları
 
-### LLM Call Implementation
+### LLM Çağrı Uygulaması
 
 ```python
 def _call_llm(presentation_data: str, transcript_data: str, llm_model: str, llm_api_key: str) -> list[str]:
@@ -161,19 +161,19 @@ def _call_llm(presentation_data: str, transcript_data: str, llm_model: str, llm_
         raise RuntimeError(f"LLM call failed: {e}") from e
 ```
 
-**LLM Configuration**:
+**LLM Yapılandırması**:
 
-- **Low Temperature**: 0.2 for consistent, deterministic output
-- **Structured Validation**: Pydantic models ensure output format
-- **Error Handling**: Comprehensive error reporting with context
+- **Düşük Sıcaklık**: Tutarlı, deterministik çıktı için 0.2
+- **Yapılandırılmış Doğrulama**: Pydantic modelleri çıktı biçimini garanti eder
+- **Hata Yönetimi**: Bağlam içeren kapsamlı hata raporlaması
 
-## Content Alignment
+## İçerik Hizalama
 
-### AI Processing Instructions
+### AI İşleme Talimatları
 
-**Location**: `src/data/llm_instruction.md`
+**Konum**: `src/data/llm_instruction.md`
 
-The SectionProducer uses detailed instructions to guide LLM behavior:
+SectionProducer, LLM davranışını yönlendirmek için ayrıntılı talimatlar kullanır:
 
 ```markdown
 Your primary function is to align presentation data with a speaker's transcript.
@@ -192,24 +192,24 @@ Key constraints:
 5. No Empty Segments: Every slide must have corresponding content
 ```
 
-### Alignment Process
+### Hizalama Süreci
 
-1. **Content Analysis**: LLM analyzes both presentation structure and transcript content
-2. **Topic Mapping**: Maps transcript portions to appropriate slides based on semantic similarity
-3. **Content Extraction**: Extracts relevant transcript passages for each slide
-4. **Gap Filling**: Generates content for slides with no corresponding transcript material
-5. **Quality Assurance**: Ensures output maintains speaker's language and tone
+1. **İçerik Analizi**: LLM, hem sunum yapısını hem de transkript içeriğini inceler
+2. **Konu Eşleştirme**: Anlamsal benzerliğe göre transkript bölümlerini uygun slaytlarla eşler
+3. **İçerik Çıkarma**: Her slayt için ilgili transkript pasajlarını alır
+4. **Boşluk Doldurma**: İlgili transkript içeriği olmayan slaytlar için yeni içerik üretir
+5. **Kalite Güvencesi**: Çıktının konuşmacının dili ve tonunu koruduğunu doğrular
 
-### Output Quality Features
+### Çıktı Kalite Özellikleri
 
-- **Language Consistency**: Matches transcript language and style
-- **Content Relevance**: Aligns speech content with slide topics
-- **Completeness**: Ensures every slide has navigable content
-- **Speaker Voice**: Maintains natural speech patterns from transcript
+- **Dil Tutarlılığı**: Transkript dilini ve stilini yansıtır
+- **İçerik Alaka Düzeyi**: Konuşma içeriğini slayt konularıyla hizalar
+- **Tamamlayıcılık**: Her slaytın gezinilebilir içeriğe sahip olmasını sağlar
+- **Konuşmacı Ses Tonu**: Transkriptin doğal konuşma kalıplarını sürdürür
 
-## Data Conversion
+## Veri Dönüştürme
 
-### Section Object Creation
+### Bölüm Nesnesi Oluşturma
 
 ```python
 def generate_sections(presentation_path: Path, transcript_path: Path, llm_model: str, llm_api_key: str) -> list[Section]:
@@ -225,7 +225,7 @@ def generate_sections(presentation_path: Path, transcript_path: Path, llm_model:
     return generated_sections
 ```
 
-### Serialization Support
+### Serileştirme Desteği
 
 ```python
 def convert_to_list(section_objects: list[Section]) -> list[dict[str, str | int]]:
@@ -246,15 +246,15 @@ def convert_to_objects(section_list: list[dict[str, str | int]]) -> list[Section
     ]
 ```
 
-**Conversion Features**:
+**Dönüştürme Özellikleri**:
 
-- **Bidirectional**: Convert between objects and serializable formats
-- **Type Safety**: Maintains type information through conversions
-- **JSON Compatibility**: Enables persistent storage and data exchange
+- **İki Yönlü**: Nesneler ve serileştirilebilir formatlar arasında dönüşüm
+- **Tür Güvenliği**: Dönüşümler sırasında tip bilgisi korunur
+- **JSON Uyumluluğu**: Kalıcı depolama ve veri alışverişi sağlar
 
-## Error Handling
+## Hata Yönetimi
 
-### PDF Processing Errors
+### PDF İşleme Hataları
 
 ```python
 def _extract_pdf(pdf_path: Path, extraction_type: Literal["transcript", "presentation"]) -> str:
@@ -268,14 +268,14 @@ def _extract_pdf(pdf_path: Path, extraction_type: Literal["transcript", "present
         ) from e
 ```
 
-**Error Scenarios**:
+**Hata Senaryoları**:
 
-- **File Access**: Handle permission or path issues
-- **Corrupted PDFs**: Manage malformed PDF files
-- **Empty Content**: Handle PDFs with no extractable text
-- **Encoding Issues**: Manage character encoding problems
+- **Dosya Erişimi**: İzin veya yol problemlerini ele al
+- **Bozuk PDF'ler**: Hatalı PDF dosyalarını yönet
+- **Boş İçerik**: Çıkarılabilir metin olmayan PDF'leri ele al
+- **Kodlama Sorunları**: Karakter kodlama problemlerini yönet
 
-### LLM Processing Errors
+### LLM İşleme Hataları
 
 ```python
 def _call_llm(...) -> list[str]:
@@ -287,25 +287,25 @@ def _call_llm(...) -> list[str]:
         raise RuntimeError(f"LLM call failed: {e}") from e
 ```
 
-**Error Scenarios**:
+**Hata Senaryoları**:
 
-- **API Failures**: Network issues, rate limiting, service outages
-- **Authentication**: Invalid API keys or expired credentials
-- **Quota Exceeded**: Usage limit or billing issues
-- **Validation Failures**: Output doesn't match expected structure
+- **API Hataları**: Ağ sorunları, oran sınırlamaları, hizmet kesintileri
+- **Kimlik Doğrulama**: Geçersiz API anahtarları veya süresi dolmuş kimlik bilgiler
+- **Kota Aşımı**: Kullanım sınırı veya fatura problemleri
+- **Doğrulama Başarısızlıkları**: Çıktının beklenen yapıya uymaması
 
-### Comprehensive Error Context
+### Kapsamlı Hata Bağlamı
 
-All error handling provides:
+Tüm hata yönetimi şunları sağlar:
 
-- **Operation Context**: Which phase failed (PDF extraction, LLM processing, etc.)
-- **Input Information**: File paths, model names, data characteristics
-- **Root Cause**: Original exception details preserved with `from e`
-- **Actionable Messages**: Clear indication of what went wrong
+- **İşlem Bağlamı**: Hangi aşamanın başarısız olduğu (PDF çıkarma, LLM işleme vb.)
+- **Girdi Bilgisi**: Dosya yolları, model adları, veri özellikleri
+- **Kök Neden**: Orijinal istisna detayları `from e` ile korunur
+- **Eyleme Yönelik Mesajlar**: Neyin yanlış gittiğinin net açıklaması
 
-## Usage Examples
+## Kullanım Örnekleri
 
-### Basic Section Generation
+### Temel Bölüm Oluşturma
 
 ```python
 from pathlib import Path
@@ -324,7 +324,7 @@ for section in sections:
     print(f"Section {section.section_index}: {section.content[:100]}...")
 ```
 
-### Data Persistence
+### Veri Sürekliliği
 
 ```python
 import json
@@ -346,7 +346,7 @@ loaded_data = json.loads(data_handler.read(output_path))
 reconstructed_sections = convert_to_objects(loaded_data)
 ```
 
-### Integration with Speaker Processing
+### Konuşmacı İşleme ile Entegrasyon
 
 ```python
 async def process_speaker(speaker, speaker_path, llm_model, llm_api_key):
@@ -372,7 +372,7 @@ async def process_speaker(speaker, speaker_path, llm_model, llm_api_key):
     return len(sections)
 ```
 
-### Error Handling in Practice
+### Pratikte Hata Yönetimi
 
 ```python
 def safe_section_generation(presentation_path, transcript_path, llm_model, llm_api_key):
@@ -404,7 +404,7 @@ else:
     print(f"Success: Generated {len(sections)} sections")
 ```
 
-### Custom Model Configuration
+### Özel Model Yapılandırması
 
 ```python
 # Different models for different use cases
@@ -425,4 +425,4 @@ def generate_with_model_selection(presentation_path, transcript_path, api_key, q
     )
 ```
 
-The SectionProducer represents the AI-powered intelligence that enables moves to understand and align presentation content with natural speech patterns. By combining robust PDF processing, structured LLM integration, and comprehensive error handling, it creates the foundation for intelligent voice-controlled navigation.
+SectionProducer, sunum içeriğini doğal konuşma kalıplarıyla anlamak ve hizalamak için gerekli AI zekasını temsil eder. Sağlam PDF işleme, yapılandırılmış LLM entegrasyonu ve kapsamlı hata yönetimini birleştirerek akıllı ses kontrollü navigasyonun temelini oluşturur.

@@ -1,22 +1,22 @@
-# Similarity Calculator
+# Benzerlik Hesaplayıcı
 
-The `SimilarityCalculator` is the core component responsible for matching real-time speech against presentation content. It combines multiple similarity algorithms with sophisticated scoring mechanisms to determine optimal slide navigation decisions.
+`SimilarityCalculator`, gerçek zamanlı konuşmayı sunum içeriğiyle eşleştirmekten sorumlu çekirdek bileşendir. Birden çok benzerlik algoritmasını, optimal slayt navigasyon kararlarını belirlemek için gelişmiş puanlama mekanizmalarıyla birleştirir.
 
-## Table of Contents
+## İçindekiler
 
-- [Overview](#overview)
-- [Hybrid Similarity Approach](#hybrid-similarity-approach)
-- [Similarity Units](#similarity-units)
-- [Scoring Normalization](#scoring-normalization)
-- [Performance Optimization](#performance-optimization)
-- [Configuration](#configuration)
-- [Usage Examples](#usage-examples)
+- [Genel Bakış](#genel-bakış)
+- [Hibrit Benzerlik Yaklaşımı](#hibrit-benzerlik-yaklaşımı)
+- [Benzerlik Birimleri](#benzerlik-birimleri)
+- [Puan Normalizasyonu](#puan-normalizasyonu)
+- [Performans Optimizasyonu](#performans-optimizasyonu)
+- [Yapılandırma](#yapılandırma)
+- [Kullanım Örnekleri](#kullanım-örnekleri)
 
-## Overview
+## Genel Bakış
 
-**Location**: `src/core/components/similarity_calculator.py`
+**Konum**: `src/core/components/similarity_calculator.py`
 
-The SimilarityCalculator implements a weighted hybrid approach that combines semantic understanding with phonetic matching to provide robust speech-to-content matching. This dual approach handles both meaning-based alignment and pronunciation-based matching, making the system resilient to speech recognition errors.
+SimilarityCalculator, anlamsal anlayışı fonetik eşleştirme ile birleştiren ağırlıklı bir hibrit yaklaşımı uygular ve sağlam bir konuşmadan içeriğe eşleştirme sağlar. Bu çift yaklaşım, anlam temelli hizalamayı ve telaffuz temelli eşleştirmeyi aynı anda ele alarak sistemi konuşma tanıma hatalarına karşı dayanıklı hâle getirir.
 
 ```python
 class SimilarityCalculator:
@@ -27,9 +27,9 @@ class SimilarityCalculator:
         self.phonetic = Phonetic()      # Metaphone + fuzzy matching
 ```
 
-## Hybrid Similarity Approach
+## Hibrit Benzerlik Yaklaşımı
 
-### Architecture Overview
+### Mimari Genel Görünüm
 
 ```
 Real-time Speech Input
@@ -60,25 +60,25 @@ Real-time Speech Input
     └─────────┘
 ```
 
-### Dual Algorithm Strategy
+### Çift Algoritma Stratejisi
 
-The calculator uses complementary algorithms to handle different aspects of speech matching:
+Hesaplayıcı, konuşma eşleştirmenin farklı yönlerini ele almak için tamamlayıcı algoritmalar kullanır:
 
-**Semantic Similarity (40% weight)**:
+**Anlamsal Benzerlik (%40 ağırlık)**:
 
-- **Purpose**: Understanding meaning and context
-- **Technology**: Sentence transformer embeddings with cosine similarity
-- **Strengths**: Handles paraphrasing, synonyms, concept matching
-- **Use Cases**: "machine learning" ↔ "artificial intelligence algorithms"
+- **Amaç**: Anlamı ve bağlamı anlamak
+- **Teknoloji**: Kosinüs benzerliğiyle cümle dönüştürücü gömme
+- **Güçlü Yönleri**: Parafraz, eşanlamlılar, kavram eşleştirme
+- **Kullanım Durumları**: "machine learning" ↔ "artificial intelligence algorithms"
 
-**Phonetic Similarity (60% weight)**:
+**Fonetik Benzerlik (%60 ağırlık)**:
 
-- **Purpose**: Matching pronunciation and sound patterns
-- **Technology**: Metaphone phonetic encoding with fuzzy string matching
-- **Strengths**: Handles speech recognition errors, mispronunciations
-- **Use Cases**: "write" ↔ "right", "there" ↔ "their"
+- **Amaç**: Telaffuz ve ses desenlerini eşleştirmek
+- **Teknoloji**: Metaphone fonetik kodlaması + bulanık dize eşleştirme
+- **Güçlü Yönleri**: Konuşma tanıma hataları, yanlış telaffuzları yönetir
+- **Kullanım Durumları**: "write" ↔ "right", "there" ↔ "their"
 
-### Weight Rationale
+### Ağırlık Gerekçesi
 
 ```python
 # Default configuration favors phonetic matching
@@ -86,18 +86,18 @@ semantic_weight = 0.4  # 40% - meaning-based matching
 phonetic_weight = 0.6  # 60% - sound-based matching
 ```
 
-**Why Phonetic Emphasis?**:
+**Neden Fonetik Önem?**:
 
-- **Speech Recognition Errors**: STT systems often produce phonetically similar but semantically different words
-- **Real-Time Constraints**: Phonetic matching is computationally faster
-- **Pronunciation Variations**: Handles accents, speaking speed variations
-- **Error Resilience**: More robust to transcription mistakes
+- **Konuşma Tanıma Hataları**: STT sistemleri sıklıkla fonetik olarak benzer ama anlamsal olarak farklı kelimeler üretir
+- **Gerçek Zamanlı Kısıtlamalar**: Fonetik eşleştirme hesaplamada daha hızlıdır
+- **Telaffuz Varyasyonları**: Aksanları, konuşma hızı çeşitliliklerini yönetir
+- **Hata Dayanıklılığı**: Transkripsiyon hatalarına karşı daha dayanıklıdır
 
-## Similarity Units
+## Benzerlik Birimleri
 
-### Semantic Similarity Unit
+### Anlamsal Benzerlik Birimi
 
-**Location**: `src/core/components/similarity_units/semantic.py`
+**Konum**: `src/core/components/similarity_units/semantic.py`
 
 ```python
 class Semantic:
@@ -126,16 +126,16 @@ class Semantic:
                 for candidate, score in zip(candidates, cosine_scores)]
 ```
 
-**Semantic Features**:
+**Anlamsal Özellikler**:
 
-- **Local Model**: No network dependency during presentations
-- **Normalized Embeddings**: Consistent similarity scaling
-- **Batch Processing**: Efficient computation for multiple candidates
-- **Cosine Similarity**: Standard semantic similarity metric
+- **Yerel Model**: Sunum sırasında ağ bağımlılığı yok
+- **Normalleştirilmiş Gömme**: Tutarlı benzerlik ölçeklendirmesi
+- **Toplu İşleme**: Birden çok aday için verimli hesaplama
+- **Kosinüs Benzerliği**: Standart anlamsal benzerlik ölçütü
 
-### Phonetic Similarity Unit
+### Fonetik Benzerlik Birimi
 
-**Location**: `src/core/components/similarity_units/phonetic.py`
+**Konum**: `src/core/components/similarity_units/phonetic.py`
 
 ```python
 class Phonetic:
@@ -161,16 +161,16 @@ class Phonetic:
         return sorted(results, key=lambda x: x.score, reverse=True)
 ```
 
-**Phonetic Features**:
+**Fonetik Özellikler**:
 
-- **Metaphone Encoding**: Standard phonetic algorithm for English
-- **LRU Caching**: Performance optimization for repeated calculations
-- **Fuzzy Matching**: RapidFuzz for efficient string similarity
-- **Normalized Scoring**: 0.0-1.0 range for consistent weighting
+- **Metaphone Kodlaması**: İngilizce için standart fonetik algoritma
+- **LRU Önbellekleme**: Tekrarlanan hesaplamalar için performans iyileştirmesi
+- **Bulanık Eşleştirme**: Verimli dize benzerliği için RapidFuzz
+- **Normalleştirilmiş Puanlama**: Tutarlı ağırlıklandırma için 0.0-1.0 aralığı
 
-## Scoring Normalization
+## Puan Normalizasyonu
 
-### Simple Normalization Algorithm
+### Basit Normalizasyon Algoritması
 
 ```python
 def _normalize_scores_simple(self, results: list[SimilarityResult]) -> dict[int, float]:
@@ -200,14 +200,14 @@ def _normalize_scores_simple(self, results: list[SimilarityResult]) -> dict[int,
     return normalized
 ```
 
-**Normalization Features**:
+**Normalizasyon Özellikleri**:
 
-- **Threshold Filtering**: Only scores ≥ 0.5 are considered valid
-- **Min-Max Scaling**: Normalizes to 0.0-1.0 range
-- **Edge Case Handling**: Manages single scores and empty results
-- **Quality Filtering**: Eliminates low-quality matches
+- **Eşik Filtreleme**: Yalnızca ≥ 0.5 puanlar geçerli kabul edilir
+- **Min-Maks Ölçekleme**: 0.0-1.0 aralığına normalleştirir
+- **Kenar Durumu İşleme**: Tek puanları ve boş sonuçları yönetir
+- **Kalite Filtrelemesi**: Düşük kaliteli eşleşmeleri ortadan kaldırır
 
-### Final Score Calculation
+### Son Puan Hesaplaması
 
 ```python
 def compare(self, input_str: str, candidates: list[Chunk]) -> list[SimilarityResult]:
@@ -237,9 +237,9 @@ def compare(self, input_str: str, candidates: list[Chunk]) -> list[SimilarityRes
     return sorted(final_results, key=lambda x: x.score, reverse=True)
 ```
 
-## Performance Optimization
+## Performans Optimizasyonu
 
-### Caching Strategy
+### Önbellek Stratejisi
 
 ```python
 # LRU caches for expensive operations
@@ -247,13 +247,13 @@ def compare(self, input_str: str, candidates: list[Chunk]) -> list[SimilarityRes
 @lru_cache(maxsize=350)  # Fuzzy ratio cache
 ```
 
-**Cache Benefits**:
+**Önbellek Yararları**:
 
-- **Reduced Computation**: Avoid recalculating phonetic codes
-- **Memory Efficiency**: Bounded cache size prevents memory leaks
-- **Real-Time Performance**: Faster similarity calculations
+- **Azaltılmış Hesaplama**: Fonetik kodların yeniden hesaplanmasını önler
+- **Bellek Verimliliği**: Sınırlı önbellek boyutu bellek sızıntılarını önler
+- **Gerçek Zamanlı Performans**: Daha hızlı benzerlik hesaplamaları
 
-### Batch Processing
+### Toplu İşleme
 
 ```python
 # Semantic similarity batch processing
@@ -261,13 +261,13 @@ embedding_input = [input_str] + [candidate.partial_content for candidate in cand
 embeddings = self.model.encode(embedding_input, ...)  # Single model call
 ```
 
-**Batch Advantages**:
+**Toplu İşleme Avantajları**:
 
-- **GPU Utilization**: Better hardware utilization for embeddings
-- **Reduced Overhead**: Fewer model initialization costs
-- **Consistent Processing**: Same model state for all candidates
+- **GPU Kullanımı**: Gömme işlemleri için donanım kullanımını artırır
+- **Azaltılmış Yük**: Daha az model başlatma maliyeti
+- **Tutarlı İşleme**: Tüm adaylar için aynı model durumu
 
-### Early Termination
+### Erken Sonlandırma
 
 ```python
 # Threshold-based filtering eliminates poor matches early
@@ -276,9 +276,9 @@ if not valid_scores:
     return {id(res.chunk): 0.0 for res in results}  # Skip expensive normalization
 ```
 
-## Configuration
+## Yapılandırma
 
-### Weight Customization
+### Ağırlık Özelleştirme
 
 ```python
 # Default configuration
@@ -299,7 +299,7 @@ precise_calculator = SimilarityCalculator(
 )
 ```
 
-### Performance Tuning
+### Performans Ayarı
 
 ```python
 # Cache size optimization
@@ -313,9 +313,9 @@ def _normalize_scores_simple(self, results):
     valid_scores = [res.score for res in results if res.score >= 0.3]  # Lower threshold
 ```
 
-## Usage Examples
+## Kullanım Örnekleri
 
-### Basic Similarity Calculation
+### Temel Benzerlik Hesaplaması
 
 ```python
 from src.core.components.similarity_calculator import SimilarityCalculator
@@ -340,7 +340,7 @@ for result in results:
     print(f"Score: {result.score:.3f} - Content: {result.chunk.partial_content}")
 ```
 
-### Performance Testing
+### Performans Testi
 
 ```python
 import time
@@ -367,7 +367,7 @@ def test_similarity_performance():
 test_similarity_performance()
 ```
 
-### Integration with Navigation
+### Navigasyon ile Entegrasyon
 
 ```python
 def navigate_presentation(self):
@@ -393,7 +393,7 @@ def navigate_presentation(self):
                 self._navigate_to_section(target_section)
 ```
 
-### Custom Weight Optimization
+### Özel Ağırlık Optimizasyonu
 
 ```python
 def find_optimal_weights(test_data):
@@ -421,7 +421,7 @@ def find_optimal_weights(test_data):
     return best_weights
 ```
 
-### Error Handling
+### Hata İşleme
 
 ```python
 def safe_similarity_calculation(calculator, input_text, candidates):
@@ -447,4 +447,4 @@ if error:
     print(f"Warning: {error}, using fallback matching")
 ```
 
-The SimilarityCalculator represents a sophisticated approach to real-time speech matching that balances accuracy, performance, and reliability. By combining semantic understanding with phonetic matching, it provides robust navigation decisions even in the presence of speech recognition errors or pronunciation variations.
+SimilarityCalculator, doğruluk, performans ve güvenilirliği dengeleyen sofistike bir gerçek zamanlı konuşma eşleştirme yaklaşımıdır. Anlamsal anlayışı fonetik eşleştirme ile birleştirerek, konuşma tanıma hataları veya telaffuz varyasyonları olsa bile sağlam navigasyon kararları sağlar.

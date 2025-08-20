@@ -77,5 +77,5 @@ def translate_folder(folder_path: str, target_lang: str):
 
 
 if __name__ == "__main__":
-    folder_to_translate = "docs/tr"
+    folder_to_translate = "docs/tr/components"
     translate_folder(folder_to_translate, "TURKISH")
