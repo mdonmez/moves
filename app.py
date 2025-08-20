@@ -28,7 +28,7 @@ def settings_editor_instance():
 
 # Initialize Typer CLI application
 app = typer.Typer(
-    help="moves CLI - AI-powered presentation control system for seamless slide navigation.",
+    help="moves CLI - Presentation control, reimagined.",
     add_completion=False,
 )
 
