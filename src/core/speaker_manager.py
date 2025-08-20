@@ -57,7 +57,7 @@ class SpeakerManager:
         data_handler.write(speaker_path / "speaker.json", json.dumps(data, indent=4))
         return speaker
 
-    def resolve(self, speaker_pattern: str) -> Speaker | list[Speaker]:
+    def resolve(self, speaker_pattern: str) -> Speaker:
         speakers = self.list()
         speaker_ids = [speaker.speaker_id for speaker in speakers]
 
@@ -71,9 +71,12 @@ class SpeakerManager:
             if len(matched_speakers) == 1:
                 return matched_speakers[0]
             else:
-                return matched_speakers
+                speaker_list = "\n".join([f"    {s.name} ({s.speaker_id})" for s in matched_speakers])
+                raise ValueError(
+                    f"Multiple speakers found matching '{speaker_pattern}'. Be more specific:\n{speaker_list}"
+                )
 
-        return []
+        raise ValueError(f"No speaker found matching '{speaker_pattern}'.")
 
     def process(
         self, speakers: list[Speaker], llm_model: str, llm_api_key: str

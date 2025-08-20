@@ -26,23 +26,6 @@ def settings_editor_instance():
     return SettingsEditor()
 
 
-def validate_speaker_resolution(resolved_speaker, speaker_name: str):
-    if isinstance(resolved_speaker, list):
-        if len(resolved_speaker) == 0:
-            typer.echo(f"Error: No speaker found matching '{speaker_name}'", err=True)
-            raise typer.Exit(1)
-        elif len(resolved_speaker) > 1:
-            typer.echo(
-                f"Error: Multiple speakers found matching '{speaker_name}'. Be more specific:",
-                err=True,
-            )
-            for s in resolved_speaker:
-                typer.echo(f"    {s.name} ({s.speaker_id})", err=True)
-            raise typer.Exit(1)
-        else:
-            return resolved_speaker[0]
-    return resolved_speaker
-
 
 # Initialize Typer CLI application
 app = typer.Typer(
@@ -56,9 +39,6 @@ presentation_app = typer.Typer(help="Live presentation control with voice naviga
 settings_app = typer.Typer(help="Configure system settings (model, API key)")
 
 
-# =============================================================================
-# SPEAKER COMMANDS
-# =============================================================================
 @speaker_app.command("add")
 def speaker_add(
     name: str = typer.Argument(..., help="Speaker's name"),
@@ -66,7 +46,7 @@ def speaker_add(
     source_transcript: Path = typer.Argument(..., help="Path to transcript file"),
 ):
     """Create a new speaker profile with presentation and transcript files"""
-    # Validate that both file paths exist and are accessible
+    # Validate file paths exist
     if not source_presentation.exists():
         typer.echo(f"Could not add speaker '{name}'.", err=True)
         typer.echo(f"    Presentation file not found: {source_presentation}", err=True)
@@ -78,23 +58,19 @@ def speaker_add(
         raise typer.Exit(1)
 
     try:
-        # Create speaker manager instance and add speaker
+        # Add speaker
         speaker_manager = speaker_manager_instance()
         speaker = speaker_manager.add(name, source_presentation, source_transcript)
 
-        # Display success message in Direct Summary format
+        # Display success message
         typer.echo(f"Speaker '{speaker.name}' ({speaker.speaker_id}) added.")
         typer.echo(f"    ID -> {speaker.speaker_id}")
         typer.echo(f"    Presentation -> {speaker.source_presentation}")
         typer.echo(f"    Transcript -> {speaker.source_transcript}")
 
-    except ValueError as e:
-        typer.echo(f"Could not add speaker '{name}'.", err=True)
-        typer.echo(f"    {str(e)}", err=True)
-        raise typer.Exit(1)
     except Exception as e:
         typer.echo(f"Could not add speaker '{name}'.", err=True)
-        typer.echo(f"    Unexpected error: {str(e)}", err=True)
+        typer.echo(f"    {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -109,7 +85,7 @@ def speaker_edit(
     ),
 ):
     """Update speaker's source files (presentation or transcript paths)"""
-    # Validate at least one update parameter is provided
+    # Validate at least one parameter is provided
     if not source_presentation and not source_transcript:
         typer.echo(
             "Error: At least one update parameter (--presentation or --transcript) must be provided",
@@ -118,12 +94,11 @@ def speaker_edit(
         raise typer.Exit(1)
 
     try:
-        # Create speaker manager instance and resolve speaker
+        # Resolve speaker
         speaker_manager = speaker_manager_instance()
         resolved_speaker = speaker_manager.resolve(speaker)
-        resolved_speaker = validate_speaker_resolution(resolved_speaker, speaker)
 
-        # Convert string paths to Path objects and validate
+        # Validate and convert paths
         presentation_path = Path(source_presentation) if source_presentation else None
         transcript_path = Path(source_transcript) if source_transcript else None
 
@@ -144,18 +119,15 @@ def speaker_edit(
             resolved_speaker, presentation_path, transcript_path
         )
 
-        # Display updated speaker information in Direct Summary format
+        # Display updated speaker information
         typer.echo(f"Speaker '{updated_speaker.name}' updated.")
         if presentation_path:
             typer.echo(f"    Presentation -> {updated_speaker.source_presentation}")
         if transcript_path:
             typer.echo(f"    Transcript -> {updated_speaker.source_transcript}")
 
-    except typer.Exit:
-        # Re-raise typer.Exit to avoid catching it in the generic handler
-        raise
     except Exception as e:
-        typer.echo(f"Unexpected error: {str(e)}", err=True)
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -163,7 +135,7 @@ def speaker_edit(
 def speaker_list():
     """List all registered speakers with ready status"""
     try:
-        # Create speaker manager instance and get all speakers
+        # Get all speakers
         speaker_manager = speaker_manager_instance()
         speakers = speaker_manager.list()
 
@@ -171,7 +143,7 @@ def speaker_list():
             typer.echo("No speakers are registered.")
             return
 
-        # Display speakers in Direct Summary format
+        # Display speakers
         typer.echo(f"Registered Speakers ({len(speakers)})")
         typer.echo()
 
@@ -201,12 +173,11 @@ def speaker_show(
 ):
     """Display detailed speaker information"""
     try:
-        # Create speaker manager instance and resolve speaker
+        # Resolve speaker
         speaker_manager = speaker_manager_instance()
         resolved_speaker = speaker_manager.resolve(speaker)
-        resolved_speaker = validate_speaker_resolution(resolved_speaker, speaker)
 
-        # Check if speaker is ready (sections.json exists)
+        # Check if speaker is ready
         from src.utils import data_handler
 
         speaker_path = (
@@ -215,7 +186,7 @@ def speaker_show(
         sections_file = speaker_path / "sections.json"
         status = "Ready" if sections_file.exists() else "Not Ready"
 
-        # Display speaker details in Direct Summary format
+        # Display speaker details
         typer.echo(
             f"Showing details for speaker '{resolved_speaker.name}' ({resolved_speaker.speaker_id})"
         )
@@ -225,11 +196,8 @@ def speaker_show(
         typer.echo(f"    Presentation -> {resolved_speaker.source_presentation}")
         typer.echo(f"    Transcript -> {resolved_speaker.source_transcript}")
 
-    except typer.Exit:
-        # Re-raise typer.Exit to avoid catching it in the generic handler
-        raise
     except Exception as e:
-        typer.echo(f"Unexpected error: {str(e)}", err=True)
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -240,14 +208,14 @@ def speaker_process(
 ):
     """Generate presentation sections using AI for live control (requires model and API key)"""
     try:
-        # Create speaker manager and settings editor instances
+        # Get instances
         speaker_manager = speaker_manager_instance()
         settings_editor = settings_editor_instance()
 
-        # Get LLM configuration from settings
+        # Get LLM configuration
         settings = settings_editor.list()
 
-        # Validate LLM settings are configured
+        # Validate LLM settings
         if not settings.model:
             typer.echo(
                 "Error: LLM model not configured. Use 'moves settings set model <model>' to configure.",
@@ -275,7 +243,6 @@ def speaker_process(
 
             for speaker_name in speakers:
                 resolved = speaker_manager.resolve(speaker_name)
-                resolved = validate_speaker_resolution(resolved, speaker_name)
                 speaker_list.append(resolved)
         else:
             typer.echo(
@@ -309,9 +276,6 @@ def speaker_process(
                     f"    '{speaker.name}' ({speaker.speaker_id}) -> {result.section_count} sections created."
                 )
 
-    except typer.Exit:
-        # Re-raise typer.Exit to avoid catching it in the generic handler
-        raise
     except Exception as e:
         typer.echo(f"Processing error: {str(e)}", err=True)
         raise typer.Exit(1)
@@ -326,7 +290,6 @@ def speaker_delete(
         # Create speaker manager instance and resolve speaker
         speaker_manager = speaker_manager_instance()
         resolved_speaker = speaker_manager.resolve(speaker)
-        resolved_speaker = validate_speaker_resolution(resolved_speaker, speaker)
 
         # Delete speaker
         success = speaker_manager.delete(resolved_speaker)
@@ -340,17 +303,11 @@ def speaker_delete(
             typer.echo("    Failed to delete speaker data.", err=True)
             raise typer.Exit(1)
 
-    except typer.Exit:
-        # Re-raise typer.Exit to avoid catching it in the generic handler
-        raise
     except Exception as e:
-        typer.echo(f"Unexpected error: {str(e)}", err=True)
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
-# =============================================================================
-# PRESENTATION COMMANDS
-# =============================================================================
 @presentation_app.command("control")
 def presentation_control(
     speaker: str = typer.Argument(..., help="Speaker name or ID"),
@@ -361,12 +318,11 @@ def presentation_control(
         from src.utils import data_handler
         from src.core.components import section_producer
 
-        # Create speaker manager instance
+        # Get speaker manager
         speaker_manager = speaker_manager_instance()
 
         # Resolve speaker
         resolved_speaker = speaker_manager.resolve(speaker)
-        resolved_speaker = validate_speaker_resolution(resolved_speaker, speaker)
 
         # Check for processed sections data
         speaker_path = (
@@ -386,12 +342,8 @@ def presentation_control(
             raise typer.Exit(1)
 
         # Load sections data
-        try:
-            sections_data = json.loads(data_handler.read(sections_file))
-            sections = section_producer.convert_to_objects(sections_data)
-        except Exception as e:
-            typer.echo(f"Error: Failed to load sections data: {str(e)}", err=True)
-            raise typer.Exit(1)
+        sections_data = json.loads(data_handler.read(sections_file))
+        sections = section_producer.convert_to_objects(sections_data)
 
         if not sections:
             typer.echo("Error: No sections found in processed data.", err=True)
@@ -412,17 +364,11 @@ def presentation_control(
 
         controller.control()
 
-    except typer.Exit:
-        # Re-raise typer.Exit to avoid catching it in the generic handler
-        raise
     except Exception as e:
         typer.echo(f"Presentation control error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
-# =============================================================================
-# SETTINGS COMMANDS
-# =============================================================================
 @settings_app.command("list")
 def settings_list():
     """Display current system configuration (model, API key status)"""
@@ -438,14 +384,9 @@ def settings_list():
         model_value = settings.model if settings.model else "Not configured"
         typer.echo(f"    model (LLM Model) -> {model_value}")
 
-        # Display API key setting (masked)
+        # Display API key setting
         if settings.key:
-            masked_key = (
-                settings.key[:8] + "..." + settings.key[-4:]
-                if len(settings.key) > 12
-                else "***"
-            )
-            typer.echo(f"    key (API Key) -> {masked_key}")
+            typer.echo(f"    key (API Key) -> {settings.key}")
         else:
             typer.echo("    key (API Key) -> Not configured")
 
@@ -476,23 +417,12 @@ def settings_set(
         success = settings_editor.set(key, value)
 
         if success:
-            # Display confirmation in Direct Summary format (mask API key in output)
-            if key == "key":
-                display_value = (
-                    value[:8] + "..." + value[-4:] if len(value) > 12 else "***"
-                )
-                typer.echo(f"Setting '{key}' updated.")
-                typer.echo(f"    New Value -> {display_value}")
-            else:
-                typer.echo(f"Setting '{key}' updated.")
-                typer.echo(f"    New Value -> {value}")
+            typer.echo(f"Setting '{key}' updated.")
+            typer.echo(f"    New Value -> {value}")
         else:
             typer.echo(f"Could not update setting '{key}'.", err=True)
             raise typer.Exit(1)
 
-    except typer.Exit:
-        # Re-raise typer.Exit to avoid catching it in the generic handler
-        raise
     except Exception as e:
         typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
@@ -523,27 +453,13 @@ def settings_unset(
         if success:
             # Display confirmation in Direct Summary format
             if key in settings_editor.template_data:
-                if (
-                    key == "key"
-                    and template_value
-                    and template_value != "null"
-                    and template_value is not None
-                ):
-                    display_value = (
-                        str(template_value)[:8] + "..." + str(template_value)[-4:]
-                        if len(str(template_value)) > 12
-                        else "***"
-                    )
-                    typer.echo(f"Setting '{key}' reset to default.")
-                    typer.echo(f"    New Value -> {display_value}")
-                else:
-                    display_value = (
-                        "Not configured"
-                        if template_value is None
-                        else str(template_value)
-                    )
-                    typer.echo(f"Setting '{key}' reset to default.")
-                    typer.echo(f"    New Value -> {display_value}")
+                display_value = (
+                    "Not configured"
+                    if template_value is None
+                    else str(template_value)
+                )
+                typer.echo(f"Setting '{key}' reset to default.")
+                typer.echo(f"    New Value -> {display_value}")
             else:
                 # Key was removed (not in template)
                 typer.echo(f"Setting '{key}' reset to default.")
@@ -552,17 +468,10 @@ def settings_unset(
             typer.echo(f"Could not reset setting '{key}'.", err=True)
             raise typer.Exit(1)
 
-    except typer.Exit:
-        # Re-raise typer.Exit to avoid catching it in the generic handler
-        raise
     except Exception as e:
         typer.echo(f"Unexpected error: {str(e)}", err=True)
         raise typer.Exit(1)
 
-
-# =============================================================================
-# APPLICATION SETUP
-# =============================================================================
 
 # Register subcommands
 app.add_typer(speaker_app, name="speaker")
