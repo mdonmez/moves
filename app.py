@@ -127,7 +127,7 @@ def speaker_edit(
             typer.echo(f"    Transcript -> {updated_speaker.source_transcript}")
 
     except Exception as e:
-        typer.echo(f"Unexpected error: {str(e)}", err=True)
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -197,7 +197,7 @@ def speaker_show(
         typer.echo(f"    Transcript -> {resolved_speaker.source_transcript}")
 
     except Exception as e:
-        typer.echo(f"Unexpected error: {str(e)}", err=True)
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 
@@ -304,7 +304,7 @@ def speaker_delete(
             raise typer.Exit(1)
 
     except Exception as e:
-        typer.echo(f"Unexpected error: {str(e)}", err=True)
+        typer.echo(f"Error: {str(e)}", err=True)
         raise typer.Exit(1)
 
 

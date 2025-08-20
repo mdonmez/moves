@@ -58,8 +58,6 @@ class SpeakerManager:
         return speaker
 
     def resolve(self, speaker_pattern: str) -> Speaker:
-        import typer
-        
         speakers = self.list()
         speaker_ids = [speaker.speaker_id for speaker in speakers]
 
@@ -73,16 +71,12 @@ class SpeakerManager:
             if len(matched_speakers) == 1:
                 return matched_speakers[0]
             else:
-                typer.echo(
-                    f"Error: Multiple speakers found matching '{speaker_pattern}'. Be more specific:",
-                    err=True,
+                speaker_list = "\n".join([f"    {s.name} ({s.speaker_id})" for s in matched_speakers])
+                raise ValueError(
+                    f"Multiple speakers found matching '{speaker_pattern}'. Be more specific:\n{speaker_list}"
                 )
-                for s in matched_speakers:
-                    typer.echo(f"    {s.name} ({s.speaker_id})", err=True)
-                raise typer.Exit(1)
 
-        typer.echo(f"Error: No speaker found matching '{speaker_pattern}'", err=True)
-        raise typer.Exit(1)
+        raise ValueError(f"No speaker found matching '{speaker_pattern}'.")
 
     def process(
         self, speakers: list[Speaker], llm_model: str, llm_api_key: str
