@@ -5,14 +5,12 @@ from src.data.models import Section
 
 
 def speaker_manager_instance():
-    """Get a SpeakerManager instance"""
     from src.core.speaker_manager import SpeakerManager
 
     return SpeakerManager()
 
 
 def presentation_controller_instance(sections: list[Section], start_section: Section):
-    """Get a PresentationController instance"""
     from src.core.presentation_controller import PresentationController
 
     return PresentationController(
@@ -23,14 +21,12 @@ def presentation_controller_instance(sections: list[Section], start_section: Sec
 
 
 def settings_editor_instance():
-    """Get a SettingsEditor instance"""
     from src.core.settings_editor import SettingsEditor
 
     return SettingsEditor()
 
 
 def validate_speaker_resolution(resolved_speaker, speaker_name: str):
-    """Helper function to validate and handle speaker resolution results"""
     if isinstance(resolved_speaker, list):
         if len(resolved_speaker) == 0:
             typer.echo(f"Error: No speaker found matching '{speaker_name}'", err=True)
@@ -416,8 +412,6 @@ def presentation_control(
 
         controller.control()
 
-    except KeyboardInterrupt:
-        typer.echo("\nPresentation control stopped.")
     except typer.Exit:
         # Re-raise typer.Exit to avoid catching it in the generic handler
         raise
