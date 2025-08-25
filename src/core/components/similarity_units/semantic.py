@@ -1,4 +1,4 @@
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 import numpy as np
 
 from ....data.models import SimilarityResult, Chunk
@@ -6,7 +6,11 @@ from ....data.models import SimilarityResult, Chunk
 
 class Semantic:
     def __init__(self) -> None:
-        self.model = SentenceTransformer("src/core/components/ml_models/embedding")
+        self.model = TextEmbedding(
+            model_name="sentence-transformers/all-MiniLM-L6-v2",
+            model_file="src/core/components/ml_models/all-MiniLM-L6-v2-O4.onnx",
+            sources="src/core/components/ml_models",
+        )
 
     def compare(
         self, input_str: str, candidates: list[Chunk]
@@ -16,12 +20,7 @@ class Semantic:
                 candidate.partial_content for candidate in candidates
             ]
 
-            embeddings = self.model.encode(
-                embedding_input,
-                convert_to_numpy=True,
-                show_progress_bar=False,
-                normalize_embeddings=True,
-            )
+            embeddings = list(self.model.embed(embedding_input))
 
             input_embedding = embeddings[0]
             candidate_embeddings = embeddings[1:]

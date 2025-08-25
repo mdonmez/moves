@@ -11,9 +11,7 @@ class SimilarityCalculator:
         self.semantic = Semantic()
         self.phonetic = Phonetic()
 
-    def _normalize_scores_simple(
-        self, results: list[SimilarityResult]
-    ) -> dict[int, float]:
+    def _normalize_scores(self, results: list[SimilarityResult]) -> dict[int, float]:
         if not results:
             return {}
 
@@ -48,8 +46,8 @@ class SimilarityCalculator:
             semantic_results = self.semantic.compare(input_str, candidates)
             phonetic_results = self.phonetic.compare(input_str, candidates)
 
-            semantic_norm = self._normalize_scores_simple(semantic_results)
-            phonetic_norm = self._normalize_scores_simple(phonetic_results)
+            semantic_norm = self._normalize_scores(semantic_results)
+            phonetic_norm = self._normalize_scores(phonetic_results)
 
             final_results = []
             for candidate in candidates:
