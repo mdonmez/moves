@@ -34,10 +34,26 @@ class PresentationController:
         self.shutdown_flag = threading.Event()
 
         self.recognizer = OnlineRecognizer.from_transducer(
-            tokens=str(Path("src/core/components/ml_models/stt/tokens.txt")),
-            encoder=str(Path("src/core/components/ml_models/stt/encoder.int8.onnx")),
-            decoder=str(Path("src/core/components/ml_models/stt/decoder.int8.onnx")),
-            joiner=str(Path("src/core/components/ml_models/stt/joiner.int8.onnx")),
+            tokens=str(
+                Path(
+                    "src/core/components/ml_models/nemo-streaming-stt-480ms-int8/tokens.txt"
+                )
+            ),
+            encoder=str(
+                Path(
+                    "src/core/components/ml_models/nemo-streaming-stt-480ms-int8/encoder.int8.onnx"
+                )
+            ),
+            decoder=str(
+                Path(
+                    "src/core/components/ml_models/nemo-streaming-stt-480ms-int8/decoder.int8.onnx"
+                )
+            ),
+            joiner=str(
+                Path(
+                    "src/core/components/ml_models/nemo-streaming-stt-480ms-int8/joiner.int8.onnx"
+                )
+            ),
             num_threads=8,
             decoding_method="greedy_search",
         )
