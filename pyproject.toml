@@ -9,10 +9,12 @@ dependencies = [
     "instructor[litellm]>=1.10.0",
     "jellyfish>=1.2.0",
     "num2words>=0.5.14",
+    "numpy>=2.3.2",
+    "pydantic>=2.11.7",
     "pymupdf>=1.26.3",
     "pynput>=1.8.1",
+    "pyyaml>=6.0.2",
     "rapidfuzz>=3.13.0",
-    "ruamel-yaml>=0.18.14",
     "sherpa-onnx>=1.12.9",
     "sounddevice>=0.5.2",
 ]
