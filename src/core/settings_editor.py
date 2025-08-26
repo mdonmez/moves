@@ -87,7 +87,7 @@ if __name__ == "__main__":
     print("Loaded template keys:", list(editor.template_data.keys()))
     print("Current data:", editor._data)
 
-    test_key = "llm_model"
+    test_key = "model"  # Use existing key from template
     print(f"\n[SET] {test_key} -> 'gpt-4'")
     result = editor.set(test_key, "gpt-4")
     print("Result:", result)
