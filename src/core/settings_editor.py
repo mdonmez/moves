@@ -1,11 +1,9 @@
 from pathlib import Path
-from ruamel.yaml import YAML
+import yaml
 import copy
 
 from ..data.models import Settings
 from ..utils import data_handler
-
-yaml = YAML()
 
 
 class SettingsEditor:
@@ -15,13 +13,13 @@ class SettingsEditor:
     def __init__(self):
         try:
             self.template_data = (
-                yaml.load(self.template.read_text(encoding="utf-8")) or {}
+                yaml.safe_load(self.template.read_text(encoding="utf-8")) or {}
             )
         except Exception:
             self.template_data = {}
 
         try:
-            user_data = yaml.load(data_handler.read(self.settings)) or {}
+            user_data = yaml.safe_load(data_handler.read(self.settings)) or {}
         except Exception:
             user_data = {}
 
@@ -51,7 +49,7 @@ class SettingsEditor:
                     node[key] = self._data[key]
 
             with self.settings.open("w", encoding="utf-8") as f:
-                yaml.dump(node, f)
+                yaml.safe_dump(node, f, default_flow_style=False, allow_unicode=True)
             return True
         except Exception as e:
             raise RuntimeError(f"Failed to save settings: {e}") from e
