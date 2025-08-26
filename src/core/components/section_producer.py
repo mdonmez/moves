@@ -1,6 +1,6 @@
 import instructor
-import pymupdf
 from litellm import completion
+import pymupdf
 from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import Literal, cast
