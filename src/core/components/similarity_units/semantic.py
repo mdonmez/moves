@@ -7,9 +7,8 @@ from ....data.models import SimilarityResult, Chunk
 class Semantic:
     def __init__(self) -> None:
         self.model = TextEmbedding(
-            model_name="sentence-transformers/all-MiniLM-L6-v2",
-            model_file="src/core/components/ml_models/all-MiniLM-L6-v2-O4.onnx",
-            sources="src/core/components/ml_models",
+            model_name="sentence-transformers/all-MiniLM-l6-v2",
+            specific_model_path="src/core/components/ml_models/all-MiniLM-L6-v2_quint8_avx2",
         )
 
     def compare(
