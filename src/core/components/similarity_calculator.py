@@ -5,7 +5,7 @@ from ...data.models import Chunk, SimilarityResult
 
 
 class SimilarityCalculator:
-    def __init__(self, semantic_weight: float = 0.4, phonetic_weight: float = 0.6):
+    def __init__(self, semantic_weight: float = 0.6, phonetic_weight: float = 0.4):
         self.semantic_weight = semantic_weight
         self.phonetic_weight = phonetic_weight
         self.semantic = Semantic()
