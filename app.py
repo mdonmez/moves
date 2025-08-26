@@ -143,24 +143,25 @@ def speaker_list():
             typer.echo("No speakers are registered.")
             return
 
-        # Display speakers
+        id_width = max(max(len(s.speaker_id) for s in speakers), len("ID"))
+        name_width = max(max(len(s.name) for s in speakers), len("NAME"))
+        status_width = max(len("Not Ready"), len("STATUS"))
+
         typer.echo(f"Registered Speakers ({len(speakers)})")
         typer.echo()
-
-        # Table header
-        typer.echo("ID              NAME    STATUS")
-        typer.echo("─────────────── ──────  ──────────")
+        typer.echo(f"{'ID':<{id_width}} {'NAME':<{name_width}} STATUS")
+        typer.echo(f"{'─' * id_width} {'─' * name_width} {'─' * status_width}")
 
         # Add speaker rows
-        from src.utils import data_handler
-
         for speaker in speakers:
             speaker_path = data_handler.DATA_FOLDER / "speakers" / speaker.speaker_id
             sections_file = speaker_path / "sections.json"
             ready_status = "Ready" if sections_file.exists() else "Not Ready"
 
-            # Format with proper spacing to align columns
-            typer.echo(f"{speaker.speaker_id:<15} {speaker.name:<6}  {ready_status}")
+            # Format with dynamic spacing to align columns
+            typer.echo(
+                f"{speaker.speaker_id:<{id_width}} {speaker.name:<{name_width}} {ready_status}"
+            )
 
     except Exception as e:
         typer.echo(f"Error accessing speaker data: {str(e)}", err=True)
