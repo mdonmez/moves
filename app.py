@@ -2,6 +2,7 @@ from typing import Optional
 import typer
 from pathlib import Path
 from src.data.models import Section
+from src.utils import data_handler
 
 
 def speaker_manager_instance():
