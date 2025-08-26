@@ -284,24 +284,54 @@ def speaker_process(
 
 @speaker_app.command("delete")
 def speaker_delete(
-    speaker: str = typer.Argument(..., help="Speaker name or ID"),
+    speakers: Optional[list[str]] = typer.Argument(None, help="Speaker(s) to delete"),
+    all: bool = typer.Option(False, "--all", "-a", help="Delete all speakers"),
 ):
-    """Remove a speaker and their data"""
+    """Remove speakers and their data"""
     try:
-        # Create speaker manager instance and resolve speaker
+        # Get speaker manager instance
         speaker_manager = speaker_manager_instance()
-        resolved_speaker = speaker_manager.resolve(speaker)
 
-        # Delete speaker
-        success = speaker_manager.delete(resolved_speaker)
+        # Resolve speakers
+        if all:
+            # Get all speakers
+            speaker_list = speaker_manager.list()
+            if not speaker_list:
+                typer.echo("No speakers found to delete.")
+                return
+        elif speakers:
+            # Resolve each speaker from the list
+            speaker_list = []
 
-        if success:
-            typer.echo(
-                f"Speaker '{resolved_speaker.name}' ({resolved_speaker.speaker_id}) deleted."
-            )
+            for speaker_name in speakers:
+                resolved = speaker_manager.resolve(speaker_name)
+                speaker_list.append(resolved)
         else:
-            typer.echo(f"Could not delete speaker '{resolved_speaker.name}'.", err=True)
-            typer.echo("    Failed to delete speaker data.", err=True)
+            typer.echo(
+                "Error: Either provide speaker names or use --all to delete all speakers.",
+                err=True,
+            )
+            raise typer.Exit(1)
+
+        # Display deletion message
+        typer.echo(f"Deleting {len(speaker_list)} speaker(s)...\n")
+
+        # Delete speakers using for loop and display results immediately
+        deleted_count = 0
+        failed_count = 0
+
+        for speaker in speaker_list:
+            success = speaker_manager.delete(speaker)
+            if success:
+                typer.echo(f"Speaker '{speaker.name}' ({speaker.speaker_id}) deleted.")
+                deleted_count += 1
+            else:
+                typer.echo(f"Could not delete speaker '{speaker.name}'.", err=True)
+                typer.echo("    Failed to delete speaker data.", err=True)
+                failed_count += 1
+
+        # Exit with error if any deletions failed
+        if failed_count > 0:
             raise typer.Exit(1)
 
     except Exception as e:
