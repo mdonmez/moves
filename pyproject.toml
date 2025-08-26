@@ -17,4 +17,5 @@ dependencies = [
     "rapidfuzz>=3.13.0",
     "sherpa-onnx>=1.12.9",
     "sounddevice>=0.5.2",
+    "typer>=0.16.1",
 ]

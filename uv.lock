@@ -703,6 +703,7 @@ dependencies = [
     { name = "rapidfuzz" },
     { name = "sherpa-onnx" },
     { name = "sounddevice" },
+    { name = "typer" },
 ]
 
 [package.metadata]
@@ -719,6 +720,7 @@ requires-dist = [
     { name = "rapidfuzz", specifier = ">=3.13.0" },
     { name = "sherpa-onnx", specifier = ">=1.12.9" },
     { name = "sounddevice", specifier = ">=0.5.2" },
+    { name = "typer", specifier = ">=0.16.1" },
 ]
 
 [[package]]
