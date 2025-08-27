@@ -1,21 +1,25 @@
-# moves documentation
+# moves Technical Documentation
 
 ### moves - Presentation control, reimagined.
 
-**moves** is intelligent presentation management and control application; it manages speakers, analyzes presentations and transcripts, tracks audio in real time, and automatically advances pages
+**moves** is an intelligent presentation management and control application. It leverages a sophisticated, multi-layered system to synchronize a speaker's live narration with the corresponding presentation slides, enabling automated, voice-driven navigation.
 
-## Features
+The system manages speaker profiles, performs AI-driven analysis of presentation and transcript documents, tracks live audio streams, and executes real-time slide transitions.
 
-- **Intelligent Navigation**: moves continuously listens to your speech and navigates slides automatically, keeping your presentation in perfect sync with your speech.
-- **Speaker Management**: Supports multiple speakers and manages their individual presentations, transcripts and sections seamlessly.
-- **Smart Processing**: Analyzes the presentation and transcript with AI and maps it to corresponding sections for accurate navigation.
-- **Manual Intervention**: Allows users to take control and manually adjust slide navigation for supervision.
-- **Lightweight & Fast**: Optimized for real-time performance; runs efficiently even on slow hardware.
+## Core System Pillars
+
+- **Intelligent Content Analysis**: Utilizes a Large Language Model (LLM) to parse presentation slides and spoken transcripts, establishing a semantic map between them. This process generates structured `Section` data, which forms the basis for navigation.
+- **Hybrid Similarity Matching**: Employs a dual-channel similarity algorithm that combines semantic (meaning-based) and phonetic (sound-based) analysis. This ensures robust and accurate matching between the live speech and the pre-processed `Section` content, even with variations in wording or speech-to-text inaccuracies.
+- **Real-time Voice-to-Action Pipeline**: A low-latency pipeline captures microphone audio, performs streaming speech-to-text (STT), calculates similarity scores, and dispatches keyboard commands to control the presentation software.
+- **Speaker-Centric Data Management**: Provides a clear system for managing speaker profiles, their source materials (presentations and transcripts), and the resulting processed data, ensuring modularity and reusability.
 
 ## Documentation
 
-- For a quick-lookup about moves, refer to the [Overview](overview.md) for understanding its core concepts and functionalities.
-- If you need more detailed information, check the [Architecture](architecture.md) and [About](about.md) documents to gain deeper insights into its functionality and purpose.
+This repository contains comprehensive technical documentation detailing the system's architecture, algorithms, and data structures.
+
+- For a high-level system summary, refer to the [Overview](overview.md).
+- For a detailed breakdown of components and data flows, see the [Architecture](architecture.md) document.
+- For in-depth explanations of specific algorithms and processes, explore the [About](about/) directory.
 
 ---
 

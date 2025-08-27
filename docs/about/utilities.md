@@ -1,36 +1,45 @@
-# Utilities
+# System Utilities
 
-The `src/utils/` directory contains several modules with helper functions that provide essential services throughout the application.
+The `src/utils/` directory contains a collection of independent modules that provide essential, cross-cutting services to the rest of the application.
 
 ## `data_handler.py`
 
-This module provides a centralized and safe way to interact with the file system. All file operations are relative to a `.moves` directory in the user's home folder. This ensures that the application's data is stored in a consistent and predictable location.
+This module provides a centralized and secure facade for all file system interactions. It abstracts file operations and confines them to the application's data directory (`~/.moves/`), preventing accidental file access elsewhere on the system.
 
-- **`write()`**: Writes text data to a file.
-- **`read()`**: Reads text data from a file.
-- **`list()`**: Lists the contents of a directory.
-- **`rename()`**: Renames a file.
-- **`delete()`**: Deletes a file or directory.
-- **`copy()`**: Copies a file or directory.
+-   **Core Functions**: Provides atomic functions for `write`, `read`, `list`, `rename`, `delete`, and `copy`.
+-   **Path Abstraction**: All paths are handled relative to the application's root data folder, simplifying file access for other modules.
+-   **Error Handling**: Wraps all file I/O operations in `try...except` blocks, raising custom `RuntimeError` exceptions with detailed context upon failure.
 
 ## `id_generator.py`
 
-This module is responsible for creating unique identifiers used within the application.
+This module is responsible for creating unique, standardized identifiers.
 
-- **`generate_speaker_id()`**: Creates a unique, URL-safe ID for a speaker based on their name and a random suffix. For example, "John Doe" might become `john-doe-aB1cD`.
-- **`generate_history_id()`**: Generates a timestamp-based ID for recording presentation history, such as `20250827_10-30-00`.
+-   **`generate_speaker_id()`**: Creates a unique ID for a speaker. The process involves:
+    1.  Normalizing the speaker's name to ASCII (`NFKD` normalization).
+    2.  Converting to lowercase.
+    3.  Replacing whitespace with hyphens.
+    4.  Removing any remaining non-alphanumeric characters.
+    5.  Appending a cryptographically secure, 5-character random suffix using `secrets.choice` to prevent collisions.
+    Example: "Dr. Özgür Can" -> `dr-ozgur-can-aB1cD`.
+
+-   **`generate_history_id()`**: Generates a simple, timestamp-based ID for logging or tracking presentation sessions, formatted as `YYYYMMDD_HH-MM-SS`.
 
 ## `logger.py`
 
-Provides a simple, pre-configured logging setup. It creates a rotating file logger that saves logs to the `.moves/logs` directory. The logger is named based on the module it's called from, making it easy to trace the source of log messages.
+Provides a pre-configured, singleton-like logging setup using Python's standard `logging` library.
+
+-   **Dynamic Naming**: The logger is automatically named based on the module from which it is instantiated, using the `inspect` module to determine the caller's filename. This allows for granular, module-level logging.
+-   **Rotating Files**: It configures a `RotatingFileHandler` that saves logs to the `.moves/logs` directory. Logs are rotated when they reach 5MB, with up to 5 backup files kept.
+-   **Standard Formatting**: Log messages are formatted to include a timestamp, log level, and the message.
 
 ## `text_normalizer.py`
 
-This module contains the `normalize_text` function, which is crucial for cleaning and standardizing text before it's used in similarity comparisons. The normalization process includes:
+This module contains the `normalize_text` function, which is critical for ensuring that text is in a clean, consistent format before being used in similarity comparisons. The multi-step normalization pipeline includes:
 
-- Converting text to lowercase.
-- Removing emojis and other special characters.
-- Standardizing quotes and apostrophes.
-- Converting numbers to words (e.g., `123` becomes "one hundred twenty-three").
-- Removing punctuation.
-- Collapsing multiple whitespace characters into a single space.
+1.  Unicode normalization (`NFC`).
+2.  Conversion to lowercase.
+3.  Removal of emojis and other special symbols.
+4.  Standardization of quotation marks and apostrophes.
+5.  Conversion of all numerical digits to their word equivalents using the `num2words` library (e.g., `42` -> "forty-two").
+6.  Removal of all remaining punctuation.
+7.  Collapsing of multiple whitespace characters into a single space.

@@ -1,92 +1,81 @@
-# moves Documentation - Architecture
+# System Architecture
 
-This document provides a detailed overview of the moves application's architecture, including its directory structure, core components, and data flow.
+This document provides a detailed overview of the **moves** application's architecture, its components, their interactions, and the flow of data through the system.
 
-## Directory Structure
-
-The project is organized into the following main directories:
-
-- **`app.py`**: The main entry point for the command-line interface (CLI), built using the Typer library.
-- **`src/`**: Contains the core logic of the application.
-  - **`core/`**: The heart of the application, containing the main business logic.
-    - **`components/`**: Reusable components used by the core modules, such as the `SimilarityCalculator` and `SectionProducer`.
-      - **`ml_models/`**: Directory for storing the machine learning models used for speech-to-text and semantic similarity.
-      - **`similarity_units/`**: Contains the individual phonetic and semantic comparison logic.
-    - **`presentation_controller.py`**: Manages the live presentation control, including audio processing and slide navigation.
-    - **`settings_editor.py`**: Handles the reading and writing of application settings.
-    - **`speaker_manager.py`**: Manages speaker profiles, including adding, editing, processing, and deleting speakers.
-  - **`data/`**: Contains data models, templates, and instructions for the application.
-    - **`models.py`**: Defines the Pydantic data models used throughout the application.
-    - **`settings_template.yaml`**: The template for the application's settings file.
-    - **`llm_instruction.md`**: The system prompt used for the large language model (LLM) when generating sections.
-  - **`utils/`**: A collection of utility functions for tasks like data handling, ID generation, and text normalization.
-- **`docs/`**: Contains all the documentation for the project.
-
-## Core Components
-
-The application is built around a few key components that work together to provide its functionality.
+## Component Diagram (C4 Model - Level 2)
 
 ```mermaid
-graph TD
-    subgraph CLI
-        A[app.py]
-    end
+C4Component
+  Person_Ext(user, "User", "CLI User")
 
-    subgraph Core Logic
-        B[SpeakerManager]
-        C[PresentationController]
-        D[SettingsEditor]
-    end
+  System_Boundary(moves, "moves Application") {
+    Component(cli, "CLI (app.py)", "Typer", "Handles user commands and orchestrates workflows")
+    Component(speaker_manager, "Speaker Manager", "Python Class", "Manages speaker profiles and processing orchestration")
+    Component(settings_editor, "Settings Editor", "Python Class", "Manages application configuration (settings.yaml)")
+    Component(presentation_controller, "Presentation Controller", "Python Class", "Manages the live, voice-driven presentation session")
 
-    subgraph Components
-        E[SectionProducer]
-        F[ChunkProducer]
-        G[SimilarityCalculator]
-    end
+    System_Boundary(components, "Core Components") {
+      Component(section_producer, "Section Producer", "Python Module", "Generates sections from PDFs using an LLM")
+      Component(chunk_producer, "Chunk Producer", "Python Module", "Generates overlapping text chunks from sections")
+      Component(similarity_calculator, "Similarity Calculator", "Python Class", "Calculates hybrid similarity score between text and chunks")
+    }
 
-    subgraph Utils
-        H[DataHandler]
-        I[IDGenerator]
-        J[TextNormalizer]
-    end
+    System_Boundary(utils, "Utilities") {
+      Component(data_handler, "Data Handler", "Python Module", "Handles all file system interactions within the .moves directory")
+      Component(id_generator, "ID Generator", "Python Module", "Creates unique, URL-safe IDs for speakers")
+      Component(text_normalizer, "Text Normalizer", "Python Module", "Cleans and standardizes text for comparison")
+    }
+  }
 
-    A -- Manages --> B
-    A -- Controls --> C
-    A -- Edits --> D
+  System_Ext(llm, "Large Language Model (LLM)", "External Service (e.g., Gemini)", "Processes presentation/transcript text to create sections")
+  System_Ext(keyboard, "Operating System Keyboard", "OS Service", "Receives keyboard commands for slide navigation")
 
-    B -- Uses --> E
-    B -- Uses --> H
-    B -- Uses --> I
+  Rel(user, cli, "Executes commands")
 
-    C -- Uses --> F
-    C -- Uses --> G
-    C -- Uses --> J
+  Rel(cli, speaker_manager, "Uses")
+  Rel(cli, presentation_controller, "Uses")
+  Rel(cli, settings_editor, "Uses")
 
-    E -- Uses --> H
-    G -- Uses --> J
+  Rel(speaker_manager, section_producer, "Uses")
+  Rel(speaker_manager, data_handler, "Uses")
+  Rel(speaker_manager, id_generator, "Uses")
+
+  Rel(presentation_controller, chunk_producer, "Uses")
+  Rel(presentation_controller, similarity_calculator, "Uses")
+  Rel(presentation_controller, text_normalizer, "Uses")
+  Rel_R(presentation_controller, keyboard, "Sends commands to")
+
+  Rel(section_producer, llm, "Makes API calls to")
+
+  Rel(similarity_calculator, text_normalizer, "Uses")
 ```
 
 ## Data Flow
 
-The data flow in moves can be broken down into two main processes: speaker processing and presentation control.
+The system operates on two primary data flows: the asynchronous **Speaker Processing Flow** and the real-time **Presentation Control Flow**.
 
 ### Speaker Processing Data Flow
 
-1.  The user initiates the `speaker process` command from the CLI.
-2.  The `SpeakerManager` retrieves the speaker's profile, including the paths to their presentation and transcript files.
-3.  The `SectionProducer` is called, which reads the content of the presentation (PDF) and transcript files.
-4.  The extracted text from the presentation and the full transcript are sent to a large language model (LLM) along with a detailed system prompt (`llm_instruction.md`).
-5.  The LLM returns a list of text segments, one for each slide, which are then saved as `sections.json` in the speaker's data directory.
+This flow is responsible for preparing the necessary data for a live presentation. It is initiated by the `speaker process` command.
+
+1.  **Initiation**: The `SpeakerManager` receives a list of speakers to process.
+2.  **File Handling**: For each speaker, it copies the source presentation and transcript PDFs into a local, structured directory managed by the `DataHandler`.
+3.  **Text Extraction**: The `SectionProducer` uses the `PyMuPDF` library to extract raw text from both the presentation and transcript PDFs.
+4.  **LLM Invocation**: The extracted texts are sent to a configured Large Language Model (LLM) via the `LiteLLM` and `Instructor` libraries. The `llm_instruction.md` prompt guides the LLM to align the transcript with the presentation slides.
+5.  **Structured Data Reception**: The `Instructor` library ensures the LLM's response is a well-formed JSON object containing a list of `Section` contents.
+6.  **Data Persistence**: The `SpeakerManager` saves the generated `Section` objects to a `sections.json` file within the speaker's data directory.
 
 ### Presentation Control Data Flow
 
-1.  The user starts the `presentation control` command from the CLI.
-2.  The `PresentationController` loads the pre-generated `sections.json` for the selected speaker.
-3.  The `ChunkProducer` generates all possible overlapping text "chunks" from the sections.
-4.  The `PresentationController` starts listening to the microphone for the speaker's voice.
-5.  The audio is processed in real-time by a streaming speech-to-text model, which outputs transcribed words.
-6.  A sliding window of the most recent transcribed words is taken as the input for the `SimilarityCalculator`.
-7.  The `SimilarityCalculator` compares this input text to a set of "candidate" chunks from the presentation, using both semantic and phonetic similarity.
-8.  The best-matching chunk determines the current section of the presentation.
-9.  If the best-matching section is different from the current section, the `PresentationController` sends keyboard commands (arrow keys) to navigate to the correct slide.
-10. The user can manually override the automatic navigation at any time using the keyboard.
+This flow executes during a live presentation, initiated by the `presentation control` command.
+
+1.  **Initialization**: The `PresentationController` loads the `sections.json` file for the selected speaker.
+2.  **Chunk Generation**: The `ChunkProducer` is called to generate all possible overlapping text `Chunks` from the loaded `Sections`. This creates a comprehensive set of comparison targets.
+3.  **Audio Capture**: The controller uses the `sounddevice` library to capture audio from the default microphone in small frames.
+4.  **Streaming STT**: The audio frames are fed into a `sherpa-onnx` `OnlineRecognizer` instance. This model performs real-time speech-to-text transcription.
+5.  **Text Normalization**: The transcribed text is cleaned by the `TextNormalizer` (converted to lowercase, numbers to words, etc.).
+6.  **Sliding Window**: The most recent 12 words of normalized text are held in a `deque` (a sliding window).
+7.  **Candidate Selection**: The `ChunkProducer` selects a small subset of `candidate chunks` from sections surrounding the current presentation slide. This narrows the search space for efficiency.
+8.  **Similarity Calculation**: The `SimilarityCalculator` compares the text from the sliding window against the candidate chunks using its hybrid semantic/phonetic algorithm.
+9.  **Navigation Logic**: The chunk with the highest similarity score determines the most likely current section. If this section is different from the currently active one, the `PresentationController` uses the `pynput` library to dispatch arrow key presses to the OS, thus changing the slide.
+10. **Manual Override**: A `pynput` `Listener` runs in a separate thread to capture user key presses (arrows for manual navigation, insert to pause/resume), allowing for immediate user intervention.

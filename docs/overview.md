@@ -1,12 +1,12 @@
-# moves Documentation - Overview
+# System Overview
 
-moves is an intelligent presentation management and control application that synchronizes slide transitions with a speaker's live narration. It achieves this by managing speaker profiles, analyzing presentation content and transcripts, and tracking the speaker's voice in real time to automatically advance slides.
+**moves** is an intelligent presentation control system designed to automate slide navigation by synchronizing with a speaker's live narration. It achieves this through a combination of AI-driven content analysis and a real-time audio processing pipeline.
 
-The application is divided into three core functional areas:
+The application is architecturally divided into three primary domains:
 
-- **Managing Speakers**: Handles the creation, modification, and processing of speaker profiles, which include their presentation and transcript files.
-- **Controlling Presentations**: Provides live, voice-controlled navigation of presentations during a speaking engagement.
-- **Editing Settings**: Allows for the configuration of system-level settings, such as the AI model and API keys used for processing.
+- **Data & Speaker Management**: Governs the creation, storage, and processing of speaker profiles and their associated presentation/transcript files.
+- **Live Presentation Control**: Manages the real-time, voice-controlled navigation of presentations.
+- **System Configuration**: Allows for the management of system-level settings, primarily the AI model and API keys used for content analysis.
 
 ---
 
@@ -23,80 +23,82 @@ graph TD
     end
 
     subgraph Data & Models
-        E[Speaker Data]
-        F[Generated Sections]
-        G[Configuration]
+        E[Speaker Profiles & Source Files]
+        F[Generated Section & Chunk Data]
+        G[System Configuration]
+        H[STT & Semantic Models]
     end
 
     A -- "speaker add/edit/process" --> B
     A -- "presentation control" --> C
     A -- "settings set/unset" --> D
 
-    B -- "Creates/Updates" --> E
-    B -- "Generates" --> F
-    C -- "Uses" --> F
-    D -- "Reads/Writes" --> G
+    B -- Creates/Updates --> E
+    B -- Generates --> F
+    C -- Uses --> F
+    C -- Relies on --> H
+    D -- Reads/Writes --> G
 ```
 
 ---
 
-## Managing Speakers
+## Speaker & Data Management
 
-This area of the application is responsible for all aspects of speaker and presentation data management. It allows users to register new speakers, associate them with their presentation and transcript files, and process these files to generate the necessary data for live presentation control. The processing step uses a large language model (LLM) to intelligently segment the transcript into sections that correspond to each slide of the presentation.
+This domain handles the preparatory analysis required for live control. It allows users to register speakers and associate them with their presentation (PDF) and transcript (PDF) files. The core of this domain is the **processing** step, which uses a Large Language Model (LLM) to intelligently segment the transcript into `Sections` that correspond to each slide of the presentation. This creates the foundational data for the live system.
 
-- **Speaker Profiles**: Each speaker has a profile containing their name, a unique ID, and paths to their source presentation and transcript files.
-- **Data Processing**: The application processes the presentation and transcript to create structured "sections" that map the spoken content to the visual slides.
-- **Storage**: All speaker data, including profiles and generated sections, is stored locally on the user's machine.
+- **Speaker Profiles**: Each speaker is represented by a profile containing their name, a unique ID, and paths to their source files.
+- **AI-Powered Section Generation**: The system sends the extracted text from the presentation and transcript to an LLM, which, guided by a detailed prompt, aligns the transcript content with the presentation slides.
+- **Data Persistence**: All speaker data, including profiles and the generated `Section` data, is stored locally in a dedicated application directory.
 
 ```mermaid
 graph TD
     subgraph Speaker Management Flow
-        A[Add/Edit Speaker] --> B{Speaker Profile};
+        A[Add/Edit Speaker] --> B(Speaker Profile);
         B --> C[Process Speaker];
-        C --> D{Presentation & Transcript};
-        C --> E[LLM];
-        E --> F[Generated Sections];
+        C --> D{Presentation & Transcript PDFs};
+        C --> E[LLM Interaction];
+        E --> F[Generated Section Data];
         D --> E;
     end
 ```
 
 ---
 
-## Controlling Presentations
+## Live Presentation Control
 
-This is the live, real-time component of the application. Once a speaker has been processed, the user can initiate a "control" session. During this session, the application listens to the speaker's voice through a microphone and uses the pre-generated sections to determine the current position in the presentation. As the speaker moves through their content, the application automatically sends keyboard commands (left and right arrow keys) to advance or go back through the slides.
+This is the real-time component of the application. Once a speaker's data has been processed, a `control` session can be initiated. The system listens to the speaker's voice via a microphone and uses the pre-generated `Section` data to determine the current position in the presentation. As the speaker progresses, the application automatically sends keyboard commands (arrow keys) to navigate the presentation software.
 
-- **Real-time Transcription**: A streaming speech-to-text model transcribes the speaker's words in real time.
-- **Similarity Matching**: The transcribed text is continuously compared against the content of the generated sections to find the most likely current position.
-- **Automated Navigation**: Based on the similarity matching, the application triggers slide navigation.
-- **Manual Override**: The speaker can manually navigate slides using the arrow keys, and can pause or resume the automatic navigation.
+- **Streaming Speech-to-Text**: A low-latency, streaming STT model transcribes the speaker's voice in real time.
+- **Hybrid Similarity Matching**: The transcribed text is continuously compared against the `Section` content using a weighted algorithm that combines semantic (meaning) and phonetic (sound) similarity.
+- **Automated Navigation**: Based on the best-matching text chunk, the system triggers slide navigation to keep the presentation synchronized with the speaker.
+- **Manual Override**: The user retains full manual control via the keyboard to navigate or to pause/resume the automatic navigation.
 
 ```mermaid
 graph TD
     subgraph Presentation Control Flow
         A[Start Control Session] --> B{Listen to Microphone};
-        B --> C[Real-time Speech-to-Text];
-        C --> D{Transcribed Text};
-        D --> E[Compare with Sections];
-        E --> F{Determine Current Section};
-        F --> G[Send Keyboard Commands];
+        B --> C[Real-time STT Engine];
+        C --> D{Live Transcribed Text};
+        D --> E[Hybrid Similarity Calculator];
+        E --> F{Determine Best-Matching Section};
+        F --> G[Send Keyboard Navigation Commands];
     end
 ```
 
 ---
 
-## Editing Settings
+## System Configuration
 
-This component allows the user to configure the application's settings. The primary settings are the selection of the large language model (LLM) used for processing speaker presentations and the API key for that model.
+This component provides a simple interface for managing the application's settings. The primary configurable parameters are the choice of Large Language Model (LLM) for content processing and the associated API key.
 
-- **Model Selection**: Users can specify which LLM they want to use for the section generation process.
-- **API Key Management**: Users can set and update the API key required for the selected LLM.
-- **Configuration File**: Settings are stored in a YAML file, with a template providing default values.
+- **Model Selection**: Users can specify which `LiteLLM`-compatible model they wish to use for section generation.
+- **API Key Management**: Users can set, update, and unset the API key for the selected LLM.
+- **Configuration File**: Settings are persisted in a `settings.yaml` file, with a template providing default values.
 
 ```mermaid
 graph TD
     subgraph Settings Management Flow
-        A[Set/Unset Setting] --> B{Update Configuration File};
-        B --> C[Application Reads Settings];
+        A[settings set/unset] --> B{Update settings.yaml};
+        B --> C[Application Reads Settings on Init];
     end
 ```

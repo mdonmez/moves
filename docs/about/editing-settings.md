@@ -1,28 +1,41 @@
-# Editing Settings
+# Application Configuration Management
 
-The `SettingsEditor` class, found in `src/core/settings_editor.py`, provides a straightforward way to manage the application's configuration. It handles reading from and writing to a `settings.yaml` file located in the user's home directory (`.moves/`).
+The `SettingsEditor` class provides a robust and safe mechanism for managing the application's configuration. It handles the interaction with the `settings.yaml` file, ensuring that the configuration is always valid and complete.
 
-## Functionality
+## Template Overlay System
 
-- **Initialization**: When instantiated, the `SettingsEditor` loads a template (`settings_template.yaml`) and merges it with the user's existing settings. This ensures that all required settings are present.
-- **Setting a Value**: The `set` method allows updating a specific setting by key and value.
-- **Unsetting a Value**: The `unset` method reverts a setting to its default value as defined in the template.
-- **Listing Settings**: The `list` method returns a `Settings` object containing the current configuration.
+The settings management employs a template overlay or merging strategy to ensure consistency and provide sensible defaults.
 
-## Configuration File
+-   **Initialization**: When the `SettingsEditor` is instantiated, it performs a three-step process:
+    1.  It first loads the default values from the `settings_template.yaml` file, which is bundled with the application.
+    2.  It then loads the user's existing `settings.yaml` from the application's data directory (`.moves/`).
+    3.  It merges the two, with the user's settings taking precedence over the template's defaults. This ensures that any settings defined by the user are respected, while any missing settings are filled in from the template.
 
-The `settings.yaml` file stores the configuration. The `settings_template.yaml` provides the default values for the model and API key.
+-   **Saving**: After the merge, the combined data is immediately saved back to the user's `settings.yaml`. This guarantees that the configuration file on disk is always complete and up-to-date with all available settings.
+
+## Core Functionality
+
+-   **`set(key, value)`**: This method allows for the modification of a setting. It first validates that the `key` exists in the template data, preventing the addition of arbitrary or misspelled keys. It then updates the value in its internal data representation and triggers a save.
+
+-   **`unset(key)`**: This method reverts a specific setting to its default value as defined in the `settings_template.yaml`. If the key exists in the template, its value is restored; otherwise, it is removed. This is followed by a save.
+
+-   **`list()`**: This method returns a `Settings` Pydantic model, providing a type-safe, read-only view of the current configuration.
 
 ```mermaid
 graph TD
-    A[settings set command] --> B{SettingsEditor.set};
-    B --> C[Update internal data];
-    C --> D{Save to settings.yaml};
+    A[SettingsEditor.__init__] --> B{Load settings_template.yaml};
+    A --> C{Load user's settings.yaml};
+    B & C --> D{Merge Data (User > Template)};
+    D --> E[Save merged data to user's settings.yaml];
 
-    E[settings unset command] --> F{SettingsEditor.unset};
-    F --> G[Revert to template value];
-    G --> D;
+    F[settings set command] --> G{SettingsEditor.set};
+    G --> H[Update internal data];
+    H --> I{Save to settings.yaml};
 
-    H[settings list command] --> I{SettingsEditor.list};
-    I --> J[Return Settings object];
+    J[settings unset command] --> K{SettingsEditor.unset};
+    K --> L[Revert to template value];
+    L --> I;
+
+    M[settings list command] --> N{SettingsEditor.list};
+    N --> O[Return Settings object];
 ```
