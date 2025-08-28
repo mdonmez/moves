@@ -2,7 +2,7 @@
 
 ## Overview
 
-moves is a smart presentation management system that leverages speech recognition and natural language processing to control slide transitions automatically. It analyzes spoken content in real time and uses similarity algorithms to match your words with the presentation, enabling seamless, automatic progression through slides.
+moves is a smart presentation management system that leverages speech recognition and natural language processing to control slide transitions automatically. It analyzes spoken content in real time and uses similarity algorithms to match your words with the presentation, enabling seamless, automatic navigation through slides.
 
 ---
 
