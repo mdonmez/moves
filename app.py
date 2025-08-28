@@ -1,6 +1,7 @@
 from typing import Optional
 import typer
 from pathlib import Path
+import tomlkit
 from src.data.models import Section
 from src.utils import data_handler
 
@@ -25,6 +26,29 @@ def settings_editor_instance():
     from src.core.settings_editor import SettingsEditor
 
     return SettingsEditor()
+
+
+def version_callback(value: bool):
+    """Get version from pyproject.toml and display it"""
+    if value:
+        try:
+            pyproject_path = Path(__file__).parent / "pyproject.toml"
+            with open(pyproject_path, "r", encoding="utf-8") as f:
+                pyproject_data = tomlkit.load(f)
+            project = pyproject_data.get("project")
+            if project:
+                version = project.get("version")
+                if version:
+                    typer.echo(f"moves version {version}")
+                else:
+                    typer.echo("Error: Version not found in pyproject.toml", err=True)
+            else:
+                typer.echo(
+                    "Error: Project section not found in pyproject.toml", err=True
+                )
+        except Exception as e:
+            typer.echo(f"Error reading version: {e}", err=True)
+        raise typer.Exit()
 
 
 # Initialize Typer CLI application
@@ -512,6 +536,16 @@ def settings_unset(
 app.add_typer(speaker_app, name="speaker")
 app.add_typer(presentation_app, name="presentation")
 app.add_typer(settings_app, name="settings")
+
+
+@app.callback()
+def main(
+    version: Optional[bool] = typer.Option(
+        None, "--version", callback=version_callback, help="Show version and exit"
+    ),
+):
+    """moves CLI - Presentation control, reimagined."""
+    pass
 
 
 if __name__ == "__main__":
