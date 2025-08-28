@@ -1,62 +1,48 @@
 from pathlib import Path
-import yaml
+import tomlkit
 import copy
+from typing import Dict, Any
 
 from ..data.models import Settings
 from ..utils import data_handler
 
 
 class SettingsEditor:
-    template = Path("src/data/settings_template.yaml")
-    settings = data_handler.DATA_FOLDER / Path("settings.yaml")
+    template = Path("src/data/settings_template.toml")
+    settings = data_handler.DATA_FOLDER / "settings.toml"
 
     def __init__(self):
-        try:
-            self.template_data = (
-                yaml.safe_load(self.template.read_text(encoding="utf-8")) or {}
-            )
-        except Exception:
-            self.template_data = {}
+        self._template_doc = tomlkit.parse(self.template.read_text(encoding="utf-8"))
+        self._template_defaults: Dict[str, Any] = dict(self._template_doc)
 
         try:
-            user_data = yaml.safe_load(data_handler.read(self.settings)) or {}
+            user_data = dict(tomlkit.parse(data_handler.read(self.settings)))
         except Exception:
             user_data = {}
 
-        self._data = (
-            {**self.template_data, **user_data}
-            if isinstance(self.template_data, dict)
-            else user_data
-        )
+        self._data = {**self._template_defaults, **user_data}
 
-        try:
-            self._save()
-        except Exception:
-            pass
+        self._save()
 
-    def _save(self):
+    def _save(self) -> bool:
         try:
-            # Ensure the data folder exists
             self.settings.parent.mkdir(parents=True, exist_ok=True)
+            node = copy.deepcopy(self._template_doc)
 
-            node = (
-                copy.deepcopy(self.template_data)
-                if isinstance(self.template_data, dict)
-                else {}
-            )
-            for key in node.keys():
+            for key in self._template_defaults.keys():
                 if key in self._data:
                     node[key] = self._data[key]
 
             with self.settings.open("w", encoding="utf-8") as f:
-                yaml.safe_dump(node, f, default_flow_style=False, allow_unicode=True)
+                f.write(tomlkit.dumps(node))
             return True
         except Exception as e:
             raise RuntimeError(f"Failed to save settings: {e}") from e
 
-    def set(self, key, value):
-        if key not in self.template_data:
+    def set(self, key: str, value: Any) -> bool:
+        if key not in self._template_defaults:
             return False
+
         self._data[key] = value
         try:
             self._save()
@@ -64,11 +50,12 @@ class SettingsEditor:
         except Exception as e:
             raise RuntimeError(f"Failed to set key '{key}': {e}") from e
 
-    def unset(self, key):
-        if key in self.template_data:
-            self._data[key] = self.template_data[key]
+    def unset(self, key: str) -> bool:
+        if key in self._template_defaults:
+            self._data[key] = self._template_defaults[key]
         else:
             self._data.pop(key, None)
+
         try:
             self._save()
             return True
@@ -84,10 +71,9 @@ if __name__ == "__main__":
 
     editor = SettingsEditor()
 
-    print("Loaded template keys:", list(editor.template_data.keys()))
     print("Current data:", editor._data)
 
-    test_key = "model"  # Use existing key from template
+    test_key = "model"
     print(f"\n[SET] {test_key} -> 'gpt-4'")
     result = editor.set(test_key, "gpt-4")
     print("Result:", result)
