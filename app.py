@@ -506,14 +506,14 @@ def settings_unset(
             raise typer.Exit(1)
 
         # Get the template value to show what it will be reset to
-        template_value = settings_editor.template_data.get(key)
+        template_value = settings_editor._template_defaults.get(key)
 
         # Reset setting
         success = settings_editor.unset(key)
 
         if success:
             # Display confirmation in Direct Summary format
-            if key in settings_editor.template_data:
+            if key in settings_editor._template_defaults:
                 display_value = (
                     "Not configured" if template_value is None else str(template_value)
                 )
