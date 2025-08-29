@@ -1,0 +1,55 @@
+name: Version Bump
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  bump-version:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+
+    - name: Install uv
+      uses: astral-sh/setup-uv@v4
+      with:
+        version: "latest"
+
+    - name: Set up Python
+      run: uv python install 3.13
+
+    - name: Install dependencies
+      run: uv sync
+
+    - name: Configure git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+
+    - name: Bump version
+      run: |
+        # Install bump2version if you want automatic version bumping
+        # pip install bump2version
+        # bump2version ${{ github.event.inputs.version_type }}
+        
+        # For now, this is a manual process reminder
+        echo "Please update version manually in pyproject.toml"
+        echo "Requested bump: ${{ github.event.inputs.version_type }}"
+
+    # - name: Push changes
+    #   run: |
+    #     git push
+    #     git push --tags
