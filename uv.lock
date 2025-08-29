@@ -688,8 +688,8 @@ wheels = [
 
 [[package]]
 name = "moves"
-version = "0.1.0"
-source = { virtual = "." }
+version = "0.2.0"
+source = { editable = "." }
 dependencies = [
     { name = "fastembed" },
     { name = "instructor", extra = ["litellm"] },
