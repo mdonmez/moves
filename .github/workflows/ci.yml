@@ -31,8 +31,14 @@ jobs:
       - name: Build package
         run: uv build
 
-      - name: List dist contents
+      - name: List dist contents (Unix)
+        if: runner.os != 'Windows'
         run: ls -la dist/
+
+      - name: List dist contents (Windows)
+        if: runner.os == 'Windows'
+        run: dir dist
+        shell: pwsh
 
       - name: Test installation
         run: |
