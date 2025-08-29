@@ -3,7 +3,7 @@ import re
 import unicodedata
 import secrets
 
-from ..data.models import SpeakerId, HistoryId
+from data.models import SpeakerId, HistoryId
 
 
 def generate_speaker_id(name: str) -> SpeakerId:

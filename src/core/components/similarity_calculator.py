@@ -1,7 +1,7 @@
-from .similarity_units.phonetic import Phonetic
-from .similarity_units.semantic import Semantic
+from core.components.similarity_units.phonetic import Phonetic
+from core.components.similarity_units.semantic import Semantic
 
-from ...data.models import Chunk, SimilarityResult
+from data.models import Chunk, SimilarityResult
 
 
 class SimilarityCalculator:

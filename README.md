@@ -13,8 +13,8 @@ _Presentation control, reimagined._
 ### Table of Contents
 
 - [✨ Features](#-features)
-- [🚀 Installation](#-installation)
-- [👩‍🏫 Usage](#-usage)
+- [⏬ Installation](#-installation)
+- [🖱️ Usage](#-usage)
   - [Get Started in 3 Steps](#get-started-in-3-steps)
   - [Command Overview](#command-overview)
 - [📚 Documentation](#-documentation)

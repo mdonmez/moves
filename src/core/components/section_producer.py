@@ -5,7 +5,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 from typing import Literal, cast
 
-from ...data.models import Section
+from data.models import Section
 
 
 def _extract_pdf(
@@ -116,7 +116,7 @@ def generate_sections(
 
 
 if __name__ == "__main__":
-    from ...utils import data_handler
+    from utils import data_handler
     import json
 
     test_data_dir = Path(

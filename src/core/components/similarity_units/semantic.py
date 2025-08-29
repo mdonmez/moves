@@ -1,7 +1,7 @@
 from fastembed import TextEmbedding
 import numpy as np
 
-from ....data.models import SimilarityResult, Chunk
+from data.models import SimilarityResult, Chunk
 
 
 class Semantic:

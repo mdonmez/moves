@@ -1,19 +1,18 @@
 from typing import Optional
 import typer
 from pathlib import Path
-import tomlkit
-from src.data.models import Section
-from src.utils import data_handler
+from data.models import Section
+from utils import data_handler
 
 
 def speaker_manager_instance():
-    from src.core.speaker_manager import SpeakerManager
+    from core.speaker_manager import SpeakerManager
 
     return SpeakerManager()
 
 
 def presentation_controller_instance(sections: list[Section], start_section: Section):
-    from src.core.presentation_controller import PresentationController
+    from core.presentation_controller import PresentationController
 
     return PresentationController(
         sections=sections,
@@ -23,31 +22,21 @@ def presentation_controller_instance(sections: list[Section], start_section: Sec
 
 
 def settings_editor_instance():
-    from src.core.settings_editor import SettingsEditor
+    from core.settings_editor import SettingsEditor
 
     return SettingsEditor()
 
 
 def version_callback(value: bool):
-    """Get version from pyproject.toml and display it"""
+    """Get version from package metadata and display it"""
     if value:
         try:
-            pyproject_path = Path(__file__).parent / "pyproject.toml"
-            with open(pyproject_path, "r", encoding="utf-8") as f:
-                pyproject_data = tomlkit.load(f)
-            project = pyproject_data.get("project")
-            if project:
-                version = project.get("version")
-                if version:
-                    typer.echo(f"moves version {version}")
-                else:
-                    typer.echo("Error: Version not found in pyproject.toml", err=True)
-            else:
-                typer.echo(
-                    "Error: Project section not found in pyproject.toml", err=True
-                )
-        except Exception as e:
-            typer.echo(f"Error reading version: {e}", err=True)
+            import importlib.metadata
+
+            version = importlib.metadata.version("moves")
+            typer.echo(f"moves version {version}")
+        except Exception:
+            typer.echo("moves version 0.2.0")  # Fallback version
         raise typer.Exit()
 
 
@@ -201,9 +190,6 @@ def speaker_show(
         # Resolve speaker
         speaker_manager = speaker_manager_instance()
         resolved_speaker = speaker_manager.resolve(speaker)
-
-        # Check if speaker is ready
-        from src.utils import data_handler
 
         speaker_path = (
             data_handler.DATA_FOLDER / "speakers" / resolved_speaker.speaker_id
@@ -370,8 +356,7 @@ def presentation_control(
     """Start live voice-controlled presentation navigation (requires processed speaker)"""
     try:
         import json
-        from src.utils import data_handler
-        from src.core.components import section_producer
+        from core.components import section_producer
 
         # Get speaker manager
         speaker_manager = speaker_manager_instance()

@@ -3,8 +3,8 @@ import tomlkit
 import copy
 from typing import Dict, Any
 
-from ..data.models import Settings
-from ..utils import data_handler
+from data.models import Settings
+from utils import data_handler
 
 
 class SettingsEditor:

@@ -7,10 +7,10 @@ import sounddevice as sd
 from pynput.keyboard import Key, Controller, Listener
 from sherpa_onnx import OnlineRecognizer
 
-from ..data.models import Section
-from ..utils import text_normalizer
-from .components import chunk_producer
-from .components.similarity_calculator import SimilarityCalculator
+from data.models import Section
+from utils import text_normalizer
+from core.components import chunk_producer
+from core.components.similarity_calculator import SimilarityCalculator
 
 
 class PresentationController:

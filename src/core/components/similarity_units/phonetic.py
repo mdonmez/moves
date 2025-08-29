@@ -2,7 +2,7 @@ from functools import lru_cache
 from rapidfuzz import fuzz
 from jellyfish import metaphone
 
-from ....data.models import SimilarityResult, Chunk
+from data.models import SimilarityResult, Chunk
 
 
 class Phonetic:

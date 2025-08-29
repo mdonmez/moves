@@ -1,5 +1,5 @@
-from ...utils import text_normalizer
-from ...data.models import Section, Chunk
+from utils import text_normalizer
+from data.models import Section, Chunk
 
 
 def generate_chunks(sections: list[Section], window_size: int = 12) -> list[Chunk]:
