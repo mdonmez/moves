@@ -8,12 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Automated GitHub Actions workflows for CI/CD
 - Automated releases on version changes
 
 ## [0.2.0] - 2025-08-30
 
 ### Added
+
 - Initial release
 - CLI interface with Typer
 - Speaker management system
@@ -22,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - AI-powered section generation
 
 ### Fixed
+
 - Package structure and import issues
 - Entry point configuration for CLI
 

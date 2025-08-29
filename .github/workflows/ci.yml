@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ master, main ]
+    branches: [master, main]
   pull_request:
-    branches: [ master, main ]
+    branches: [master, main]
 
 jobs:
   test:
@@ -15,30 +15,30 @@ jobs:
         python-version: ["3.13"]
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Install uv
-      uses: astral-sh/setup-uv@v4
-      with:
-        version: "latest"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "latest"
 
-    - name: Set up Python ${{ matrix.python-version }}
-      run: uv python install ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
 
-    - name: Install dependencies
-      run: uv sync
+      - name: Install dependencies
+        run: uv sync
 
-    - name: Build package
-      run: uv build
+      - name: Build package
+        run: uv build
 
-    - name: List dist contents
-      run: ls -la dist/
+      - name: List dist contents
+        run: ls -la dist/
 
-    - name: Test installation
-      run: |
-        WHEEL_FILE=$(find dist -name "*.whl" -type f | head -1)
-        echo "Installing wheel: $WHEEL_FILE"
-        uv tool install "$WHEEL_FILE"
-        moves --version
-        moves --help
-      shell: bash
+      - name: Test installation
+        run: |
+          WHEEL_FILE=$(find dist -name "*.whl" -type f | head -1)
+          echo "Installing wheel: $WHEEL_FILE"
+          uv tool install "$WHEEL_FILE"
+          moves --version
+          moves --help
+        shell: bash
