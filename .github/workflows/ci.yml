@@ -31,8 +31,24 @@ jobs:
     - name: Build package
       run: uv build
 
-    - name: Test installation
+    - name: List dist contents
+      run: ls -la dist/
+
+    - name: Test installation (Unix)
+      if: runner.os != 'Windows'
       run: |
-        uv tool install dist/*.whl
+        WHEEL_FILE=$(find dist -name "*.whl" | head -1)
+        echo "Installing: $WHEEL_FILE"
+        uv tool install "$WHEEL_FILE"
+        moves --version
+        moves --help
+
+    - name: Test installation (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $wheelFile = Get-ChildItem -Path dist -Filter "*.whl" | Select-Object -First 1
+        Write-Host "Installing: $($wheelFile.FullName)"
+        uv tool install $wheelFile.FullName
         moves --version
         moves --help

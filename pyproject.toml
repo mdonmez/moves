@@ -23,3 +23,13 @@ dependencies = [
 
 [project.scripts]
 moves = "app:app"
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+data = ["*.toml", "*.md"]
