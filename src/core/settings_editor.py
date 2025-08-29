@@ -2,26 +2,17 @@ from pathlib import Path
 import tomlkit
 import copy
 from typing import Dict, Any
-from importlib import resources
 
 from data.models import Settings
 from utils import data_handler
 
 
 class SettingsEditor:
+    template = Path("src/data/settings_template.toml")
     settings = data_handler.DATA_FOLDER / "settings.toml"
 
     def __init__(self):
-        # Use importlib.resources to access the template file from the package
-        try:
-            import data
-            template_text = resources.read_text(data, "settings_template.toml")
-        except (ImportError, FileNotFoundError):
-            # Fallback for development
-            template_path = Path("src/data/settings_template.toml")
-            template_text = template_path.read_text(encoding="utf-8")
-        
-        self._template_doc = tomlkit.parse(template_text)
+        self._template_doc = tomlkit.parse(self.template.read_text(encoding="utf-8"))
         self._template_defaults: Dict[str, Any] = dict(self._template_doc)
 
         try:
