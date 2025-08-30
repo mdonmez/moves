@@ -36,7 +36,7 @@ def version_callback(value: bool):
             version = importlib.metadata.version("moves")
             typer.echo(f"moves version {version}")
         except Exception:
-            typer.echo("moves version 0.2.0")  # Fallback version
+            typer.echo("Error retrieving version")
         raise typer.Exit()
 
 
