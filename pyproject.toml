@@ -23,3 +23,8 @@ dependencies = [
 
 [project.scripts]
 moves = "app:app"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.1",
+]
