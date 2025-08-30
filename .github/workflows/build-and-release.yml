@@ -33,9 +33,6 @@ jobs:
       - name: Set up Python
         run: uv python install 3.13
 
-      - name: Sync dependencies
-        run: uv sync
-
       - name: Build package
         run: uv build
 
@@ -106,26 +103,9 @@ jobs:
       - name: Create GitHub Release
         if: steps.check_release.outputs.exists == 'false'
         run: |
+          CHANGELOG=$(cat CHANGELOG.MD)
           gh release create "${{ steps.get_version.outputs.tag }}" \
             --title "Release ${{ steps.get_version.outputs.version }}" \
-            --notes "## Changes in ${{ steps.get_version.outputs.version }}
-
-          - Automated release from GitHub Actions
-
-          ## Installation
-
-          You can install this release using:
-
-          \`\`\`bash
-          uv tool install https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.tag }}/${{ steps.get_version.outputs.wheel_name }}
-          \`\`\`
-
-          Or download the wheel file and install locally:
-
-          \`\`\`bash
-          uv tool install ./${{ steps.get_version.outputs.wheel_name }}
-          \`\`\`" \
-            dist/${{ steps.get_version.outputs.wheel_name }} \
-            dist/*.tar.gz
+            --notes "$CHANGELOG\n\n## Installation\n\nInstall latest version using:\n\n\`\`\`bash\nuv tool install moves-cli\n\`\`\`"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
