@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "fastembed>=0.7.2",
-    "instructor[litellm]>=1.10.0",
+    "instructor[litellm]>=1.11.2",
     "jellyfish>=1.2.0",
     "num2words>=0.5.14",
     "numpy>=2.3.2",
