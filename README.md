@@ -26,10 +26,6 @@ _Presentation control, reimagined._
 
 ## ✨ Features
 
-Here’s a **more detailed version** in the same instructive, one-word style with full explanations:
-
-## ✨ Features
-
 - **🙌 Hands-Free:** Speak naturally and let your slides advance automatically. Maintain smooth pacing without interruptions, keeping your audience engaged throughout.
 - **🧠 Intelligent:** Advanced AI analyzes your transcript, segments it into meaningful sections, and maps them accurately to your slides for seamless navigation.
 - **🔒 Private:** All processing—speech-to-text conversion and similarity matching—happens locally on your device. No internet is required, ensuring full privacy and minimal latency.
@@ -144,8 +140,8 @@ For a deeper dive into the system's architecture, components, and design decisio
 
 ## 🧪 Tests
 
-> [!INFO]
-> Due to time constraints, I am currently unable to create unit tests for this project. However, I plan to implement them as soon as possible.
+> [!NOTE]  
+> Tests are currently under development and will be available soon.
 
 ## 🤝 Contributing
 
