@@ -32,17 +32,3 @@ class Phonetic:
 
         except Exception as e:
             raise RuntimeError(f"Phonetic similarity comparison failed: {e}") from e
-
-
-if __name__ == "__main__":
-    input_text = "That's write."
-    candidates = [
-        Chunk(partial_content="That's right.", source_sections=[]),
-        Chunk(partial_content="The write stuff.", source_sections=[]),
-    ]
-
-    phonetic = Phonetic()
-    results = phonetic.compare(input_text, candidates)
-
-    for result in results:
-        print(f"Candidate: {result.chunk.partial_content}, Score: {result.score}")

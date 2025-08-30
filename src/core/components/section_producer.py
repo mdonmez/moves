@@ -113,28 +113,3 @@ def generate_sections(
         generated_sections.append(section)
 
     return generated_sections
-
-
-if __name__ == "__main__":
-    from utils import data_handler
-    import json
-
-    test_data_dir = Path(
-        "C:/Users/Donmez/Sync/Projects/Active/moves_prev/src/data/test_data_section_generation/1"
-    )
-    presentation_path = test_data_dir / "input_presentation.pdf"
-    transcript_path = test_data_dir / "input_transcript.pdf"
-    output_path = test_data_dir / "sections.json"
-
-    sections = generate_sections(
-        presentation_path,
-        transcript_path,
-        llm_model="gemini/gemini-2.5-flash",
-        llm_api_key="",
-    )
-    section_list = convert_to_list(sections)
-
-    data_handler.write(
-        output_path, json.dumps(section_list, indent=2, ensure_ascii=False)
-    )
-    print(f"Successfully generated {len(sections)} sections and saved to {output_path}")

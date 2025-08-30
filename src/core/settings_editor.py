@@ -64,29 +64,3 @@ class SettingsEditor:
 
     def list(self) -> Settings:
         return Settings(**self._data)
-
-
-if __name__ == "__main__":
-    import sys
-
-    editor = SettingsEditor()
-
-    print("Current data:", editor._data)
-
-    test_key = "model"
-    print(f"\n[SET] {test_key} -> 'gpt-4'")
-    result = editor.set(test_key, "gpt-4")
-    print("Result:", result)
-    print("Data after set:", editor._data)
-
-    print(f"\n[UNSET] {test_key}")
-    result = editor.unset(test_key)
-    print("Result:", result)
-    print("Data after unset:", editor._data)
-
-    print("\n[LIST]")
-    settings_obj = editor.list()
-    print(settings_obj)
-
-    print("\n=== Test Completed ===")
-    sys.exit(0)

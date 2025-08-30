@@ -1,3 +1,5 @@
+# TODO: Implement logging project-wide
+
 import logging
 from pathlib import Path
 from logging.handlers import RotatingFileHandler

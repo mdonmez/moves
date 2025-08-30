@@ -29,8 +29,3 @@ def normalize_text(text: str) -> str:
     text = re.sub(r"\d+", lambda m: num2words(m.group(0)).replace("-", " "), text)
     text = re.sub(r"[^\w\s'\"`]", " ", text, flags=re.UNICODE)
     return re.sub(r"\s+", " ", text).strip()
-
-
-if __name__ == "__main__":
-    sample_text = "“Hello”, world! 123 ‘John’s’ text! „Smart qu'otes‟ test. 😊"
-    print(normalize_text(sample_text))

@@ -69,23 +69,3 @@ class SimilarityCalculator:
 
         except Exception as e:
             raise RuntimeError(f"Similarity comparison failed: {e}") from e
-
-
-if __name__ == "__main__":
-    import time
-
-    calculator = SimilarityCalculator(semantic_weight=0.4, phonetic_weight=0.6)
-
-    input_text = "That's write."
-    candidates = [
-        Chunk(partial_content="That's right.", source_sections=[]),
-        Chunk(partial_content="The write stuff.", source_sections=[]),
-    ]
-    start_time = time.time()
-    results = calculator.compare(input_str=input_text, candidates=candidates)
-    end_time = time.time()
-
-    for result in results:
-        print(f"Candidate: {result.chunk.partial_content}, Score: {result.score}")
-
-    print(f"Similarity calculation time: {(end_time - start_time) * 1000:.2f}ms")

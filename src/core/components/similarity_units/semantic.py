@@ -35,17 +35,3 @@ class Semantic:
 
         except Exception as e:
             raise RuntimeError(f"Semantic similarity comparison failed: {e}") from e
-
-
-if __name__ == "__main__":
-    input_text = "the weather is sunny today"
-    candidates = [
-        Chunk(partial_content="It's a bright and sunny day.", source_sections=[]),
-        Chunk(partial_content="The rain is pouring down.", source_sections=[]),
-    ]
-
-    semantic = Semantic()
-    results = semantic.compare(input_text, candidates)
-
-    for result in results:
-        print(f"Candidate: {result.chunk.partial_content}, Score: {result.score}")

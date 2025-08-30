@@ -31,8 +31,3 @@ def generate_speaker_id(name: str) -> SpeakerId:
 def generate_history_id() -> HistoryId:
     history_id = datetime.now().strftime("%Y%m%d_%H-%M-%S")
     return history_id
-
-
-if __name__ == "__main__":
-    print(generate_speaker_id("John Doe"))
-    print(generate_history_id())
