@@ -29,8 +29,14 @@ jobs:
       - name: Build package
         run: uv build
 
+      - name: Get version
+        id: version
+        run: |
+          VERSION=$(grep '^version' pyproject.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
       - name: Install wheel
-        run: uv tool install dist/moves-*.whl
+        run: uv tool install dist/moves-${{ steps.version.outputs.version }}-py3-none-any.whl
 
       - name: Test version
         run: moves --version
