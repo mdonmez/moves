@@ -27,4 +27,8 @@ moves = "app:app"
 [dependency-groups]
 dev = [
     "pytest>=8.4.1",
+    "pytest-mock>=3.14.1",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = ["src", "."]
