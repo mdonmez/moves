@@ -13,6 +13,10 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   build-and-test:
     name: Build and Test on ${{ matrix.os }}
@@ -73,6 +77,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
@@ -98,40 +104,29 @@ jobs:
           name: dist-ubuntu-latest
           path: dist/
 
-      - name: Create and push tag
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git tag ${{ steps.get_version.outputs.tag }}
-          git push origin ${{ steps.get_version.outputs.tag }}
-
       - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.get_version.outputs.tag }}
-          name: Release ${{ steps.get_version.outputs.version }}
-          body: |
-            ## Manual Release ${{ steps.get_version.outputs.version }}
+        run: |
+          gh release create "${{ steps.get_version.outputs.tag }}" \
+            --title "Release ${{ steps.get_version.outputs.version }}" \
+            --notes "## Manual Release ${{ steps.get_version.outputs.version }}
 
-            This release was created manually via GitHub Actions workflow.
+          This release was created manually via GitHub Actions workflow.
 
-            ## Installation
+          ## Installation
 
-            You can install this release using:
+          You can install this release using:
 
-            ```bash
-            uv tool install https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.tag }}/${{ steps.get_version.outputs.wheel_name }}
-            ```
+          \`\`\`bash
+          uv tool install https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.tag }}/${{ steps.get_version.outputs.wheel_name }}
+          \`\`\`
 
-            Or download the wheel file and install locally:
+          Or download the wheel file and install locally:
 
-            ```bash
-            uv tool install ./${{ steps.get_version.outputs.wheel_name }}
-            ```
-          files: |
-            dist/${{ steps.get_version.outputs.wheel_name }}
+          \`\`\`bash
+          uv tool install ./${{ steps.get_version.outputs.wheel_name }}
+          \`\`\`" \
+            $(if [ "${{ github.event.inputs.prerelease }}" == "true" ]; then echo "--prerelease"; fi) \
+            dist/${{ steps.get_version.outputs.wheel_name }} \
             dist/*.tar.gz
-          draft: false
-          prerelease: ${{ github.event.inputs.prerelease }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

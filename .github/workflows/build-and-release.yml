@@ -8,6 +8,10 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   build-and-test:
     name: Build and Test on ${{ matrix.os }}
@@ -65,6 +69,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4
@@ -89,48 +95,37 @@ jobs:
       - name: Check if release exists
         id: check_release
         run: |
-          if git tag --list | grep -q "^${{ steps.get_version.outputs.tag }}$"; then
+          if gh release view "${{ steps.get_version.outputs.tag }}" >/dev/null 2>&1; then
             echo "exists=true" >> $GITHUB_OUTPUT
           else
             echo "exists=false" >> $GITHUB_OUTPUT
           fi
-
-      - name: Create and push tag
-        if: steps.check_release.outputs.exists == 'false'
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git tag ${{ steps.get_version.outputs.tag }}
-          git push origin ${{ steps.get_version.outputs.tag }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create GitHub Release
         if: steps.check_release.outputs.exists == 'false'
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: ${{ steps.get_version.outputs.tag }}
-          name: Release ${{ steps.get_version.outputs.version }}
-          body: |
-            ## Changes in ${{ steps.get_version.outputs.version }}
+        run: |
+          gh release create "${{ steps.get_version.outputs.tag }}" \
+            --title "Release ${{ steps.get_version.outputs.version }}" \
+            --notes "## Changes in ${{ steps.get_version.outputs.version }}
 
-            - Automated release from GitHub Actions
+          - Automated release from GitHub Actions
 
-            ## Installation
+          ## Installation
 
-            You can install this release using:
+          You can install this release using:
 
-            ```bash
-            uv tool install https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.tag }}/${{ steps.get_version.outputs.wheel_name }}
-            ```
+          \`\`\`bash
+          uv tool install https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.tag }}/${{ steps.get_version.outputs.wheel_name }}
+          \`\`\`
 
-            Or download the wheel file and install locally:
+          Or download the wheel file and install locally:
 
-            ```bash
-            uv tool install ./${{ steps.get_version.outputs.wheel_name }}
-            ```
-          files: |
-            dist/${{ steps.get_version.outputs.wheel_name }}
+          \`\`\`bash
+          uv tool install ./${{ steps.get_version.outputs.wheel_name }}
+          \`\`\`" \
+            dist/${{ steps.get_version.outputs.wheel_name }} \
             dist/*.tar.gz
-          draft: false
-          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

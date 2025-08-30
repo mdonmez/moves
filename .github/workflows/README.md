@@ -29,9 +29,16 @@ This repository contains three GitHub Actions workflows:
 
 - Builds and tests on all three platforms (Ubuntu, Windows, macOS)
 - Creates a GitHub release automatically when code is pushed to main/master
+- Uses GitHub CLI (`gh`) instead of git commands to avoid permission issues
 - Uploads the wheel file and source distribution to GitHub Releases
 - Only creates a release if the version tag doesn't already exist
 - Provides installation instructions in the release notes
+
+**Key fixes:**
+
+- Added `permissions: contents: write` to allow release creation
+- Uses `gh release create` instead of manual git tag pushing
+- No longer requires git configuration or tag pushing permissions
 
 ## 3. Manual Release Workflow (`manual-release.yml`)
 
@@ -45,6 +52,7 @@ This repository contains three GitHub Actions workflows:
 - Option to specify a custom version or use the one from `pyproject.toml`
 - Option to mark the release as a prerelease
 - Same build and test process as the automatic workflow
+- Uses GitHub CLI for release creation (no permission issues)
 
 ## Usage
 
@@ -61,6 +69,15 @@ This repository contains three GitHub Actions workflows:
 3. Click "Run workflow"
 4. Optionally specify a custom version or mark as prerelease
 5. The workflow will build, test, and create the release
+
+## Permission Requirements
+
+The workflows now use the built-in `GITHUB_TOKEN` with proper permissions:
+
+- `contents: write` - Allows creating releases and uploading assets
+- `actions: read` - Allows reading workflow artifacts
+
+No additional setup is required - these permissions are automatically available to GitHub Actions.
 
 ## Installation from Release
 
