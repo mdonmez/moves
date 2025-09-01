@@ -77,31 +77,7 @@ You are now ready to use `moves`!
 
 ## 🧪 Testing
 
-The project includes a comprehensive test suite with 76 tests covering all major functionality.
-
-### Running Tests
-
-```bash
-# Run all tests
-uv run pytest tests/
-
-# Run tests with verbose output
-uv run pytest tests/ -v
-
-# Run specific test file
-uv run pytest tests/data/test_models.py
-
-# Run tests quietly
-uv run pytest tests/ -q
-```
-
-### Test Coverage
-
-- **Data Models**: All dataclasses with immutability validation
-- **Core Components**: Similarity engines, chunk/section processing
-- **Utilities**: ID generation, text normalization, logging, data handling
-- **CLI**: Command-line interface functionality
-- **Integration**: Component interaction and error handling
+*The tests are not ready*
 
 ## 🖱️ Usage
 
